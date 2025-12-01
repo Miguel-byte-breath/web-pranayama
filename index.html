@@ -657,7 +657,8 @@
       counterText.textContent = "";
       patternLabelDisplay.textContent = ""; 
       patternSelector.style.display = 'block';
-      
+      document.getElementById('shareBtn').style.display = 'block';
+
       if(ctx) {
          const w = canvas.width / (window.devicePixelRatio || 1);
          const h = canvas.height / (window.devicePixelRatio || 1);
