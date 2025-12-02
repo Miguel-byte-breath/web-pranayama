@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: Visualizer Fix</title>
+  <title>Respiración: Precision 5.0</title>
   <style>
     /* --- 1. VARIABLES & BASE --- */
     :root {
@@ -11,195 +11,125 @@
       --primary-dark: #2e7d32;
       --accent: #1a5f7a;
       --bg: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-      --glass: rgba(255, 255, 255, 0.85);
-      --border: 1px solid rgba(255, 255, 255, 0.5);
-      --shadow: 0 4px 20px rgba(0,0,0,0.05);
+      --glass: rgba(255, 255, 255, 0.90);
+      --border: 1px solid rgba(255, 255, 255, 0.6);
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
     body {
-      background: var(--bg);
-      color: #37474f;
-      font-family: system-ui, -apple-system, sans-serif;
-      height: 100dvh;
-      width: 100vw;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      background: var(--bg); color: #37474f; font-family: system-ui, -apple-system, sans-serif;
+      height: 100dvh; width: 100vw; overflow: hidden; display: flex; flex-direction: column;
     }
 
-    /* --- 2. LAYOUT HÍBRIDO (GRID) --- */
-    .app-container {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      width: 100%;
-      position: relative;
-    }
+    /* --- 2. LAYOUT HÍBRIDO --- */
+    .app-container { display: flex; flex-direction: column; height: 100%; width: 100%; }
 
-    /* ZONA ESFERA */
     .stage-area {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      z-index: 10;
-      padding: 20px;
-      transition: all 0.3s;
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      position: relative; z-index: 10; padding: 20px;
     }
 
-    /* ZONA CONTROLES */
     .sidebar-area {
-      background: var(--glass);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-top: var(--border);
-      z-index: 50;
-      display: flex;
-      flex-direction: column;
-      padding: 15px;
-      box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
-      transition: all 0.3s;
+      background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-top: var(--border); z-index: 50; display: flex; flex-direction: column;
+      padding: 15px; box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
     }
 
-    /* --- 3. BARRA DE HERRAMIENTAS --- */
+    /* --- 3. BARRA SUPERIOR (VERTICAL ONLY) --- */
     .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      padding: 10px 20px;
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 60;
-      pointer-events: none;
+      display: flex; justify-content: space-between; align-items: center; width: 100%;
+      padding: 15px 20px; position: absolute; top: 0; left: 0; z-index: 60; pointer-events: none;
     }
-    
-    .toolbar-content {
-      pointer-events: auto;
-      display: flex;
-      gap: 10px;
-      width: 100%;
-      justify-content: space-between;
-      align-items: center;
-    }
+    .toolbar-content { pointer-events: auto; display: flex; gap: 10px; width: 100%; justify-content: space-between; }
 
-    /* --- ELEMENTOS UI --- */
+    /* --- UI ELEMENTS --- */
     .badge {
-      background: var(--primary-dark); color: white; padding: 6px 12px;
-      border-radius: 20px; font-weight: 700; font-size: 0.9rem;
-      box-shadow: 0 2px 8px rgba(46,125,50,0.3);
-      display: flex; align-items: center; gap: 5px;
+      background: var(--primary-dark); color: white; padding: 6px 14px; border-radius: 20px;
+      font-weight: 700; font-size: 0.95rem; box-shadow: 0 2px 8px rgba(46,125,50,0.3);
+      display: flex; align-items: center; gap: 6px;
     }
-
-    .btn-group { display: flex; gap: 8px; }
-    
     .btn {
-      background: white; border: 1px solid #cfd8dc; padding: 8px 12px;
-      border-radius: 12px; font-weight: 600; color: #546e7a;
-      cursor: pointer; display: flex; align-items: center; gap: 5px;
+      background: white; border: 1px solid #cfd8dc; padding: 8px 14px; border-radius: 12px;
+      font-weight: 600; color: #546e7a; cursor: pointer; display: flex; align-items: center; gap: 6px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
-    .btn:active { transform: scale(0.95); background: #eceff1; }
+    .btn:active { transform: scale(0.96); background: #eceff1; }
     .btn-primary { background: #e8f5e9; border-color: #a5d6a7; color: #2e7d32; }
-
     select { border:none; background:transparent; font-weight:bold; color:#37474f; outline:none; }
 
-    /* --- 4. ESFERA Y TEXTOS --- */
+    /* --- 4. ESFERA & TEXTO --- */
     .phase-indicator {
-      font-size: clamp(1.5rem, 4vw, 2.5rem);
-      color: var(--accent);
-      font-weight: 300;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      margin-bottom: 40px;
-      height: 40px;
-      display: flex; align-items: center; justify-content: center;
-      text-shadow: 0 2px 10px rgba(255,255,255,0.8);
-      z-index: 20;
-    }
-
-    .sphere-wrapper {
-      position: relative;
-      display: flex; align-items: center; justify-content: center;
-      width: 300px; height: 300px; 
-    }
-
-    .sphere {
-      width: 180px; height: 180px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #a8ff60, #4CAF50);
-      box-shadow: 0 15px 40px rgba(76,175,80,0.3);
-      display: flex; align-items: center; justify-content: center;
-      will-change: transform;
-      z-index: 10;
-    }
-
-    .counter-inner {
-      font-size: 3rem; font-weight: 800; color: white;
-      text-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    .quote-box {
-      margin-top: 20px; padding: 0 20px; text-align: center;
-      font-family: 'Georgia', serif; font-style: italic; color: #78909c;
+      font-size: clamp(1.8rem, 5vw, 2.8rem); color: var(--accent); font-weight: 300;
+      letter-spacing: 4px; text-transform: uppercase; margin-bottom: 30px;
       height: 50px; display: flex; align-items: center; justify-content: center;
+      text-shadow: 0 2px 10px rgba(255,255,255,0.8); z-index: 20;
+    }
+    .sphere-wrapper {
+      position: relative; width: 300px; height: 300px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .sphere {
+      width: 180px; height: 180px; border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #a8ff60, #4CAF50);
+      box-shadow: 0 20px 50px rgba(76,175,80,0.35);
+      display: flex; align-items: center; justify-content: center;
+      will-change: transform; z-index: 10;
+    }
+    .counter-inner {
+      font-size: 3.5rem; font-weight: 800; color: white;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+    .quote-box {
+      margin-top: 25px; padding: 0 20px; text-align: center; font-family: 'Georgia', serif;
+      font-style: italic; color: #78909c; height: 50px; display: flex; align-items: center; justify-content: center;
     }
 
-    /* --- 5. PANEL INFERIOR --- */
-    .exercise-list {
-      overflow-y: auto;
-      display: grid; grid-template-columns: 1fr; gap: 8px;
-      max-height: 30vh; /* Límite en vertical */
-      padding-bottom: 20px;
-    }
+    /* --- 5. VISUALIZADOR & LISTA --- */
+    .visualizer-container { width: 100%; height: 80px; margin-bottom: 10px; position: relative; }
+    #breathGraph { width: 100%; height: 100%; display: block; }
     
-    .card {
-      background: rgba(255,255,255,0.6); padding: 12px; border-radius: 10px;
-      border: 1px solid transparent; cursor: pointer; text-align: left;
+    .exercise-list {
+      overflow-y: auto; display: grid; grid-template-columns: 1fr; gap: 8px;
+      max-height: 25vh; padding-bottom: 20px;
     }
-    .card.active { background: #fff; border-color: var(--primary); box-shadow: 0 2px 8px rgba(76,175,80,0.1); }
-    .card-title { font-weight: 700; color: #37474f; font-size: 0.95rem; }
-    .card-desc { font-size: 0.8rem; color: #90a4ae; }
+    .card {
+      background: rgba(255,255,255,0.6); padding: 12px 15px; border-radius: 12px;
+      border: 1px solid transparent; cursor: pointer; text-align: left;
+      transition: all 0.2s;
+    }
+    .card:hover { background: #fff; }
+    .card.active { background: #fff; border-color: var(--primary); box-shadow: 0 4px 12px rgba(76,175,80,0.15); }
+    .card-title { font-weight: 700; color: #37474f; font-size: 1rem; }
+    .card-desc { font-size: 0.85rem; color: #90a4ae; }
 
-    .visualizer { width: 100%; height: 60px; margin-bottom: 15px; }
-    #breathGraph { width: 100%; height: 100%; }
-
-    /* --- 6. MEDIA QUERIES --- */
+    /* --- 6. MEDIA QUERIES (LANDSCAPE) --- */
     @media (orientation: landscape) {
       .app-container { flex-direction: row; }
       .toolbar { display: none; }
-      .stage-area { flex: 1.5; height: 100dvh; }
-      .sphere-wrapper { width: 220px; height: 220px; }
-      .sphere { width: 140px; height: 140px; }
-      .phase-indicator { margin-bottom: 20px; }
+      .stage-area { flex: 1.4; height: 100dvh; }
       .sidebar-area {
-        width: 360px; height: 100dvh;
-        border-top: none; border-left: var(--border);
-        background: rgba(255,255,255,0.7);
-        justify-content: flex-start;
+        width: 380px; height: 100dvh; border-top: none; border-left: var(--border);
+        background: rgba(255,255,255,0.7); justify-content: flex-start;
       }
+      .sphere-wrapper { width: 220px; height: 220px; }
+      .sphere { width: 150px; height: 150px; }
+      .phase-indicator { margin-bottom: 10px; font-size: 1.8rem; }
       .exercise-list { flex: 1; max-height: none; padding-bottom: 80px; }
-      #sidebarControls { display: flex !important; flex-direction: column; gap: 10px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+      
+      /* Inyectar controles en sidebar solo en landscape */
+      #sidebarControls { display: flex !important; flex-direction: column; gap: 12px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.08); }
       .control-row { display: flex; justify-content: space-between; align-items: center; }
     }
-
-    @media (orientation: portrait) {
-      #sidebarControls { display: none; }
-    }
-
-    .fab {
-      position: fixed; bottom: 20px; right: 20px;
-      background: var(--accent); color: white; padding: 12px 20px;
-      border-radius: 30px; border: none; font-weight: 600;
-      box-shadow: 0 4px 15px rgba(26,95,122,0.4); z-index: 100;
-      display: flex; align-items: center; gap: 8px; cursor: pointer;
-    }
     
+    @media (orientation: portrait) { #sidebarControls { display: none; } }
+
+    /* FAB */
+    .fab {
+      position: fixed; bottom: 25px; right: 25px; background: var(--accent); color: white;
+      padding: 14px 24px; border-radius: 30px; border: none; font-weight: 700;
+      box-shadow: 0 6px 20px rgba(26,95,122,0.4); z-index: 100; cursor: pointer;
+      display: flex; align-items: center; gap: 10px; transition: transform 0.2s;
+    }
+    .fab:active { transform: scale(0.95); }
     #pillOverlay { background: rgba(255,255,255,0.98); }
   </style>
 </head>
@@ -208,18 +138,17 @@
   <div id="pillOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:200; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px;">
     <h1 style="color:var(--primary-dark); margin-bottom:10px;">🍃 Pausa para ti</h1>
     <h2 id="pillRecipient" style="color:#546e7a; margin-bottom:20px; font-weight:400;"></h2>
-    <p id="pillMessage" style="font-size:1.2rem; font-style:italic; color:#37474f; margin-bottom:30px; max-width:500px;"></p>
-    <button id="startPillBtn" class="btn btn-primary" style="padding:15px 40px; font-size:1.1rem;">Comenzar</button>
+    <p id="pillMessage" style="font-size:1.3rem; font-style:italic; color:#37474f; margin-bottom:40px; max-width:600px;"></p>
+    <button id="startPillBtn" class="btn btn-primary" style="padding:15px 40px; font-size:1.2rem;">Comenzar Ahora</button>
   </div>
 
   <div class="app-container">
-    
     <div class="toolbar">
       <div class="toolbar-content">
         <div class="badge" id="cycleBadgeTop">🔄 0</div>
-        <div class="btn-group">
+        <div style="display:flex; gap:8px;">
            <button class="btn btn-primary" id="resetBtnTop">↻</button>
-           <button class="btn" id="soundBtnTop">🔊</button>
+           <button class="btn" id="soundBtnTop">🔇</button>
         </div>
       </div>
     </div>
@@ -237,30 +166,30 @@
     <div class="sidebar-area">
       <div id="sidebarControls">
          <div class="control-row">
-            <div class="badge" id="cycleBadgeSide" style="font-size:1.2rem; padding:10px 20px;">🔄 0</div>
+            <div class="badge" id="cycleBadgeSide" style="font-size:1.1rem; padding:10px 20px;">🔄 0</div>
             <button class="btn btn-primary" id="resetBtnSide" style="padding:10px 20px;">↻ Reiniciar</button>
          </div>
          <div class="control-row">
             <div class="btn">⚡ <select id="tempoSelect"><option value="1000">1x</option><option value="1500">Lento</option><option value="2000">Zen</option></select></div>
-            <div class="btn-group">
+            <div style="display:flex; gap:8px;">
               <button class="btn" id="soundBtnSide">🔇</button>
               <button class="btn" id="metronomeBtn">⏱️</button>
             </div>
          </div>
       </div>
 
-      <div class="visualizer">
+      <div class="visualizer-container">
         <canvas id="breathGraph"></canvas>
       </div>
 
       <div class="exercise-list">
         <div class="card" data-pattern="4-4-6-2">
            <div class="card-title">4-4-6-2 • Relax Profundo</div>
-           <div class="card-desc">Baja pulsaciones rápidamente</div>
+           <div class="card-desc">Baja pulsaciones (In 4, Mant 4, Ex 6, Sost 2)</div>
         </div>
         <div class="card" data-pattern="4-7-8">
            <div class="card-title">4-7-8 • Para Dormir</div>
-           <div class="card-desc">Técnica Dr. Weil</div>
+           <div class="card-desc">Técnica Dr. Weil (In 4, Mant 7, Ex 8)</div>
         </div>
         <div class="card" data-pattern="box">
            <div class="card-title">Cuadrada • Enfoque</div>
@@ -268,7 +197,7 @@
         </div>
         <div class="card" data-pattern="5-5">
            <div class="card-title">5-5 • Coherencia</div>
-           <div class="card-desc">Equilibrio total</div>
+           <div class="card-desc">Equilibrio (In 5, Ex 5)</div>
         </div>
       </div>
     </div>
@@ -277,14 +206,19 @@
   <button id="shareBtn" class="fab">📤 Enviar Píldora</button>
 
   <script>
-    /* --- LÓGICA V4.1 (Con Bolita Restaurada) --- */
-    const patterns={'4-4-6-2':[{t:"Inhala",b:4,y:'rise'},{t:"Mantén",b:4,y:'hold_high'},{t:"Exhala",b:6,y:'fall'},{t:"Sostén",b:2,y:'hold_low'}],'4-7-8':[{t:"Inhala",b:4,y:'rise'},{t:"Mantén",b:7,y:'hold_high'},{t:"Exhala",b:8,y:'fall'}],'box':[{t:"Inhala",b:4,y:'rise'},{t:"Mantén",b:4,y:'hold_high'},{t:"Exhala",b:4,y:'fall'},{t:"Sostén",b:4,y:'hold_low'}],'5-5':[{t:"Inhala",b:5,y:'rise'},{t:"Exhala",b:5,y:'fall'}]};
-    const quotes=["El amor es lo que eres.","Vuelve al ahora.","Observa sin juzgar.","Paz en cada aliento.","Suelta lo que pesa."];
+    /* --- MOTOR DE PRECISIÓN 5.0 --- */
+    const patterns = {
+      '4-4-6-2': [{t:"Inhala",b:4,y:'rise'},{t:"Mantén",b:4,y:'hold_high'},{t:"Exhala",b:6,y:'fall'},{t:"Sostén",b:2,y:'hold_low'}],
+      '4-7-8': [{t:"Inhala",b:4,y:'rise'},{t:"Mantén",b:7,y:'hold_high'},{t:"Exhala",b:8,y:'fall'}],
+      'box': [{t:"Inhala",b:4,y:'rise'},{t:"Mantén",b:4,y:'hold_high'},{t:"Exhala",b:4,y:'fall'},{t:"Sostén",b:4,y:'hold_low'}],
+      '5-5': [{t:"Inhala",b:5,y:'rise'},{t:"Exhala",b:5,y:'fall'}]
+    };
+    const quotes = ["El amor es lo que eres.", "Vuelve al ahora.", "Observa sin juzgar.", "Paz en cada aliento.", "Suelta lo que pesa.", "Aquí y ahora."];
 
-    let state={pk:null,data:[],start:0,dur:0,tempo:1000,run:false,af:null,cyc:0,snd:false,met:false,ctx:null,lastB:-1};
+    let state = { pk:null, data:[], start:0, dur:0, tempo:1000, run:false, af:null, cyc:0, snd:false, met:false, ctx:null, lastB:-1, coords:[] };
     
-    // Referencias DOM
-    const els={
+    // UI Refs
+    const els = {
       sph:document.getElementById('sphere'), ph:document.getElementById('phaseText'),
       cnt:document.getElementById('counterText'), qt:document.getElementById('phraseContent'),
       cvs:document.getElementById('breathGraph'), ctx:document.getElementById('breathGraph').getContext('2d'),
@@ -299,132 +233,189 @@
       o.connect(g); g.connect(state.ctx.destination); o.start(); o.stop(state.ctx.currentTime+d);
     }
 
-    // --- FUNCIÓN DE DIBUJO (CORREGIDA) ---
-    function render(){
-      const r=els.cvs.parentNode.getBoundingClientRect();
-      els.cvs.width=r.width*2; els.cvs.height=r.height*2; els.ctx.scale(2,2);
-      const w=r.width, h=r.height, m=5; els.ctx.clearRect(0,0,w,h);
-      
-      if(!state.data.length)return;
-      const px=w/state.data.reduce((a,b)=>a+b.b,0);
-      let x=0, pts=[];
-      
-      // 1. Calcular puntos
-      state.data.forEach(p=>{
-        const dw=p.b*px, ex=x+dw; let ey=h-m;
-        if(p.y==='rise')ey=m; if(p.y==='hold_high')ey=m;
-        pts.push({x1:x,y1:h-m,x2:ex,y2:ey,s:p.start,e:p.end});
-        x=ex;
-      });
+    // --- CÁLCULO DE GEOMETRÍA (EL CEREBRO DEL VISUALIZADOR) ---
+    function calcGeometry() {
+       if(!state.data.length) return;
+       const r = els.cvs.parentNode.getBoundingClientRect();
+       // Doble resolución para nitidez (Retina/HighDPI)
+       els.cvs.width = r.width * 2; els.cvs.height = r.height * 2;
+       
+       const w = els.cvs.width, h = els.cvs.height;
+       const m = 20; // Margen vertical
+       const totalBeats = state.data.reduce((a,b) => a + b.b, 0);
+       const pxPerBeat = w / totalBeats;
 
-      // 2. Dibujar línea verde
-      els.ctx.beginPath(); els.ctx.strokeStyle='rgba(76,175,80,0.4)'; els.ctx.lineWidth=4; els.ctx.lineCap='round'; els.ctx.lineJoin='round';
-      let cx=0, cy=h-m;
-      state.data.forEach(p=>{
-         const dw=p.b*px, ex=cx+dw; let ey=cy;
-         if(p.y==='rise') ey=m; if(p.y==='fall') ey=h-m; 
-         if(p.y==='hold_high') ey=m; if(p.y==='hold_low') ey=h-m;
-         if(cx===0) els.ctx.moveTo(cx,cy); els.ctx.lineTo(ex,ey);
-         cx=ex; cy=ey;
-      });
-      els.ctx.stroke();
+       state.coords = [];
+       let cx = 0;
+       
+       // Determinamos punto Y inicial basado en el primer tipo
+       // Normalmente empezamos abajo, salvo que sea 'exhala' (raro) o 'hold_high'
+       let cy = h - m; 
+       if(state.data[0].y === 'hold_high' || state.data[0].y === 'fall') cy = m;
 
-      // 3. DIBUJAR LA BOLITA (RESTAURADO)
-      if(state.run){
-         const now=(Date.now()-state.start)%state.dur;
-         const seg=pts.find(s=>now>=s.s && now<s.e);
-         if(seg){
-             const p=(now-seg.s)/(seg.e-seg.s); // Progreso en el segmento (0 a 1)
-             const bx=seg.x1+(seg.x2-seg.x1)*p; // Posición X
-             const by=seg.y1+(seg.y2-seg.y1)*p; // Posición Y
-             
-             // Dibujar círculo
-             els.ctx.beginPath();
-             els.ctx.fillStyle='#ff7043'; // Naranja visible
-             els.ctx.arc(bx, by, 6, 0, Math.PI * 2);
-             els.ctx.fill();
-             
-             // Brillo
-             els.ctx.shadowColor="rgba(255, 112, 67, 0.6)";
-             els.ctx.shadowBlur=10;
-             els.ctx.fill();
-             els.ctx.shadowBlur=0;
-         }
-      }
+       state.data.forEach(p => {
+          const segW = p.b * pxPerBeat;
+          const ex = cx + segW;
+          let ey = cy;
+
+          // Lógica estricta de Y final
+          if(p.y === 'rise') ey = m;          // Subir -> Top
+          if(p.y === 'fall') ey = h - m;      // Bajar -> Bottom
+          if(p.y === 'hold_high') ey = m;     // Mantener Arriba -> Top
+          if(p.y === 'hold_low') ey = h - m;  // Mantener Abajo -> Bottom
+          
+          state.coords.push({
+              x1: cx, y1: cy,
+              x2: ex, y2: ey,
+              start: p.start, end: p.end,
+              dur: p.dur
+          });
+          
+          cx = ex; cy = ey; // El fin de este es el inicio del siguiente
+       });
     }
 
-    function loop(){
-      if(!state.run)return;
-      const elap=Date.now()-state.start, t=elap%state.dur;
-      const cyc=Math.floor(elap/state.dur);
-      if(cyc>state.cyc){ state.cyc=cyc; els.cyc.forEach(e=>e.textContent=`🔄 ${cyc}`); }
+    // --- RENDER LOOP ---
+    function renderLoop() {
+       const w = els.cvs.width, h = els.cvs.height;
+       els.ctx.clearRect(0,0,w,h);
+       
+       if(!state.coords.length) return;
 
-      const p=state.data.find(x=>t>=x.start && t<x.end);
-      if(p){
-        if(els.ph.textContent!==p.t){
-          els.ph.textContent=p.t;
-          if(state.snd) beep(p.y==='rise'?300:p.y==='fall'?250:400,'sine',0.3);
+       // 1. DIBUJAR LÍNEA VERDE (Trayectoria)
+       els.ctx.beginPath();
+       els.ctx.strokeStyle = '#4CAF50'; 
+       els.ctx.lineWidth = 8; // Línea más gruesa
+       els.ctx.lineCap = 'round'; els.ctx.lineJoin = 'round';
+       
+       state.coords.forEach((c, i) => {
+           if(i === 0) els.ctx.moveTo(c.x1, c.y1);
+           els.ctx.lineTo(c.x2, c.y2);
+       });
+       els.ctx.stroke();
+
+       // 2. DIBUJAR LÍNEA GUÍA TENUE (Opcional, estética)
+       els.ctx.beginPath(); els.ctx.strokeStyle = 'rgba(76,175,80,0.1)'; els.ctx.lineWidth = 2;
+       els.ctx.moveTo(0, h-20); els.ctx.lineTo(w, h-20); // Base
+       els.ctx.moveTo(0, 20); els.ctx.lineTo(w, 20);     // Topo
+       els.ctx.stroke();
+
+       // 3. DIBUJAR BOLITA (Interpolada)
+       if(state.run) {
+           const now = (Date.now() - state.start) % state.dur;
+           
+           // Buscar en qué segmento estamos
+           const seg = state.coords.find(s => now >= s.start && now < s.end);
+           
+           if(seg) {
+               // Interpolación Lineal (Lerp)
+               // Progreso de 0 a 1 dentro de ESTE segmento específico
+               const progress = (now - seg.start) / seg.dur;
+               
+               // Calcular posición exacta en la línea
+               const bx = seg.x1 + (seg.x2 - seg.x1) * progress;
+               const by = seg.y1 + (seg.y2 - seg.y1) * progress;
+               
+               // Pintar Bola
+               els.ctx.beginPath();
+               els.ctx.fillStyle = '#ff7043'; // Naranja brillante
+               els.ctx.arc(bx, by, 12, 0, Math.PI * 2); // Bola más grande
+               els.ctx.fill();
+               
+               // Halo/Brillo
+               els.ctx.beginPath();
+               els.ctx.fillStyle = 'rgba(255, 112, 67, 0.4)';
+               els.ctx.arc(bx, by, 20, 0, Math.PI * 2);
+               els.ctx.fill();
+           }
+       }
+       requestAnimationFrame(renderLoop);
+    }
+
+    function logicLoop() {
+      if(!state.run) return;
+      const elap = Date.now() - state.start, t = elap % state.dur;
+      const cyc = Math.floor(elap / state.dur);
+      if(cyc > state.cyc){ state.cyc = cyc; els.cyc.forEach(e => e.textContent = `🔄 ${cyc}`); }
+
+      const p = state.data.find(x => t >= x.start && t < x.end);
+      if(p) {
+        if(els.ph.textContent !== p.t) {
+          els.ph.textContent = p.t;
+          if(state.snd) beep(p.y==='rise'?300:p.y==='fall'?250:400, 'sine', 0.3);
         }
-        const tip=t-p.start;
-        els.cnt.textContent=Math.floor(tip/state.tempo)+1;
+        const tip = t - p.start;
+        els.cnt.textContent = Math.floor(tip / state.tempo) + 1;
         
-        const bk=`${cyc}-${p.t}-${els.cnt.textContent}`;
-        if(state.met && state.lastB!==bk){ beep(800,'triangle',0.05); state.lastB=bk; }
+        const bk = `${cyc}-${p.t}-${els.cnt.textContent}`;
+        if(state.met && state.lastB !== bk) { beep(800, 'triangle', 0.05); state.lastB = bk; }
 
-        const pr=tip/p.dur; let s=1;
-        if(p.y==='rise') s=1+(0.6*pr); else if(p.y==='fall') s=1.6-(0.6*pr); else if(p.y==='hold_high') s=1.6;
-        els.sph.style.transform=`scale(${s})`;
+        const pr = tip / p.dur; let s = 1;
+        if(p.y === 'rise') s = 1 + (0.6 * pr);
+        else if(p.y === 'fall') s = 1.6 - (0.6 * pr);
+        else if(p.y === 'hold_high') s = 1.6;
+        els.sph.style.transform = `scale(${s})`;
       }
-      render(); // Llamar a dibujar la bola en cada frame
-      state.af=requestAnimationFrame(loop);
+      state.af = requestAnimationFrame(logicLoop);
     }
 
-    function start(k){
-      if(state.run) stop(); state.pk=k;
-      document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));
+    function start(k) {
+      if(state.run) stop(); state.pk = k;
+      document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
       document.querySelector(`.card[data-pattern="${k}"]`)?.classList.add('active');
       
-      state.data=[]; let acc=0;
-      patterns[k].forEach(x=>{ const d=x.b*state.tempo; state.data.push({...x,start:acc,end:acc+d,dur:d}); acc+=d; });
-      state.dur=acc; render();
+      state.data = []; let acc = 0;
+      patterns[k].forEach(x => { const d = x.b * state.tempo; state.data.push({...x, start:acc, end:acc+d, dur:d}); acc += d; });
+      state.dur = acc; 
       
-      initAudio(); els.qt.textContent=quotes[Math.floor(Math.random()*quotes.length)];
-      setTimeout(()=>{ state.run=true; state.start=Date.now(); state.cyc=0; loop(); },50);
+      calcGeometry(); // Calcular raíles antes de arrancar
+      initAudio(); els.qt.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+      
+      setTimeout(() => { 
+          state.run = true; state.start = Date.now(); state.cyc = 0; 
+          logicLoop(); // Bucle de lógica (sonido, textos, esfera)
+      }, 50);
     }
 
-    function stop(){
-      state.run=false; cancelAnimationFrame(state.af);
-      els.sph.style.transform='scale(1)'; els.ph.textContent="RESPIRA"; els.cnt.textContent="";
-      els.cyc.forEach(e=>e.textContent="🔄 0");
-      document.getElementById('shareBtn').style.display='flex';
-      render(); // Limpiar bola al parar
+    function stop() {
+      state.run = false; cancelAnimationFrame(state.af);
+      els.sph.style.transform = 'scale(1)'; els.ph.textContent = "RESPIRA"; els.cnt.textContent = "";
+      els.cyc.forEach(e => e.textContent = "🔄 0");
+      document.getElementById('shareBtn').style.display = 'flex';
     }
 
-    // Bindings
-    document.querySelectorAll('.card').forEach(c=>c.addEventListener('click',()=>start(c.dataset.pattern)));
-    [document.getElementById('resetBtnTop'), document.getElementById('resetBtnSide')].forEach(b=>b.addEventListener('click',stop));
-    els.snd.forEach(b=>b.addEventListener('click',function(){ state.snd=!state.snd; els.snd.forEach(x=>x.textContent=state.snd?"🔊":"🔇"); initAudio(); }));
-    document.getElementById('metronomeBtn').addEventListener('click',function(){ state.met=!state.met; this.style.background=state.met?"#e8f5e9":"white"; });
-    document.getElementById('tempoSelect').addEventListener('change',function(){ state.tempo=parseInt(this.value); if(state.run){ start(state.pk); } });
+    // Eventos
+    document.querySelectorAll('.card').forEach(c => c.addEventListener('click', () => start(c.dataset.pattern)));
+    [document.getElementById('resetBtnTop'), document.getElementById('resetBtnSide')].forEach(b => b.addEventListener('click', stop));
+    els.snd.forEach(b => b.addEventListener('click', function(){ state.snd = !state.snd; els.snd.forEach(x => x.textContent = state.snd ? "🔊" : "🔇"); initAudio(); }));
+    document.getElementById('metronomeBtn').addEventListener('click', function(){ state.met = !state.met; this.style.background = state.met ? "#e8f5e9" : "white"; });
+    document.getElementById('tempoSelect').addEventListener('change', function(){ state.tempo = parseInt(this.value); if(state.run){ start(state.pk); } });
     
-    document.getElementById('shareBtn').addEventListener('click',()=>{
-       const p=prompt("Patrón (4-7-8, box...)", "4-7-8");
-       if(patterns[p]){
-         const u=`${location.href.split('?')[0]}?p=${p}&para=Amigo&msg=Respira`;
-         navigator.clipboard.writeText(u).then(()=>alert("Enlace copiado"));
+    // Resize inteligente
+    window.addEventListener('resize', () => { calcGeometry(); });
+    
+    // Iniciar render visual SIEMPRE (para ver la línea estática)
+    requestAnimationFrame(renderLoop);
+
+    // Compartir
+    document.getElementById('shareBtn').addEventListener('click', () => {
+       const p = prompt("Patrón (4-7-8, box...)", "4-7-8");
+       if(patterns[p]) {
+         const n = prompt("Nombre:", "Amigo"); const m = prompt("Mensaje:", "Respira");
+         const u = `${location.href.split('?')[0]}?p=${p}&para=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
+         navigator.clipboard.writeText(u).then(() => alert("Enlace copiado"));
        }
     });
 
-    const q=new URLSearchParams(location.search);
-    if(q.get('p') && patterns[q.get('p')]){
-       document.getElementById('pillOverlay').style.display='flex';
-       document.getElementById('pillRecipient').textContent=`Hola, ${q.get('para')||'Ti'}`;
-       document.getElementById('pillMessage').textContent=`"${q.get('msg')}"`;
-       document.getElementById('startPillBtn').onclick=()=>{ document.getElementById('pillOverlay').style.display='none'; start(q.get('p')); };
-       document.getElementById('shareBtn').style.display='none';
+    // Carga inicial
+    const q = new URLSearchParams(location.search);
+    if(q.get('p') && patterns[q.get('p')]) {
+       document.getElementById('pillOverlay').style.display = 'flex';
+       document.getElementById('pillRecipient').textContent = `Hola, ${q.get('para') || 'Ti'}`;
+       document.getElementById('pillMessage').textContent = `"${q.get('msg')}"`;
+       document.getElementById('startPillBtn').onclick = () => { document.getElementById('pillOverlay').style.display = 'none'; start(q.get('p')); };
+       document.getElementById('shareBtn').style.display = 'none';
     }
-
-    window.onresize=render; render();
   </script>
 </body>
 </html>
