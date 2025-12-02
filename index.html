@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: Zen Final 7.2</title>
+  <title>Respiración: Zen Final 7.3</title>
   <style>
-    /* --- 1. BASE & VARIABLES --- */
+    /* --- 1. VARIABLES & BASE --- */
     :root {
       --primary: #4CAF50; --primary-dark: #2e7d32; --accent: #1a5f7a;
       --bg: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
@@ -18,7 +18,7 @@
       height: 100dvh; width: 100vw; overflow: hidden; display: flex; flex-direction: column;
     }
 
-    /* --- 2. ESTRUCTURA PRINCIPAL --- */
+    /* --- 2. LAYOUT --- */
     .app-layout {
       flex: 1; display: flex; flex-direction: column; position: relative; width: 100%; height: 100%;
     }
@@ -27,9 +27,27 @@
     .top-bar {
       display: flex; justify-content: space-between; align-items: center;
       padding: 15px 20px; z-index: 40; pointer-events: none;
-      height: 70px;
+      height: 70px; position: relative; /* Para posicionar el centro absoluto */
     }
     .top-left, .top-right { pointer-events: auto; display: flex; gap: 10px; align-items: center; }
+
+    /* --- NUEVO: INDICADOR DE PATRÓN CENTRAL --- */
+    .pattern-indicator {
+      position: absolute;
+      left: 50%; top: 50%; transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.95);
+      padding: 6px 16px;
+      border-radius: 20px;
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid rgba(255,255,255,0.6);
+      white-space: nowrap;
+      pointer-events: none; /* No bloquea clicks */
+      z-index: 45;
+    }
 
     .badge {
       background: var(--primary-dark); color: white; padding: 6px 14px; border-radius: 20px;
@@ -47,25 +65,20 @@
       color: #546e7a; font-weight: 600; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
-    /* --- 3. ZONA SEGURA (STAGE) --- */
+    /* --- 3. STAGE (ZONA SEGURA) --- */
     .stage-center {
-      flex: 1; 
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 10; width: 100%; padding: 10px; 
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 10; width: 100%; padding: 10px;
     }
 
-    /* TEXTO DE ACCIÓN (INHALA/EXHALA) - ARRIBA */
     .phase-text {
-      font-size: clamp(2rem, 5vw, 3rem); font-weight: 300; letter-spacing: 4px; 
-      color: var(--accent); text-transform: uppercase; 
-      height: 50px; display: flex; align-items: center; justify-content: center;
+      font-size: clamp(2rem, 5vw, 3rem); font-weight: 300; letter-spacing: 4px; color: var(--accent);
+      text-transform: uppercase; height: 50px; display: flex; align-items: center; justify-content: center;
       z-index: 20; margin-bottom: 10px;
     }
 
-    /* CONTENEDOR DE SEGURIDAD PARA LA ESFERA */
     .sphere-wrapper {
-      position: relative;
-      width: 300px; height: 300px;
+      position: relative; width: 300px; height: 300px;
       display: flex; align-items: center; justify-content: center;
       max-width: 60vh; max-height: 60vh;
     }
@@ -79,12 +92,8 @@
       max-width: 60%; max-height: 60%;
     }
 
-    .counter-big { 
-      font-size: 3.5rem; font-weight: 800; color: white; 
-      text-shadow: 0 2px 10px rgba(0,0,0,0.1); 
-    }
+    .counter-big { font-size: 3.5rem; font-weight: 800; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.1); }
 
-    /* FRASE MOTIVADORA - ABAJO */
     .quote {
       margin-top: 10px; padding: 0 20px; text-align: center; color: #78909c;
       font-family: 'Georgia', serif; font-style: italic; 
@@ -92,7 +101,6 @@
       z-index: 20;
     }
 
-    /* VISUALIZADOR INFERIOR */
     .bottom-viz {
       width: 100%; height: 80px; background: rgba(255,255,255,0.5);
       backdrop-filter: blur(5px); border-top: 1px solid rgba(255,255,255,0.5);
@@ -100,7 +108,7 @@
     }
     #breathGraph { width: 100%; height: 100%; display: block; }
 
-    /* --- 4. MENÚ DE SELECCIÓN (OVERLAY) --- */
+    /* --- 4. MENÚ & OVERLAYS --- */
     #selectionMenu {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--glass-overlay); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -124,24 +132,21 @@
     .menu-card h3 { color: #37474f; font-size: 1.1rem; margin-bottom: 5px; }
     .menu-card p { color: #90a4ae; font-size: 0.9rem; }
 
-    /* PILL OVERLAY */
     #pillOverlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(255,255,255,0.98); z-index: 200;
       display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px;
     }
 
-    /* FAB SHARE - Z-INDEX CORREGIDO (150) */
     .fab {
       position: fixed; bottom: 20px; right: 20px;
       background: var(--accent); color: white; padding: 12px 24px;
       border-radius: 30px; border: none; font-weight: 700;
       box-shadow: 0 4px 15px rgba(26,95,122,0.4); 
-      z-index: 150; /* AHORA FLOTA POR ENCIMA DEL MENÚ (100) */
-      display: flex; align-items: center; gap: 8px; cursor: pointer;
+      z-index: 150; display: flex; align-items: center; gap: 8px; cursor: pointer;
     }
     
-    /* LANDSCAPE AJUSTES */
+    /* MEDIA QUERIES */
     @media (orientation: landscape) {
       .app-layout { flex-direction: row; }
       .top-bar { position: absolute; width: 100%; top: 0; padding: 10px 20px; }
@@ -191,6 +196,9 @@
         <button class="btn-text" onclick="stop()">❮ Menú</button>
         <div class="badge" id="cycleBadge">🔄 0</div>
       </div>
+      
+      <div class="pattern-indicator" id="patternDisplay">4-7-8</div>
+
       <div class="top-right">
         <button class="btn-text" id="tempoBtn" onclick="toggleTempo()">⚡ 1x</button>
         <button class="btn-icon" id="soundBtn" onclick="toggleSound()">🔇</button>
@@ -200,13 +208,11 @@
 
     <div class="stage-center">
       <div class="phase-text" id="phaseText">LISTO</div>
-      
       <div class="sphere-wrapper">
         <div class="sphere" id="sphere">
           <div class="counter-big" id="counterText"></div>
         </div>
       </div>
-      
       <div class="quote" id="phraseContent">Respira...</div>
     </div>
 
@@ -218,7 +224,6 @@
   <button id="shareBtn" class="fab" onclick="sharePill()">📤 Enviar Píldora</button>
 
   <script>
-    /* --- MOTOR V7.2 --- */
     const patterns = {
       '4-4-6-2': [{t:"INHALA",b:4,y:'rise'},{t:"MANTÉN",b:4,y:'hold_high'},{t:"EXHALA",b:6,y:'fall'},{t:"SOSTÉN",b:2,y:'hold_low'}],
       '4-7-8': [{t:"INHALA",b:4,y:'rise'},{t:"MANTÉN",b:7,y:'hold_high'},{t:"EXHALA",b:8,y:'fall'}],
@@ -234,7 +239,8 @@
       sph: document.getElementById('sphere'), ph: document.getElementById('phaseText'),
       cnt: document.getElementById('counterText'), qt: document.getElementById('phraseContent'),
       cvs: document.getElementById('breathGraph'), ctx: document.getElementById('breathGraph').getContext('2d'),
-      cyc: document.getElementById('cycleBadge'), share: document.getElementById('shareBtn')
+      cyc: document.getElementById('cycleBadge'), share: document.getElementById('shareBtn'),
+      pat: document.getElementById('patternDisplay') // Referencia al nuevo indicador
     };
 
     function initAudio(){ if(!state.ctx) state.ctx=new(window.AudioContext||window.webkitAudioContext)(); }
@@ -244,7 +250,6 @@
       o.connect(g); g.connect(state.ctx.destination); o.start(); o.stop(state.ctx.currentTime+d);
     }
 
-    // GEOMETRÍA
     function calcGeometry() {
        const r = els.cvs.parentNode.getBoundingClientRect();
        if(r.width===0) return;
@@ -305,6 +310,12 @@
 
     function start(k) {
       prepareData(k); 
+      
+      // Actualizar el Texto del Patrón
+      let displayTxt = k;
+      if(k === 'box') displayTxt = '4-4-4-4';
+      els.pat.innerText = displayTxt;
+
       els.menu.style.opacity = '0'; setTimeout(()=>els.menu.style.display='none',300);
       els.share.style.display = 'none';
       initAudio(); els.qt.innerText = quotes[Math.floor(Math.random()*quotes.length)];
@@ -330,8 +341,7 @@
     function sharePill() {
        const p = prompt("¿Qué ejercicio quieres enviar? (4-7-8, box, 5-5, o 4-4-6-2)", "4-7-8");
        if(patterns[p]) {
-         // --- CORRECCIÓN SOLICITADA ---
-         const n = prompt("Escribe el nombre del destinatario:", ""); // Sin valor por defecto
+         const n = prompt("Escribe el nombre del destinatario:", ""); 
          const m = prompt("Mensaje de dedicatoria:", "Respira");
          const u = `${location.href.split('?')[0]}?p=${p}&para=${encodeURIComponent(n || 'Amigo')}&msg=${encodeURIComponent(m)}`;
          navigator.clipboard.writeText(u).then(() => alert("¡Enlace copiado!\n\nAhora pégalo en WhatsApp."));
@@ -348,6 +358,7 @@
        window.closePill = () => { document.getElementById('pillOverlay').style.display='none'; start(q.get('p')); };
     } else {
        prepareData('4-7-8');
+       els.pat.innerText = "4-7-8"; // Valor inicial
     }
     loop();
   </script>
