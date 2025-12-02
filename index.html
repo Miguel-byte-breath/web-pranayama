@@ -3,372 +3,348 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración Guiada: Web del Pranayama</title>
+  <title>Respiración Guiada: Zen Web</title>
   <style>
-    /* --- RESET Y BASE --- */
+    /* --- 1. VARIABLES & RESET (BASE DEL DISEÑO) --- */
+    :root {
+      --primary: #4CAF50;
+      --primary-dark: #2e7d32;
+      --accent: #1a5f7a;
+      --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+      --glass-border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
-      background: linear-gradient(135deg, #f5f7fa 0%, #e8f4f8 50%, #f0f5f9 100%);
+      background: var(--bg-gradient);
       color: #2c3e50;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+      justify-content: space-between; /* Distribuye elementos arriba, centro y abajo */
+      height: 100vh; /* Altura fija para evitar scroll */
       overflow: hidden;
       position: relative;
     }
 
-    /* --- UI SUPERIOR --- */
-    .ui-layer {
-      position: absolute;
-      top: 0;
-      left: 0;
+    /* --- 2. CAPA UI SUPERIOR (CONTROLES) --- */
+    .ui-top-bar {
       width: 100%;
-      padding: 15px;
-      pointer-events: none;
-      z-index: 40;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      z-index: 50;
+      pointer-events: none; /* Dejar pasar clicks a lo de abajo si fuera necesario */
+    }
+
+    /* Agrupamos controles para que no floten sueltos */
+    .controls-group {
       display: flex;
       flex-direction: column;
       gap: 10px;
-    }
-
-    .top-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
+      align-items: flex-end;
       pointer-events: auto;
     }
 
-    .cycle-counter {
-      font-size: 0.95rem;
-      background: rgba(255, 255, 255, 0.95);
-      color: #2c3e50;
-      padding: 8px 14px;
+    .btn, .cycle-badge {
+      background: var(--glass-bg);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: var(--glass-border);
+      padding: 8px 16px;
       border-radius: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      border: 1px solid rgba(76, 175, 80, 0.2);
+      font-size: 0.9rem;
       font-weight: 600;
-    }
-
-    .controls-row {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      pointer-events: auto;
-      flex-wrap: wrap;
-    }
-
-    .btn, .tempo-selector {
-      background: rgba(255, 255, 255, 0.95);
-      border: 1px solid #cfd8dc;
-      padding: 8px 12px;
-      border-radius: 18px;
-      font-size: 0.85rem;
-      cursor: pointer;
       color: #455a64;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      display: flex;
-      align-items: center;
-      gap: 5px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
       transition: all 0.2s ease;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .btn:active, .btn.active {
       background: #e8f5e9;
-      color: #2e7d32;
-      border-color: #4CAF50;
-      transform: scale(0.98);
+      color: var(--primary-dark);
+      border-color: var(--primary);
+      transform: scale(0.96);
     }
-
+    
     select {
-      background: transparent;
-      border: none;
-      outline: none;
-      font-weight: 700;
-      color: #2e7d32;
-      font-size: 0.9rem;
+        background: transparent;
+        border: none;
+        font-weight: bold;
+        color: var(--primary-dark);
+        outline: none;
     }
 
-    /* --- FRASE REFLEXIVA --- */
-    .reflective-phrase {
-      position: absolute;
-      z-index: 15;
-      color: #1a5f7a;
-      font-weight: 500;
-      font-style: italic;
-      line-height: 1.4;
-      opacity: 0.9;
-      pointer-events: none;
-      transition: opacity 0.5s ease;
-      text-align: center;
-      width: 85%;
-      max-width: 600px;
-      text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 5px rgba(255, 255, 255, 1);
-    }
-
-    /* --- ESFERA CENTRAL --- */
-    .sphere-container {
-      position: relative;
+    /* --- 3. ÁREA CENTRAL (ESFERA + TEXTO) --- */
+    .center-stage {
+      flex-grow: 1; /* Ocupa todo el espacio disponible */
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 10;
-      margin-top: 2vh; 
-      margin-bottom: 2vh;
       width: 100%;
+      position: relative;
+      z-index: 10;
     }
 
     .sphere {
-      width: 180px;
-      height: 180px;
+      width: min(45vw, 220px); /* Responsive: nunca más grande que 220px ni 45% del ancho */
+      height: min(45vw, 220px);
       border-radius: 50%;
       background: radial-gradient(circle at 30% 30%, #a8ff60, #4CAF50);
-      box-shadow: 0 10px 40px rgba(76, 175, 80, 0.4);
-      transform: scale(1);
-      margin-bottom: 50px; 
-      z-index: 10;
-      will-change: transform; 
+      box-shadow: 0 20px 60px rgba(76, 175, 80, 0.35);
+      will-change: transform;
+      margin-bottom: 2rem;
     }
 
-    .phase {
-      font-size: 2rem;
-      color: #1a5f7a;
+    .phase-text {
+      font-size: clamp(1.5rem, 5vw, 2.5rem); /* Texto escala fluidamente */
+      color: var(--accent);
       font-weight: 300;
-      letter-spacing: 1px;
-      min-height: 40px;
-      position: relative;
-      z-index: 20; 
-      text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 10px rgba(255, 255, 255, 0.8);
-      margin-top: -10px; 
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.8;
+      margin-bottom: 0.5rem;
+      min-height: 3rem; /* Evita saltos */
+      text-shadow: 0 2px 10px rgba(255,255,255,0.8);
     }
 
-    .counter {
-      font-size: 2.2rem;
-      color: #4CAF50;
-      font-weight: 700;
-      min-height: 45px;
-      position: relative;
-      z-index: 20;
-      text-shadow: 0 0 15px rgba(255, 255, 255, 1);
+    .counter-text {
+      font-size: clamp(2rem, 6vw, 3rem);
+      font-weight: 800;
+      color: var(--primary);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); /* Centrado perfecto sobre la esfera */
+      text-shadow: 0 2px 15px rgba(255,255,255,0.9);
+      pointer-events: none;
     }
 
-    /* --- CANVAS Y VISUALIZADOR --- */
-    .breath-visual {
-      width: 92%;
+    /* --- 4. LA FRASE (NUEVO DISEÑO EQUILIBRADO) --- */
+    .quote-container {
+      margin-top: 1rem;
+      padding: 0 20px;
+      text-align: center;
       max-width: 600px;
-      height: 120px;
-      position: relative;
-      margin-bottom: 5px; 
-      z-index: 15; 
+      height: 60px; /* Altura reservada para que no baile la pantalla */
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
+    .quote-text {
+      font-family: 'Georgia', serif; /* Toque elegante */
+      font-style: italic;
+      color: #546e7a;
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      line-height: 1.4;
+      opacity: 0; /* Empieza invisible para efecto fade */
+      transition: opacity 0.8s ease;
+    }
+
+    /* --- 5. ÁREA INFERIOR (VISUALIZADOR + SELECTOR) --- */
+    .bottom-ui {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 20px;
+      z-index: 20;
+      background: linear-gradient(to top, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%);
+    }
+
+    .visualizer-container {
+      width: 90%;
+      max-width: 500px;
+      height: 80px;
+      margin-bottom: 15px;
+    }
+    
     #breathGraph {
       width: 100%;
       height: 100%;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.5);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-    }
-    
-    .pattern-label-display {
-      font-size: 1.1rem;
-      color: #4CAF50;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-align: center;
-      margin-bottom: 20px;
-      z-index: 15;
-      position: relative;
-      text-shadow: 0 1px 2px rgba(255,255,255,0.8);
-      height: 25px; 
+      border-radius: 15px;
+      /* background: rgba(255,255,255,0.4); Quitado para limpieza */ 
     }
 
-    /* --- SELECTOR --- */
-    .pattern-selector {
-      position: absolute;
-      bottom: 0;
-      left: 0;
+    .pattern-label {
+        color: var(--primary);
+        font-weight: 800;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        height: 20px;
+    }
+
+    /* --- 6. MODAL/SELECTOR DESLIZANTE --- */
+    .pattern-selector-panel {
       width: 100%;
-      background: rgba(255, 255, 255, 0.98);
-      padding: 20px 15px 30px 15px;
-      border-top-left-radius: 20px;
-      border-top-right-radius: 20px;
-      box-shadow: 0 -5px 25px rgba(0,0,0,0.1);
-      max-height: 50vh;
-      overflow-y: auto;
-      z-index: 50;
-      display: block;
+      max-width: 500px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-top: var(--glass-border);
+      border-radius: 25px 25px 0 0;
+      padding: 20px;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
     }
 
-    .pattern-option {
-      padding: 12px;
-      margin-bottom: 8px;
-      border-radius: 12px;
-      background: #f9f9f9;
+    .pattern-card {
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.6);
       cursor: pointer;
       border: 1px solid transparent;
-      display: flex;
-      flex-direction: column;
+      transition: all 0.2s;
     }
-    .pattern-option:hover { background: #f0f7f0; }
-    .pattern-option.selected { background: #e8f5e9; border-color: #4CAF50; }
-    .pattern-option .name { font-weight: 700; color: #2e7d32; font-size: 1rem; margin-bottom: 4px; }
-    .pattern-option .description { font-size: 0.85rem; color: #546e7a; }
+    .pattern-card:hover { background: #fff; transform: translateY(-2px); }
+    .pattern-card.active { border-color: var(--primary); background: #f1f8f1; }
+    
+    .pattern-name { color: var(--primary-dark); font-weight: 700; margin-bottom: 4px; }
+    .pattern-desc { color: #78909c; font-size: 0.85rem; }
 
-    /* --- ESTILOS MODO PÍLDORA (NUEVO) --- */
+    /* --- 7. BOTÓN FLOTANTE (FAB) PARA COMPARTIR --- */
+    .fab-share {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        background: var(--accent);
+        color: white;
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 15px rgba(26, 95, 122, 0.3);
+        border: none;
+        cursor: pointer;
+        z-index: 100;
+        transition: transform 0.2s;
+    }
+    .fab-share:hover { transform: scale(1.1); }
+    .fab-text { display: none; } /* Solo icono en móvil */
+
+    /* PANTALLA DE BIENVENIDA (PILL OVERLAY) */
     #pillOverlay {
-      background: rgba(255,255,255,0.98);
-      backdrop-filter: blur(5px);
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
     }
     
-    #startPillBtn {
-      font-size: 1.1rem;
-      padding: 15px 35px;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-      font-weight: 600;
-    }
-    #startPillBtn:active { transform: scale(0.95); }
-
-    #shareBtn {
-      position: fixed; 
-      bottom: 20px; 
-      right: 20px; 
-      z-index: 60; 
-      background: #1a5f7a; 
-      color: white; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      font-weight: 600;
-      padding: 12px 20px;
-    }
-
-    /* --- MEDIA QUERIES --- */
-    @media (orientation: portrait) {
-      .sphere {
-        width: 45vw; height: 45vw;
-        max-width: 180px; max-height: 180px;
-        margin-bottom: 40px; 
-      }
-      .reflective-phrase {
-        top: 135px; left: 50%; transform: translateX(-50%); font-size: 1rem;
-      }
-      .sphere-container { margin-top: 70px; }
-    }
-
-    @media (min-width: 768px) and (orientation: landscape) {
-      .ui-layer { width: auto; right: 20px; left: auto; align-items: flex-end; }
-      .top-row { justify-content: flex-end; gap: 15px; width: auto; }
-      .controls-row { justify-content: flex-end; }
-      .reflective-phrase {
-        top: 50%; left: 5%; transform: translateY(-50%); text-align: left; 
-        width: 30vw; font-size: 1.3rem;
-        border-left: 4px solid rgba(76, 175, 80, 0.3); padding-left: 20px;
-      }
-      .pattern-selector {
-        width: 350px; left: 50%; bottom: 20px; transform: translateX(-50%);
-        border-radius: 15px;
-      }
-      .sphere-container { margin-top: 0; }
-      .sphere { margin-bottom: 50px; }
+    /* Responsive ajustes finos */
+    @media (min-width: 768px) {
+        .fab-share { 
+            width: auto; height: auto; 
+            padding: 12px 24px; 
+            border-radius: 30px; 
+            font-size: 1rem;
+        }
+        .fab-share span { display: inline; margin-left: 8px; } /* Texto visible en PC */
+        .fab-text { display: inline; }
     }
   </style>
 </head>
 <body>
 
-  <div id="pillOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:100; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
-    <h1 style="color:#2e7d32; margin-bottom:10px; font-size: 2rem;">🍃 Una pausa para ti</h1>
-    <h2 id="pillRecipient" style="color:#1a5f7a; margin-bottom:20px; font-weight:400;"></h2>
-    <p id="pillMessage" style="font-size:1.2rem; font-style:italic; color:#546e7a; margin-bottom:40px; max-width:500px; line-height: 1.5;"></p>
-    <button id="startPillBtn" class="btn">Comenzar Ejercicio</button>
+  <div id="pillOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:200; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px;">
+    <div style="font-size:4rem; margin-bottom:10px;">🍃</div>
+    <h1 style="color:var(--primary-dark); margin-bottom:10px; font-size: 2rem;">Una pausa para ti</h1>
+    <h2 id="pillRecipient" style="color:#546e7a; margin-bottom:20px; font-weight:400; font-size:1.5rem;"></h2>
+    <p id="pillMessage" style="font-size:1.3rem; font-style:italic; color:#37474f; margin-bottom:40px; max-width:600px; line-height: 1.6; padding:20px; background:rgba(255,255,255,0.5); border-radius:15px;"></p>
+    <button id="startPillBtn" class="btn" style="background:var(--primary); color:white; border:none; padding:15px 40px; font-size:1.1rem;">Comenzar Ahora</button>
   </div>
 
-  <div class="ui-layer">
-    <div class="top-row">
-      <div class="cycle-counter" id="cycleCounter">🔄 Ciclos: 0</div>
-      <button class="btn" id="resetBtn">↻ Reiniciar</button>
-    </div>
-    <div class="controls-row">
-      <div class="tempo-selector">
-        ⏱️
-        <select id="tempoSelect">
-          <option value="1000">1s</option>
-          <option value="1500">1.5s</option>
-          <option value="2000">2s</option>
-        </select>
-      </div>
-      <button class="btn" id="soundBtn">🔇 Sonido</button>
-      <button class="btn" id="metronomeBtn">⏱️ Metro</button>
+  <div class="ui-top-bar">
+    <div class="cycle-badge" id="cycleCounter">🔄 0</div>
+    
+    <div class="controls-group">
+        <button class="btn" id="resetBtn">↻ Reiniciar</button>
+        <div style="display:flex; gap:8px;">
+            <div class="btn">
+                ⏱️ <select id="tempoSelect"><option value="1000">1x</option><option value="1500">0.7x</option><option value="2000">0.5x</option></select>
+            </div>
+            <button class="btn" id="soundBtn">🔇</button>
+            <button class="btn" id="metronomeBtn">⏱️</button>
+        </div>
     </div>
   </div>
 
-  <div class="reflective-phrase" id="reflectivePhrase">
-    <span id="phraseContent">Respira. El amor es tu verdadera naturaleza.</span>
-  </div>
-
-  <div class="sphere-container">
-    <div class="sphere" id="sphere"></div>
-    <div class="phase" id="phaseText">Elige patrón</div>
-    <div class="counter" id="counterText"></div>
-  </div>
-
-  <div class="breath-visual">
-    <canvas id="breathGraph"></canvas>
-  </div>
-  
-  <div class="pattern-label-display" id="patternLabelDisplay"></div>
-
-  <button id="shareBtn" class="btn">📤 Enviar Píldora</button>
-
-  <div class="pattern-selector" id="patternSelector">
-    <h3 style="text-align:center; color:#2e7d32; margin-bottom:15px; font-size:1.1rem;">Selecciona Patrón</h3>
-    <div class="pattern-option" data-pattern="4-4-6-2">
-      <div class="name">4-4-6-2 (Relajación Profunda)</div>
-      <div class="description">Inhala 4 • Mantén 4 • Exhala 6 • Sostén 2</div>
+  <div class="center-stage">
+    <div class="sphere" id="sphere">
+        <div class="counter" id="counterText"></div>
     </div>
-    <div class="pattern-option" data-pattern="4-7-8">
-      <div class="name">4-7-8 (Sueño)</div>
-      <div class="description">Inhala 4 • Mantén 7 • Exhala 8</div>
-    </div>
-    <div class="pattern-option" data-pattern="box">
-      <div class="name">Cuadrada (Enfoque)</div>
-      <div class="description">In 4 • Mant 4 • Ex 4 • Sost 4</div>
-    </div>
-    <div class="pattern-option" data-pattern="5-5">
-      <div class="name">5-5 (Coherencia)</div>
-      <div class="description">Inhala 5 • Exhala 5</div>
+    
+    <div class="phase-text" id="phaseText">Respira</div>
+    
+    <div class="quote-container">
+        <p class="quote-text" id="phraseContent">Cargando inspiración...</p>
     </div>
   </div>
+
+  <div class="bottom-ui">
+    <div class="pattern-label" id="patternLabelDisplay"></div>
+    
+    <div class="visualizer-container">
+        <canvas id="breathGraph"></canvas>
+    </div>
+
+    <div class="pattern-selector-panel" id="patternSelector">
+        <h4 style="text-align:center; color:#cfd8dc; margin-bottom:15px; text-transform:uppercase; font-size:0.7rem; letter-spacing:2px;">Seleccionar Ejercicio</h4>
+        
+        <div class="pattern-card" data-pattern="4-4-6-2">
+            <div class="pattern-name">4-4-6-2 • Relajación Profunda</div>
+            <div class="pattern-desc">Ideal para bajar pulsaciones rápidamente.</div>
+        </div>
+        <div class="pattern-card" data-pattern="4-7-8">
+            <div class="pattern-name">4-7-8 • Para Dormir</div>
+            <div class="pattern-desc">Técnica del Dr. Weil para el insomnio.</div>
+        </div>
+        <div class="pattern-card" data-pattern="box">
+            <div class="pattern-name">Box Breathing • Enfoque</div>
+            <div class="pattern-desc">Usada por Navy SEALs para concentración.</div>
+        </div>
+        <div class="pattern-card" data-pattern="5-5">
+            <div class="pattern-name">5-5 • Coherencia Cardíaca</div>
+            <div class="pattern-desc">Equilibrio perfecto del sistema nervioso.</div>
+        </div>
+    </div>
+  </div>
+
+  <button id="shareBtn" class="fab-share">
+    📤 <span class="fab-text">Enviar Píldora</span>
+  </button>
 
   <script>
-    /* --- CONFIGURACIÓN --- */
+    /* --- CONFIGURACIÓN DE DATOS --- */
     const patterns = {
       '4-4-6-2': [
-        { text: "Inhala", beats: 4, type: 'rise' },
-        { text: "Mantén", beats: 4, type: 'hold_high' },
-        { text: "Exhala", beats: 6, type: 'fall' },
-        { text: "Sostén", beats: 2, type: 'hold_low' }
+        { text: "Inhala", beats: 4, type: 'rise' }, { text: "Mantén", beats: 4, type: 'hold_high' },
+        { text: "Exhala", beats: 6, type: 'fall' }, { text: "Sostén", beats: 2, type: 'hold_low' }
       ],
       '4-7-8': [
-        { text: "Inhala", beats: 4, type: 'rise' },
-        { text: "Mantén", beats: 7, type: 'hold_high' },
+        { text: "Inhala", beats: 4, type: 'rise' }, { text: "Mantén", beats: 7, type: 'hold_high' },
         { text: "Exhala", beats: 8, type: 'fall' }
       ],
       'box': [
-        { text: "Inhala", beats: 4, type: 'rise' },
-        { text: "Mantén", beats: 4, type: 'hold_high' },
-        { text: "Exhala", beats: 4, type: 'fall' },
-        { text: "Sostén", beats: 4, type: 'hold_low' }
+        { text: "Inhala", beats: 4, type: 'rise' }, { text: "Mantén", beats: 4, type: 'hold_high' },
+        { text: "Exhala", beats: 4, type: 'fall' }, { text: "Sostén", beats: 4, type: 'hold_low' }
       ],
       '5-5': [
-        { text: "Inhala", beats: 5, type: 'rise' },
-        { text: "Exhala", beats: 5, type: 'fall' }
+        { text: "Inhala", beats: 5, type: 'rise' }, { text: "Exhala", beats: 5, type: 'fall' }
       ]
     };
 
@@ -378,72 +354,66 @@
       "Cuando la mente se detiene, la belleza del mundo se revela.",
       "No eres tus pensamientos. Eres el silencio detrás de ellos.",
       "Acepta este momento radicalmente. Aquí reside la paz.",
-      "La belleza es el resplandor de la verdad.",
-      "En el silencio del no-saber, el corazón encuentra descanso.",
-      "Sé como el cielo: permite que pasen las nubes sin aferrarte.",
-      "El amor incondicional es la aceptación total de lo que es.",
       "Vuelve a casa, vuelve al ahora.",
       "Tu verdadera naturaleza es paz, amor y dicha.",
       "Observa sin juzgar. Eso es amor."
     ];
 
-    /* --- VARIABLES DE ESTADO --- */
+    /* --- VARIABLES --- */
     let currentPatternKey = null;
     let currentPatternData = [];
     let startTime = 0;
     let totalCycleDuration = 0;
     let tempo = 1000;
-    
     let isRunning = false;
     let animationFrameId = null;
     let cycles = 0;
-    
     let soundOn = false;
     let metronomeOn = false;
     let audioCtx = null;
     let lastPhraseIdx = -1;
     let lastBeatPlayed = -1;
 
-    // Canvas
-    let canvas, ctx;
-    let segments = [];
-
-    /* --- ELEMENTOS DOM --- */
+    // DOM Elements
     const sphere = document.getElementById('sphere');
     const phaseText = document.getElementById('phaseText');
     const counterText = document.getElementById('counterText');
     const cycleCounter = document.getElementById('cycleCounter');
     const patternSelector = document.getElementById('patternSelector');
-    const phraseEl = document.getElementById('phraseContent');
-    const phraseContainer = document.getElementById('reflectivePhrase');
     const patternLabelDisplay = document.getElementById('patternLabelDisplay');
+    const phraseEl = document.getElementById('phraseContent');
+    const shareBtn = document.getElementById('shareBtn');
+    
+    // Canvas
+    let canvas = document.getElementById('breathGraph');
+    let ctx = canvas.getContext('2d');
+    let segments = [];
 
-    /* --- FRASES ALEATORIAS --- */
+    /* --- FUNCIONES LÓGICAS --- */
     function setRandomPhrase() {
       let newIdx;
-      do {
-        newIdx = Math.floor(Math.random() * REFLECTIVE_PHRASES.length);
-      } while (newIdx === lastPhraseIdx && REFLECTIVE_PHRASES.length > 1);
+      do { newIdx = Math.floor(Math.random() * REFLECTIVE_PHRASES.length); } 
+      while (newIdx === lastPhraseIdx && REFLECTIVE_PHRASES.length > 1);
       lastPhraseIdx = newIdx;
       
-      phraseContainer.style.opacity = 0;
+      phraseEl.style.opacity = 0;
       setTimeout(() => {
         phraseEl.textContent = REFLECTIVE_PHRASES[newIdx];
-        phraseContainer.style.opacity = 0.9;
-      }, 300);
+        phraseEl.style.opacity = 1;
+      }, 500);
     }
 
-    /* --- AUDIO --- */
     function initAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     }
+    
     function beep(freq = 440, type = 'sine', dur = 0.1) {
       if (!audioCtx) return;
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = type;
       osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.05, audioCtx.currentTime); // Volumen más bajo y suave
       gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
@@ -451,40 +421,33 @@
       osc.stop(audioCtx.currentTime + dur);
     }
 
-    /* --- MOTOR DE SINCRONIZACIÓN --- */
     function recalculatePatternData() {
       if (!currentPatternKey) return;
       const patternDef = patterns[currentPatternKey];
-      
       currentPatternData = [];
       let accumulatedTime = 0;
       
       patternDef.forEach(p => {
         const duration = p.beats * tempo;
         currentPatternData.push({
-          ...p,
-          startTime: accumulatedTime,
-          endTime: accumulatedTime + duration,
-          duration: duration
+          ...p, startTime: accumulatedTime, endTime: accumulatedTime + duration, duration: duration
         });
         accumulatedTime += duration;
       });
-      
       totalCycleDuration = accumulatedTime;
       calculateCanvasSegments();
     }
 
     function loop() {
       if (!isRunning) return;
-
       const now = Date.now();
       const elapsedTotal = now - startTime;
       const timeInCycle = elapsedTotal % totalCycleDuration;
-      
       const currentCycle = Math.floor(elapsedTotal / totalCycleDuration);
+      
       if (currentCycle > cycles) {
         cycles = currentCycle;
-        cycleCounter.textContent = `🔄 Ciclos: ${cycles}`;
+        cycleCounter.textContent = `🔄 ${cycles}`;
       }
 
       const currentPhase = currentPatternData.find(p => timeInCycle >= p.startTime && timeInCycle < p.endTime);
@@ -498,7 +461,7 @@
                 if(currentPhase.type === 'hold_high') freq = 450;
                 if(currentPhase.type === 'fall') freq = 400;
                 if(currentPhase.type === 'hold_low') freq = 250;
-                beep(freq, 'sine', 0.2);
+                beep(freq, 'sine', 0.3);
              }
         }
 
@@ -508,76 +471,63 @@
 
         const beatKey = `${cycles}-${currentPhase.text}-${currentBeat}`;
         if (metronomeOn && lastBeatPlayed !== beatKey) {
-            beep(800, 'square', 0.05);
+            beep(600, 'triangle', 0.05);
             lastBeatPlayed = beatKey;
         }
 
         const phaseProgress = timeInPhase / currentPhase.duration; 
         let scale = 1;
-
-        if (currentPhase.type === 'rise') {
-          scale = 1 + (0.5 * phaseProgress);
-        } else if (currentPhase.type === 'fall') {
-          scale = 1.5 - (0.5 * phaseProgress);
-        } else if (currentPhase.type === 'hold_high') {
-          scale = 1.5;
-        } else {
-          scale = 1;
-        }
+        if (currentPhase.type === 'rise') scale = 1 + (0.6 * phaseProgress); // Un poco más de expansión
+        else if (currentPhase.type === 'fall') scale = 1.6 - (0.6 * phaseProgress);
+        else if (currentPhase.type === 'hold_high') scale = 1.6;
+        else scale = 1;
         
         sphere.style.transform = `scale(${scale})`;
       }
-
+      
       drawCanvas(timeInCycle);
-
       animationFrameId = requestAnimationFrame(loop);
     }
 
-    /* --- CANVAS --- */
     function initCanvas() {
-      canvas = document.getElementById('breathGraph');
-      ctx = canvas.getContext('2d');
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
-      
-      calculateCanvasSegments();
+        // Ajuste de DPI para nitidez en pantallas retina
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.parentNode.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        calculateCanvasSegments();
     }
 
     function calculateCanvasSegments() {
-      if (!canvas || !currentPatternData.length) return;
-      
-      const w = canvas.width / (window.devicePixelRatio || 1);
-      const h = canvas.height / (window.devicePixelRatio || 1);
-      const marginY = 20;
+      if (!currentPatternData.length) return;
+      const width = canvas.width / (window.devicePixelRatio || 1);
+      const height = canvas.height / (window.devicePixelRatio || 1);
+      const margin = 10;
       
       segments = [];
       const totalBeats = currentPatternData.reduce((sum, p) => sum + p.beats, 0);
-      const unitW = w / totalBeats;
+      const pxPerBeat = width / totalBeats;
       
-      let startX = 0;
-      let currentY = h - marginY; 
+      let currentX = 0;
+      let currentY = height - margin; 
 
       currentPatternData.forEach(p => {
-        const width = p.beats * unitW;
-        const endX = startX + width;
-        
+        const segWidth = p.beats * pxPerBeat;
+        const endX = currentX + segWidth;
         let endY = currentY;
-        if (p.type === 'rise') endY = marginY;
-        if (p.type === 'fall') endY = h - marginY;
-        if (p.type === 'hold_high') endY = marginY;
-        if (p.type === 'hold_low') endY = h - marginY;
+        
+        if (p.type === 'rise') endY = margin;
+        if (p.type === 'fall') endY = height - margin;
+        if (p.type === 'hold_high') endY = margin;
+        if (p.type === 'hold_low') endY = height - margin;
         
         segments.push({
-            startX, endX,
-            startY: currentY, endY,
-            startTime: p.startTime,
-            endTime: p.endTime
+            startX: currentX, endX: endX,
+            startY: currentY, endY: endY,
+            startTime: p.startTime, endTime: p.endTime
         });
-        
-        startX = endX;
+        currentX = endX;
         currentY = endY;
       });
     }
@@ -588,53 +538,55 @@
       
       ctx.clearRect(0, 0, w, h);
       
+      // Dibujar línea de fondo (trayectoria)
       ctx.beginPath();
-      ctx.strokeStyle = '#4CAF50';
+      ctx.strokeStyle = 'rgba(76, 175, 80, 0.3)';
       ctx.lineWidth = 4;
       ctx.lineJoin = 'round';
       ctx.lineCap = 'round';
-      
       segments.forEach((seg, i) => {
         if (i === 0) ctx.moveTo(seg.startX, seg.startY);
         ctx.lineTo(seg.endX, seg.endY);
       });
       ctx.stroke();
-      
+
+      // Dibujar bola de progreso
       const activeSeg = segments.find(s => timeInCycle >= s.startTime && timeInCycle < s.endTime);
-      
       if (activeSeg) {
           const segDuration = activeSeg.endTime - activeSeg.startTime;
           const progress = (timeInCycle - activeSeg.startTime) / segDuration;
-          
           const ballX = activeSeg.startX + (activeSeg.endX - activeSeg.startX) * progress;
           const ballY = activeSeg.startY + (activeSeg.endY - activeSeg.startY) * progress;
           
           ctx.beginPath();
-          ctx.fillStyle = '#FF5722';
-          ctx.arc(ballX, ballY, 8, 0, Math.PI * 2);
+          ctx.fillStyle = '#1a5f7a';
+          ctx.shadowColor = "rgba(26, 95, 122, 0.5)";
+          ctx.shadowBlur = 10;
+          ctx.arc(ballX, ballY, 6, 0, Math.PI * 2);
           ctx.fill();
-          ctx.strokeStyle = '#fff';
-          ctx.lineWidth = 2;
-          ctx.stroke();
+          ctx.shadowBlur = 0; // Reset shadow
       }
     }
 
-    /* --- CONTROLES --- */
+    /* --- CONTROLES DE ESTADO --- */
     function start(patternKey) {
       if (isRunning) stop();
-      
       currentPatternKey = patternKey;
       
-      // Actualizar el nombre numérico visible
-      let displayName = patternKey;
-      if (patternKey === 'box') displayName = '4-4-4-4'; // Traducción especial para BOX
-      patternLabelDisplay.textContent = displayName;
-      
+      // Mostrar etiqueta del patrón seleccionado
+      const selectedEl = document.querySelector(`.pattern-card[data-pattern="${patternKey}"]`);
+      if(selectedEl) {
+          const name = selectedEl.querySelector('.pattern-name').innerText.split('•')[0].trim();
+          patternLabelDisplay.textContent = name;
+      }
+
       recalculatePatternData();
       
-      patternSelector.style.display = 'none';
-      cycleCounter.textContent = "🔄 Ciclos: 0";
-      
+      // Animación UI
+      patternSelector.style.transform = "translateY(110%)"; // Ocultar hacia abajo
+      shareBtn.style.transform = "scale(0)"; // Ocultar botón compartir
+
+      cycleCounter.textContent = "🔄 0";
       initAudio();
       setRandomPhrase();
       
@@ -645,7 +597,7 @@
         cycles = 0;
         lastBeatPlayed = -1;
         loop(); 
-      }, 50);
+      }, 100);
     }
 
     function stop() {
@@ -653,11 +605,14 @@
       cancelAnimationFrame(animationFrameId);
       
       sphere.style.transform = 'scale(1)';
-      phaseText.textContent = "Elige patrón";
+      phaseText.textContent = "Respira";
       counterText.textContent = "";
-      patternLabelDisplay.textContent = ""; 
-      patternSelector.style.display = 'block';
-      document.getElementById('shareBtn').style.display = 'block';
+      patternLabelDisplay.textContent = "";
+      
+      // Restaurar UI
+      patternSelector.style.transform = "translateY(0)";
+      shareBtn.style.transform = "scale(1)";
+      shareBtn.style.display = "flex";
 
       if(ctx) {
          const w = canvas.width / (window.devicePixelRatio || 1);
@@ -667,11 +622,11 @@
       setRandomPhrase();
     }
 
-    /* --- EVENTOS --- */
-    document.querySelectorAll('.pattern-option').forEach(el => {
+    /* --- LISTENERS --- */
+    document.querySelectorAll('.pattern-card').forEach(el => {
       el.addEventListener('click', () => {
-        document.querySelectorAll('.pattern-option').forEach(o => o.classList.remove('selected'));
-        el.classList.add('selected');
+        document.querySelectorAll('.pattern-card').forEach(o => o.classList.remove('active'));
+        el.classList.add('active');
         start(el.dataset.pattern);
       });
     });
@@ -680,113 +635,67 @@
     
     document.getElementById('soundBtn').addEventListener('click', function() {
       soundOn = !soundOn;
-      this.classList.toggle('active');
-      this.textContent = soundOn ? "🔊 ON" : "🔇 Sonido";
+      this.textContent = soundOn ? "🔊" : "🔇";
       initAudio();
     });
 
     document.getElementById('metronomeBtn').addEventListener('click', function() {
       metronomeOn = !metronomeOn;
-      this.classList.toggle('active');
+      this.style.borderColor = metronomeOn ? "var(--primary)" : "transparent";
     });
 
     document.getElementById('tempoSelect').addEventListener('change', function() {
       tempo = parseInt(this.value);
-      if (isRunning) {
-        recalculatePatternData();
-        startTime = Date.now(); 
-        lastBeatPlayed = -1;
-      }
+      if (isRunning) { recalculatePatternData(); startTime = Date.now(); }
     });
 
-    window.addEventListener('resize', () => {
-      if (isRunning) {
-          initCanvas();
-      }
-    });
+    window.addEventListener('resize', () => { if (isRunning) initCanvas(); });
 
-    setRandomPhrase();
-    
-    /* -----------------------------------------------------
-       MÓDULO DE PÍLDORAS WEB: GESTIÓN DE URL Y COMPARTIR
-       ----------------------------------------------------- */
-
-    // 1. Leer parámetros URL
+    // --- LÓGICA DE URL Y COMPARTIR ---
     function getQueryParams() {
       const params = new URLSearchParams(window.location.search);
-      return {
-        pattern: params.get('p'),      
-        to: params.get('para'),        
-        msg: params.get('msg')         
-      };
+      return { p: params.get('p'), to: params.get('para'), msg: params.get('msg') };
     }
 
-    // 2. Inicialización inteligente
     window.addEventListener('DOMContentLoaded', () => {
+      setRandomPhrase(); // Frase inicial
       const params = getQueryParams();
 
-      if (params.pattern && patterns[params.pattern]) {
-        // MODO PÍLDORA (El usuario viene de un enlace compartido)
+      if (params.p && patterns[params.p]) {
+        // MODO PÍLDORA
         const overlay = document.getElementById('pillOverlay');
-        const recipientEl = document.getElementById('pillRecipient');
-        const msgEl = document.getElementById('pillMessage');
-        const startBtn = document.getElementById('startPillBtn');
-        const shareBtn = document.getElementById('shareBtn');
-
-        // Configurar la interfaz
-        patternSelector.style.display = 'none'; // Ocultar selector
-        shareBtn.style.display = 'none';        // Ocultar botón de crear píldora al receptor
+        document.getElementById('pillRecipient').textContent = `Hola, ${params.to || 'Alguien'}`;
+        document.getElementById('pillMessage').textContent = params.msg ? `"${params.msg}"` : '"Tómate un respiro."';
         
-        const name = params.to ? params.to : "Alguien";
-        recipientEl.textContent = `Hola, ${name}`;
-        msgEl.textContent = params.msg ? `"${params.msg}"` : '"Tómate un momento para respirar."';
-
-        // Mostrar pantalla de bienvenida
+        // Ocultar UI inicial
+        patternSelector.style.transform = "translateY(110%)";
+        shareBtn.style.display = 'none';
+        
         overlay.style.display = 'flex';
 
-        // Al hacer clic, iniciamos todo (necesario para activar AudioContext)
-        startBtn.addEventListener('click', () => {
+        document.getElementById('startPillBtn').addEventListener('click', () => {
           overlay.style.display = 'none';
-          
           if (params.msg) {
-            phraseEl.textContent = params.msg;
-            lastPhraseIdx = -999; // Evitar que cambie la frase
+             phraseEl.textContent = params.msg;
+             lastPhraseIdx = -999; 
           }
-          
-          start(params.pattern);
+          start(params.p);
         });
-
-      } else {
-        // MODO NORMAL (Sin parámetros)
-        // Se muestra la UI estándar
       }
     });
 
-    // 3. Botón para Generar y Compartir Píldora
-    document.getElementById('shareBtn').addEventListener('click', () => {
-      const pattern = prompt("¿Qué ejercicio quieres enviar? (Escribe: 4-7-8, box, 5-5, o 4-4-6-2)", "4-7-8");
+    shareBtn.addEventListener('click', () => {
+      const pattern = prompt("¿Qué ejercicio? (4-7-8, box, 5-5, 4-4-6-2)", "4-7-8");
+      if (!patterns[pattern]) { alert("Patrón no válido."); return; }
       
-      if (!patterns[pattern]) {
-        alert("Patrón no válido. Por favor usa uno de la lista.");
-        return;
-      }
-
-      const name = prompt("¿Para quién es?", "Amigo");
-      const message = prompt("Escribe una dedicatoria corta:", "Respira y suelta el estrés...");
-
-      // Construcción dinámica de la URL
+      const name = prompt("¿Para quién?", "Amigo");
+      const message = prompt("Mensaje:", "Relájate un poco...");
+      
       const baseUrl = window.location.href.split('?')[0];
-      const finalUrl = `${baseUrl}?p=${pattern}&para=${encodeURIComponent(name || 'Amigo')}&msg=${encodeURIComponent(message || 'Respira')}`;
-
-      const whatsappText = `Hola ${name}, te mando una píldora de respiración: "${message}". Entra aquí: ${finalUrl}`;
+      const finalUrl = `${baseUrl}?p=${pattern}&para=${encodeURIComponent(name||'Amigo')}&msg=${encodeURIComponent(message||'Respira')}`;
+      const text = `Hola ${name}, te mando un respiro: ${finalUrl}`;
       
-      // Intentar copiar al portapapeles
-      navigator.clipboard.writeText(whatsappText).then(() => {
-        alert("¡Enlace copiado al portapapeles!\n\nPégalo ahora en WhatsApp.");
-      }).catch(err => {
-        // Fallback si falla el copiado automático
-        prompt("Copia este enlace:", whatsappText);
-      });
+      navigator.clipboard.writeText(text).then(() => alert("¡Enlace copiado! Pégalo en WhatsApp."));
     });
 
   </script>
