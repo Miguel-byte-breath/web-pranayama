@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración Guiada: Zen Web</title>
+  <title>Respiración Guiada: iPad Ready</title>
   <style>
-    /* --- 1. VARIABLES & RESET (BASE DEL DISEÑO) --- */
+    /* --- 1. VARIABLES & RESET --- */
     :root {
       --primary: #4CAF50;
       --primary-dark: #2e7d32;
       --accent: #1a5f7a;
       --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-      --glass-bg: rgba(255, 255, 255, 0.85);
+      --glass-bg: rgba(255, 255, 255, 0.90);
       --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-      --glass-border: 1px solid rgba(255, 255, 255, 0.4);
+      --glass-border: 1px solid rgba(255, 255, 255, 0.6);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -22,682 +22,457 @@
       background: var(--bg-gradient);
       color: #2c3e50;
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden; /* Evitar scroll global */
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: space-between; /* Distribuye elementos arriba, centro y abajo */
-      height: 100vh; /* Altura fija para evitar scroll */
-      overflow: hidden;
-      position: relative;
     }
 
-    /* --- 2. CAPA UI SUPERIOR (CONTROLES) --- */
+    /* --- 2. BARRA SUPERIOR (CORREGIDA) --- */
     .ui-top-bar {
       width: 100%;
-      padding: 15px 20px;
+      height: 70px; /* Altura fija para estabilidad */
+      padding: 10px 20px;
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      z-index: 50;
-      pointer-events: none; /* Dejar pasar clicks a lo de abajo si fuera necesario */
+      justify-content: space-between; /* Ciclos a izq, controles a der */
+      align-items: center;
+      z-index: 60;
+      background: rgba(255,255,255,0.3); /* Ligeramente visible para separar */
+      backdrop-filter: blur(5px);
     }
 
-    /* Agrupamos controles para que no floten sueltos */
+    /* CONTADOR DE CICLOS (RESTAURADO) */
+    .cycle-badge {
+      background: var(--primary-dark); /* Color sólido para visibilidad */
+      color: white;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* GRUPO DE CONTROLES (EN FILA, NO COLUMNA) */
     .controls-group {
       display: flex;
-      flex-direction: column;
+      flex-direction: row; /* CLAVE: Horizontal */
       gap: 10px;
-      align-items: flex-end;
-      pointer-events: auto;
+      align-items: center;
     }
 
-    .btn, .cycle-badge {
+    .btn {
       background: var(--glass-bg);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
       border: var(--glass-border);
-      padding: 8px 16px;
-      border-radius: 20px;
+      padding: 8px 14px;
+      border-radius: 12px;
       font-size: 0.9rem;
       font-weight: 600;
       color: #455a64;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-      transition: all 0.2s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
       cursor: pointer;
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
+      white-space: nowrap; /* Que no se rompa el texto */
     }
-
-    .btn:active, .btn.active {
-      background: #e8f5e9;
-      color: var(--primary-dark);
-      border-color: var(--primary);
-      transform: scale(0.96);
-    }
+    .btn:active { transform: scale(0.95); background: #e8f5e9; }
     
-    select {
-        background: transparent;
-        border: none;
-        font-weight: bold;
-        color: var(--primary-dark);
-        outline: none;
+    select { background: transparent; border: none; font-weight: bold; color: var(--primary-dark); outline: none; width: 40px;}
+
+    /* --- 3. LAYOUT PRINCIPAL (FLEXIBLE) --- */
+    /* Contenedor que abraza esfera y paneles */
+    .main-layout {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column; /* Por defecto vertical (móvil portrait) */
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      width: 100%;
+      height: calc(100vh - 70px); /* Restamos la barra superior */
     }
 
-    /* --- 3. ÁREA CENTRAL (ESFERA + TEXTO) --- */
-    .center-stage {
-      flex-grow: 1; /* Ocupa todo el espacio disponible */
+    /* --- ESFERA Y TEXTO --- */
+    .sphere-section {
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       width: 100%;
-      position: relative;
-      z-index: 10;
+      transition: all 0.5s ease;
     }
 
     .sphere {
-      width: min(45vw, 220px); /* Responsive: nunca más grande que 220px ni 45% del ancho */
-      height: min(45vw, 220px);
+      width: min(40vw, 200px);
+      height: min(40vw, 200px);
       border-radius: 50%;
       background: radial-gradient(circle at 30% 30%, #a8ff60, #4CAF50);
-      box-shadow: 0 20px 60px rgba(76, 175, 80, 0.35);
+      box-shadow: 0 20px 50px rgba(76, 175, 80, 0.4);
       will-change: transform;
-      margin-bottom: 2rem;
-    }
-
-    .phase-text {
-      font-size: clamp(1.5rem, 5vw, 2.5rem); /* Texto escala fluidamente */
-      color: var(--accent);
-      font-weight: 300;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      opacity: 0.8;
-      margin-bottom: 0.5rem;
-      min-height: 3rem; /* Evita saltos */
-      text-shadow: 0 2px 10px rgba(255,255,255,0.8);
-    }
-
-    .counter-text {
-      font-size: clamp(2rem, 6vw, 3rem);
-      font-weight: 800;
-      color: var(--primary);
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%); /* Centrado perfecto sobre la esfera */
-      text-shadow: 0 2px 15px rgba(255,255,255,0.9);
-      pointer-events: none;
-    }
-
-    /* --- 4. LA FRASE (NUEVO DISEÑO EQUILIBRADO) --- */
-    .quote-container {
-      margin-top: 1rem;
-      padding: 0 20px;
-      text-align: center;
-      max-width: 600px;
-      height: 60px; /* Altura reservada para que no baile la pantalla */
+      margin-bottom: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .quote-text {
-      font-family: 'Georgia', serif; /* Toque elegante */
-      font-style: italic;
-      color: #546e7a;
-      font-size: clamp(1rem, 3vw, 1.25rem);
-      line-height: 1.4;
-      opacity: 0; /* Empieza invisible para efecto fade */
-      transition: opacity 0.8s ease;
+    .counter-text {
+      font-size: 2.5rem; font-weight: 800; color: white;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
 
-    /* --- 5. ÁREA INFERIOR (VISUALIZADOR + SELECTOR) --- */
-    .bottom-ui {
+    .phase-text {
+      font-size: 1.8rem; color: var(--accent); font-weight: 300; letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 5px; min-height: 40px;
+    }
+
+    .quote-text {
+      font-family: 'Georgia', serif; font-style: italic; color: #546e7a;
+      text-align: center; max-width: 90%; font-size: 1rem; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* --- PANEL INFERIOR / LATERAL (SELECTOR) --- */
+    .control-panel {
       width: 100%;
+      background: var(--glass-bg);
+      border-top: var(--glass-border);
+      padding: 15px;
+      border-radius: 25px 25px 0 0;
+      box-shadow: 0 -5px 30px rgba(0,0,0,0.05);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding-bottom: 20px;
-      z-index: 20;
-      background: linear-gradient(to top, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%);
+      z-index: 50;
+      max-height: 40vh; /* Máximo 40% de pantalla en vertical */
+      overflow-y: auto; /* Scroll si hace falta */
     }
 
-    .visualizer-container {
-      width: 90%;
-      max-width: 500px;
-      height: 80px;
-      margin-bottom: 15px;
-    }
+    .visualizer-container { width: 100%; max-width: 400px; height: 60px; margin-bottom: 10px; flex-shrink: 0; }
+    #breathGraph { width: 100%; height: 100%; }
     
-    #breathGraph {
-      width: 100%;
-      height: 100%;
-      border-radius: 15px;
-      /* background: rgba(255,255,255,0.4); Quitado para limpieza */ 
-    }
-
-    .pattern-label {
-        color: var(--primary);
-        font-weight: 800;
-        letter-spacing: 1px;
-        margin-bottom: 10px;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        height: 20px;
-    }
-
-    /* --- 6. MODAL/SELECTOR DESLIZANTE --- */
-    .pattern-selector-panel {
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: 1fr; /* 1 columna en móvil */
+      gap: 10px;
       width: 100%;
       max-width: 500px;
-      background: var(--glass-bg);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      border-top: var(--glass-border);
-      border-radius: 25px 25px 0 0;
-      padding: 20px;
-      box-shadow: 0 -10px 40px rgba(0,0,0,0.05);
-      transition: transform 0.3s ease;
     }
 
     .pattern-card {
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.6);
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(0,0,0,0.05);
       cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.2s;
+      text-align: left;
     }
-    .pattern-card:hover { background: #fff; transform: translateY(-2px); }
-    .pattern-card.active { border-color: var(--primary); background: #f1f8f1; }
-    
-    .pattern-name { color: var(--primary-dark); font-weight: 700; margin-bottom: 4px; }
-    .pattern-desc { color: #78909c; font-size: 0.85rem; }
+    .pattern-card:hover { background: white; }
+    .pattern-card.active { border: 2px solid var(--primary); background: #f1f8f1; }
+    .pattern-name { font-weight: 700; color: var(--primary-dark); font-size: 0.95rem; }
+    .pattern-desc { font-size: 0.8rem; color: #78909c; }
 
-    /* --- 7. BOTÓN FLOTANTE (FAB) PARA COMPARTIR --- */
+    /* --- MEDIA QUERY: MODO PAISAJE (LANDSCAPE) --- */
+    /* Aquí ocurre la magia para el iPad */
+    @media (orientation: landscape) {
+      .main-layout {
+        flex-direction: row; /* Elementos lado a lado */
+        align-items: stretch;
+      }
+
+      /* Izquierda: Esfera */
+      .sphere-section {
+        flex: 1.2; /* Un poco más de espacio */
+        border-right: 1px solid rgba(0,0,0,0.05);
+      }
+      .sphere {
+        width: min(25vh, 160px); /* Más pequeña para que quepa en altura */
+        height: min(25vh, 160px);
+        margin-bottom: 10px;
+      }
+      .phase-text { font-size: 1.5rem; margin-bottom: 0; }
+      .quote-text { font-size: 0.9rem; max-width: 80%; }
+
+      /* Derecha: Panel de Control */
+      .control-panel {
+        width: 380px; /* Ancho fijo lateral */
+        height: 100%; /* Toda la altura disponible */
+        max-height: none;
+        border-top: none;
+        border-left: var(--glass-border);
+        border-radius: 20px 0 0 20px;
+        background: rgba(255,255,255,0.8);
+        padding: 20px;
+        justify-content: flex-start; /* Alinear arriba */
+      }
+
+      .pattern-grid {
+        grid-template-columns: 1fr; /* Una columna en panel lateral es mejor */
+        overflow-y: auto;
+        padding-bottom: 80px; /* Espacio para el botón flotante */
+      }
+
+      /* Ajuste visualizador en lateral */
+      .visualizer-container { height: 70px; margin-bottom: 20px; }
+    }
+
+    /* --- BOTÓN FLOTANTE --- */
     .fab-share {
-        position: fixed;
-        bottom: 25px;
-        right: 25px;
-        background: var(--accent);
-        color: white;
-        width: 55px;
-        height: 55px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        box-shadow: 0 4px 15px rgba(26, 95, 122, 0.3);
-        border: none;
-        cursor: pointer;
-        z-index: 100;
-        transition: transform 0.2s;
+      position: fixed;
+      bottom: 20px; right: 20px;
+      background: var(--accent); color: white;
+      padding: 12px 24px; border-radius: 30px;
+      font-weight: bold; border: none;
+      box-shadow: 0 4px 15px rgba(26, 95, 122, 0.4);
+      z-index: 100;
+      cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
     }
-    .fab-share:hover { transform: scale(1.1); }
-    .fab-text { display: none; } /* Solo icono en móvil */
 
-    /* PANTALLA DE BIENVENIDA (PILL OVERLAY) */
-    #pillOverlay {
-        background: rgba(255,255,255,0.95);
-        backdrop-filter: blur(10px);
-    }
-    
-    /* Responsive ajustes finos */
-    @media (min-width: 768px) {
-        .fab-share { 
-            width: auto; height: auto; 
-            padding: 12px 24px; 
-            border-radius: 30px; 
-            font-size: 1rem;
-        }
-        .fab-share span { display: inline; margin-left: 8px; } /* Texto visible en PC */
-        .fab-text { display: inline; }
-    }
+    /* OVERLAY */
+    #pillOverlay { background: rgba(255,255,255,0.98); }
   </style>
 </head>
 <body>
 
   <div id="pillOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:200; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px;">
-    <div style="font-size:4rem; margin-bottom:10px;">🍃</div>
-    <h1 style="color:var(--primary-dark); margin-bottom:10px; font-size: 2rem;">Una pausa para ti</h1>
-    <h2 id="pillRecipient" style="color:#546e7a; margin-bottom:20px; font-weight:400; font-size:1.5rem;"></h2>
-    <p id="pillMessage" style="font-size:1.3rem; font-style:italic; color:#37474f; margin-bottom:40px; max-width:600px; line-height: 1.6; padding:20px; background:rgba(255,255,255,0.5); border-radius:15px;"></p>
-    <button id="startPillBtn" class="btn" style="background:var(--primary); color:white; border:none; padding:15px 40px; font-size:1.1rem;">Comenzar Ahora</button>
+    <h1 style="color:var(--primary-dark); margin-bottom:10px;">🍃 Pausa para ti</h1>
+    <h2 id="pillRecipient" style="color:#546e7a; margin-bottom:20px; font-weight:400;"></h2>
+    <p id="pillMessage" style="font-size:1.2rem; font-style:italic; color:#37474f; margin-bottom:30px; max-width:500px;"></p>
+    <button id="startPillBtn" class="btn" style="background:var(--primary); color:white; padding:15px 30px;">Comenzar</button>
   </div>
 
   <div class="ui-top-bar">
     <div class="cycle-badge" id="cycleCounter">🔄 0</div>
     
     <div class="controls-group">
-        <button class="btn" id="resetBtn">↻ Reiniciar</button>
-        <div style="display:flex; gap:8px;">
-            <div class="btn">
-                ⏱️ <select id="tempoSelect"><option value="1000">1x</option><option value="1500">0.7x</option><option value="2000">0.5x</option></select>
-            </div>
-            <button class="btn" id="soundBtn">🔇</button>
-            <button class="btn" id="metronomeBtn">⏱️</button>
-        </div>
-    </div>
-  </div>
-
-  <div class="center-stage">
-    <div class="sphere" id="sphere">
-        <div class="counter" id="counterText"></div>
-    </div>
-    
-    <div class="phase-text" id="phaseText">Respira</div>
-    
-    <div class="quote-container">
-        <p class="quote-text" id="phraseContent">Cargando inspiración...</p>
-    </div>
-  </div>
-
-  <div class="bottom-ui">
-    <div class="pattern-label" id="patternLabelDisplay"></div>
-    
-    <div class="visualizer-container">
-        <canvas id="breathGraph"></canvas>
-    </div>
-
-    <div class="pattern-selector-panel" id="patternSelector">
-        <h4 style="text-align:center; color:#cfd8dc; margin-bottom:15px; text-transform:uppercase; font-size:0.7rem; letter-spacing:2px;">Seleccionar Ejercicio</h4>
+        <button class="btn" id="resetBtn" style="background:#fff3e0; border-color:#ffe0b2; color:#e65100;">
+          ↻ Reiniciar
+        </button>
         
-        <div class="pattern-card" data-pattern="4-4-6-2">
-            <div class="pattern-name">4-4-6-2 • Relajación Profunda</div>
-            <div class="pattern-desc">Ideal para bajar pulsaciones rápidamente.</div>
+        <div class="btn">
+            ⚡ <select id="tempoSelect"><option value="1000">1x</option><option value="1500">Lento</option><option value="2000">Muy Lento</option></select>
         </div>
-        <div class="pattern-card" data-pattern="4-7-8">
-            <div class="pattern-name">4-7-8 • Para Dormir</div>
-            <div class="pattern-desc">Técnica del Dr. Weil para el insomnio.</div>
+        <button class="btn" id="soundBtn">🔇</button>
+        <button class="btn" id="metronomeBtn">⏱️</button>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    
+    <div class="sphere-section">
+      <div class="sphere" id="sphere">
+          <div class="counter-text" id="counterText"></div>
+      </div>
+      <div class="phase-text" id="phaseText">Respira</div>
+      <div class="quote-text" id="phraseContent">Cargando calma...</div>
+    </div>
+
+    <div class="control-panel" id="controlPanel">
+        <div style="font-size:0.8rem; font-weight:800; color:var(--primary); margin-bottom:5px; text-transform:uppercase;">Visualización</div>
+        <div class="visualizer-container">
+            <canvas id="breathGraph"></canvas>
         </div>
-        <div class="pattern-card" data-pattern="box">
-            <div class="pattern-name">Box Breathing • Enfoque</div>
-            <div class="pattern-desc">Usada por Navy SEALs para concentración.</div>
-        </div>
-        <div class="pattern-card" data-pattern="5-5">
-            <div class="pattern-name">5-5 • Coherencia Cardíaca</div>
-            <div class="pattern-desc">Equilibrio perfecto del sistema nervioso.</div>
+
+        <div style="font-size:0.8rem; font-weight:800; color:#90a4ae; margin-bottom:10px; text-transform:uppercase; margin-top:10px;">Ejercicios</div>
+        <div class="pattern-grid">
+            <div class="pattern-card" data-pattern="4-4-6-2">
+                <div class="pattern-name">4-4-6-2 • Relax Profundo</div>
+                <div class="pattern-desc">Baja pulsaciones (4-4-6-2)</div>
+            </div>
+            <div class="pattern-card" data-pattern="4-7-8">
+                <div class="pattern-name">4-7-8 • Dormir</div>
+                <div class="pattern-desc">Técnica Dr. Weil para sueño</div>
+            </div>
+            <div class="pattern-card" data-pattern="box">
+                <div class="pattern-name">Cuadrada • Enfoque</div>
+                <div class="pattern-desc">Box Breathing (4-4-4-4)</div>
+            </div>
+            <div class="pattern-card" data-pattern="5-5">
+                <div class="pattern-name">5-5 • Coherencia</div>
+                <div class="pattern-desc">Equilibrio total (5-5)</div>
+            </div>
         </div>
     </div>
   </div>
 
   <button id="shareBtn" class="fab-share">
-    📤 <span class="fab-text">Enviar Píldora</span>
+    📤 Enviar Píldora
   </button>
 
   <script>
-    /* --- CONFIGURACIÓN DE DATOS --- */
+    /* --- LÓGICA (IDÉNTICA PERO ROBUSTA) --- */
     const patterns = {
-      '4-4-6-2': [
-        { text: "Inhala", beats: 4, type: 'rise' }, { text: "Mantén", beats: 4, type: 'hold_high' },
-        { text: "Exhala", beats: 6, type: 'fall' }, { text: "Sostén", beats: 2, type: 'hold_low' }
-      ],
-      '4-7-8': [
-        { text: "Inhala", beats: 4, type: 'rise' }, { text: "Mantén", beats: 7, type: 'hold_high' },
-        { text: "Exhala", beats: 8, type: 'fall' }
-      ],
-      'box': [
-        { text: "Inhala", beats: 4, type: 'rise' }, { text: "Mantén", beats: 4, type: 'hold_high' },
-        { text: "Exhala", beats: 4, type: 'fall' }, { text: "Sostén", beats: 4, type: 'hold_low' }
-      ],
-      '5-5': [
-        { text: "Inhala", beats: 5, type: 'rise' }, { text: "Exhala", beats: 5, type: 'fall' }
-      ]
+      '4-4-6-2': [{t:"Inhala",b:4,y:'rise'},{t:"Mantén",b:4,y:'hold_high'},{t:"Exhala",b:6,y:'fall'},{t:"Sostén",b:2,y:'hold_low'}],
+      '4-7-8': [{t:"Inhala",b:4,y:'rise'},{t:"Mantén",b:7,y:'hold_high'},{t:"Exhala",b:8,y:'fall'}],
+      'box': [{t:"Inhala",b:4,y:'rise'},{t:"Mantén",b:4,y:'hold_high'},{t:"Exhala",b:4,y:'fall'},{t:"Sostén",b:4,y:'hold_low'}],
+      '5-5': [{t:"Inhala",b:5,y:'rise'},{t:"Exhala",b:5,y:'fall'}]
     };
-
     const REFLECTIVE_PHRASES = [
-      "El amor no es algo que haces, es lo que eres.",
-      "Ama lo que es. La resistencia solo trae dolor.",
-      "Cuando la mente se detiene, la belleza del mundo se revela.",
-      "No eres tus pensamientos. Eres el silencio detrás de ellos.",
-      "Acepta este momento radicalmente. Aquí reside la paz.",
-      "Vuelve a casa, vuelve al ahora.",
-      "Tu verdadera naturaleza es paz, amor y dicha.",
-      "Observa sin juzgar. Eso es amor."
+      "El amor no es algo que haces, es lo que eres.", "Ama lo que es. La resistencia trae dolor.",
+      "Vuelve a casa, vuelve al ahora.", "Observa sin juzgar. Eso es amor.", "La paz empieza contigo."
     ];
 
-    /* --- VARIABLES --- */
-    let currentPatternKey = null;
-    let currentPatternData = [];
-    let startTime = 0;
-    let totalCycleDuration = 0;
-    let tempo = 1000;
-    let isRunning = false;
-    let animationFrameId = null;
-    let cycles = 0;
-    let soundOn = false;
-    let metronomeOn = false;
-    let audioCtx = null;
-    let lastPhraseIdx = -1;
-    let lastBeatPlayed = -1;
-
-    // DOM Elements
-    const sphere = document.getElementById('sphere');
-    const phaseText = document.getElementById('phaseText');
-    const counterText = document.getElementById('counterText');
-    const cycleCounter = document.getElementById('cycleCounter');
-    const patternSelector = document.getElementById('patternSelector');
-    const patternLabelDisplay = document.getElementById('patternLabelDisplay');
-    const phraseEl = document.getElementById('phraseContent');
-    const shareBtn = document.getElementById('shareBtn');
+    let currentPatternKey = null, currentPatternData = [], startTime=0, totalCycleDuration=0, tempo=1000;
+    let isRunning=false, animationFrameId=null, cycles=0, soundOn=false, metronomeOn=false, audioCtx=null;
+    
+    // UI Elements
+    const sphere = document.getElementById('sphere'), phaseText = document.getElementById('phaseText');
+    const counterText = document.getElementById('counterText'), cycleCounter = document.getElementById('cycleCounter');
+    const phraseEl = document.getElementById('phraseContent'), shareBtn = document.getElementById('shareBtn');
+    const controlPanel = document.getElementById('controlPanel');
     
     // Canvas
-    let canvas = document.getElementById('breathGraph');
-    let ctx = canvas.getContext('2d');
-    let segments = [];
+    let canvas = document.getElementById('breathGraph'), ctx = canvas.getContext('2d'), segments=[];
 
-    /* --- FUNCIONES LÓGICAS --- */
-    function setRandomPhrase() {
-      let newIdx;
-      do { newIdx = Math.floor(Math.random() * REFLECTIVE_PHRASES.length); } 
-      while (newIdx === lastPhraseIdx && REFLECTIVE_PHRASES.length > 1);
-      lastPhraseIdx = newIdx;
-      
-      phraseEl.style.opacity = 0;
-      setTimeout(() => {
-        phraseEl.textContent = REFLECTIVE_PHRASES[newIdx];
-        phraseEl.style.opacity = 1;
-      }, 500);
-    }
-
-    function initAudio() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
+    function setRandomPhrase() { phraseEl.textContent = REFLECTIVE_PHRASES[Math.floor(Math.random()*REFLECTIVE_PHRASES.length)]; }
+    function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
     
-    function beep(freq = 440, type = 'sine', dur = 0.1) {
-      if (!audioCtx) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.05, audioCtx.currentTime); // Volumen más bajo y suave
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + dur);
+    function beep(freq, type, dur) {
+      if(!audioCtx) return;
+      const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+      osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.05, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+dur);
+      osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime+dur);
     }
 
-    function recalculatePatternData() {
-      if (!currentPatternKey) return;
-      const patternDef = patterns[currentPatternKey];
-      currentPatternData = [];
-      let accumulatedTime = 0;
-      
-      patternDef.forEach(p => {
-        const duration = p.beats * tempo;
-        currentPatternData.push({
-          ...p, startTime: accumulatedTime, endTime: accumulatedTime + duration, duration: duration
-        });
-        accumulatedTime += duration;
+    function recalculate() {
+      if(!currentPatternKey) return;
+      currentPatternData = []; let acc = 0;
+      patterns[currentPatternKey].forEach(p => {
+        const dur = p.b * tempo;
+        currentPatternData.push({...p, start: acc, end: acc+dur, dur: dur});
+        acc += dur;
       });
-      totalCycleDuration = accumulatedTime;
-      calculateCanvasSegments();
+      totalCycleDuration = acc;
+      calcCanvas();
     }
 
     function loop() {
-      if (!isRunning) return;
-      const now = Date.now();
-      const elapsedTotal = now - startTime;
-      const timeInCycle = elapsedTotal % totalCycleDuration;
-      const currentCycle = Math.floor(elapsedTotal / totalCycleDuration);
+      if(!isRunning) return;
+      const now = Date.now(), elapsed = now - startTime, timeIn = elapsed % totalCycleDuration;
+      const curCycle = Math.floor(elapsed/totalCycleDuration);
       
-      if (currentCycle > cycles) {
-        cycles = currentCycle;
-        cycleCounter.textContent = `🔄 ${cycles}`;
-      }
+      if(curCycle > cycles) { cycles = curCycle; cycleCounter.textContent = `🔄 ${cycles}`; }
 
-      const currentPhase = currentPatternData.find(p => timeInCycle >= p.startTime && timeInCycle < p.endTime);
-
-      if (currentPhase) {
-        if (phaseText.textContent !== currentPhase.text) {
-             phaseText.textContent = currentPhase.text;
-             if (soundOn) {
-                let freq = 440;
-                if(currentPhase.type === 'rise') freq = 300;
-                if(currentPhase.type === 'hold_high') freq = 450;
-                if(currentPhase.type === 'fall') freq = 400;
-                if(currentPhase.type === 'hold_low') freq = 250;
-                beep(freq, 'sine', 0.3);
-             }
+      const phase = currentPatternData.find(p => timeIn >= p.start && timeIn < p.end);
+      if(phase) {
+        if(phaseText.textContent !== phase.t) {
+            phaseText.textContent = phase.t;
+            if(soundOn) beep(phase.y==='rise'?300:phase.y==='fall'?250:400, 'sine', 0.3);
         }
-
-        const timeInPhase = timeInCycle - currentPhase.startTime;
-        const currentBeat = Math.floor(timeInPhase / tempo) + 1;
-        counterText.textContent = currentBeat;
-
-        const beatKey = `${cycles}-${currentPhase.text}-${currentBeat}`;
-        if (metronomeOn && lastBeatPlayed !== beatKey) {
-            beep(600, 'triangle', 0.05);
-            lastBeatPlayed = beatKey;
-        }
-
-        const phaseProgress = timeInPhase / currentPhase.duration; 
-        let scale = 1;
-        if (currentPhase.type === 'rise') scale = 1 + (0.6 * phaseProgress); // Un poco más de expansión
-        else if (currentPhase.type === 'fall') scale = 1.6 - (0.6 * phaseProgress);
-        else if (currentPhase.type === 'hold_high') scale = 1.6;
-        else scale = 1;
+        const timeInPhase = timeIn - phase.start;
+        counterText.textContent = Math.floor(timeInPhase/tempo)+1;
         
-        sphere.style.transform = `scale(${scale})`;
+        // Metrónomo
+        const beatKey = `${cycles}-${phase.t}-${counterText.textContent}`;
+        if(metronomeOn && window.lastBeat !== beatKey) { beep(800, 'triangle', 0.05); window.lastBeat = beatKey; }
+
+        // Animación Esfera
+        const progress = timeInPhase / phase.dur;
+        let s = 1;
+        if(phase.y === 'rise') s = 1 + (0.6 * progress);
+        else if(phase.y === 'fall') s = 1.6 - (0.6 * progress);
+        else if(phase.y === 'hold_high') s = 1.6;
+        sphere.style.transform = `scale(${s})`;
       }
-      
-      drawCanvas(timeInCycle);
+      drawCanvas(timeIn);
       animationFrameId = requestAnimationFrame(loop);
     }
 
-    function initCanvas() {
-        // Ajuste de DPI para nitidez en pantallas retina
-        const dpr = window.devicePixelRatio || 1;
-        const rect = canvas.parentNode.getBoundingClientRect();
-        canvas.width = rect.width * dpr;
-        canvas.height = rect.height * dpr;
-        ctx.scale(dpr, dpr);
-        calculateCanvasSegments();
-    }
+    function calcCanvas() {
+        const r = canvas.parentNode.getBoundingClientRect();
+        canvas.width = r.width * 2; canvas.height = r.height * 2; ctx.scale(2,2);
+        segments = [];
+        const w = r.width, h = r.height, m = 10;
+        const totalB = currentPatternData.reduce((a,b)=>a+b.b,0);
+        const px = w / totalB; let cx = 0, cy = h-m;
 
-    function calculateCanvasSegments() {
-      if (!currentPatternData.length) return;
-      const width = canvas.width / (window.devicePixelRatio || 1);
-      const height = canvas.height / (window.devicePixelRatio || 1);
-      const margin = 10;
-      
-      segments = [];
-      const totalBeats = currentPatternData.reduce((sum, p) => sum + p.beats, 0);
-      const pxPerBeat = width / totalBeats;
-      
-      let currentX = 0;
-      let currentY = height - margin; 
-
-      currentPatternData.forEach(p => {
-        const segWidth = p.beats * pxPerBeat;
-        const endX = currentX + segWidth;
-        let endY = currentY;
-        
-        if (p.type === 'rise') endY = margin;
-        if (p.type === 'fall') endY = height - margin;
-        if (p.type === 'hold_high') endY = margin;
-        if (p.type === 'hold_low') endY = height - margin;
-        
-        segments.push({
-            startX: currentX, endX: endX,
-            startY: currentY, endY: endY,
-            startTime: p.startTime, endTime: p.endTime
+        currentPatternData.forEach(p => {
+            const dw = p.b * px, ex = cx + dw;
+            let ey = cy;
+            if(p.y === 'rise') ey = m; if(p.y === 'fall') ey = h-m; 
+            if(p.y === 'hold_high') ey = m; if(p.y === 'hold_low') ey = h-m;
+            segments.push({x1:cx, y1:cy, x2:ex, y2:ey, start:p.start, end:p.end});
+            cx = ex; cy = ey;
         });
-        currentX = endX;
-        currentY = endY;
-      });
     }
 
-    function drawCanvas(timeInCycle) {
-      const w = canvas.width / (window.devicePixelRatio || 1);
-      const h = canvas.height / (window.devicePixelRatio || 1);
-      
-      ctx.clearRect(0, 0, w, h);
-      
-      // Dibujar línea de fondo (trayectoria)
-      ctx.beginPath();
-      ctx.strokeStyle = 'rgba(76, 175, 80, 0.3)';
-      ctx.lineWidth = 4;
-      ctx.lineJoin = 'round';
-      ctx.lineCap = 'round';
-      segments.forEach((seg, i) => {
-        if (i === 0) ctx.moveTo(seg.startX, seg.startY);
-        ctx.lineTo(seg.endX, seg.endY);
-      });
-      ctx.stroke();
+    function drawCanvas(t) {
+        const w = canvas.width/2, h = canvas.height/2;
+        ctx.clearRect(0,0,w,h);
+        ctx.beginPath(); ctx.strokeStyle='rgba(76,175,80,0.3)'; ctx.lineWidth=4; ctx.lineCap='round';
+        segments.forEach((s,i) => { if(i==0) ctx.moveTo(s.x1,s.y1); ctx.lineTo(s.x2,s.y2); });
+        ctx.stroke();
 
-      // Dibujar bola de progreso
-      const activeSeg = segments.find(s => timeInCycle >= s.startTime && timeInCycle < s.endTime);
-      if (activeSeg) {
-          const segDuration = activeSeg.endTime - activeSeg.startTime;
-          const progress = (timeInCycle - activeSeg.startTime) / segDuration;
-          const ballX = activeSeg.startX + (activeSeg.endX - activeSeg.startX) * progress;
-          const ballY = activeSeg.startY + (activeSeg.endY - activeSeg.startY) * progress;
-          
-          ctx.beginPath();
-          ctx.fillStyle = '#1a5f7a';
-          ctx.shadowColor = "rgba(26, 95, 122, 0.5)";
-          ctx.shadowBlur = 10;
-          ctx.arc(ballX, ballY, 6, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.shadowBlur = 0; // Reset shadow
-      }
+        const active = segments.find(s => t >= s.start && t < s.end);
+        if(active) {
+            const p = (t - active.start) / (active.end - active.start);
+            const bx = active.x1 + (active.x2 - active.x1)*p;
+            const by = active.y1 + (active.y2 - active.y1)*p;
+            ctx.beginPath(); ctx.fillStyle='#1a5f7a'; ctx.arc(bx,by,5,0,Math.PI*2); ctx.fill();
+        }
     }
 
-    /* --- CONTROLES DE ESTADO --- */
-    function start(patternKey) {
-      if (isRunning) stop();
-      currentPatternKey = patternKey;
+    function start(pk) {
+      if(isRunning) stop();
+      currentPatternKey = pk;
+      document.querySelectorAll('.pattern-card').forEach(c => c.classList.remove('active'));
+      document.querySelector(`.pattern-card[data-pattern="${pk}"]`)?.classList.add('active');
       
-      // Mostrar etiqueta del patrón seleccionado
-      const selectedEl = document.querySelector(`.pattern-card[data-pattern="${patternKey}"]`);
-      if(selectedEl) {
-          const name = selectedEl.querySelector('.pattern-name').innerText.split('•')[0].trim();
-          patternLabelDisplay.textContent = name;
-      }
-
-      recalculatePatternData();
+      recalculate();
+      // En móvil, ocultar panel si ocupa mucho; en iPad landscape, dejarlo
+      if(window.innerWidth < 768) controlPanel.style.transform = "translateY(80%)"; // Minimizamos
       
-      // Animación UI
-      patternSelector.style.transform = "translateY(110%)"; // Ocultar hacia abajo
-      shareBtn.style.transform = "scale(0)"; // Ocultar botón compartir
-
-      cycleCounter.textContent = "🔄 0";
-      initAudio();
-      setRandomPhrase();
-      
-      setTimeout(() => {
-        initCanvas();
-        isRunning = true;
-        startTime = Date.now();
-        cycles = 0;
-        lastBeatPlayed = -1;
-        loop(); 
-      }, 100);
+      initAudio(); setRandomPhrase();
+      setTimeout(() => { isRunning=true; startTime=Date.now(); cycles=0; loop(); }, 50);
     }
 
     function stop() {
-      isRunning = false;
-      cancelAnimationFrame(animationFrameId);
-      
-      sphere.style.transform = 'scale(1)';
-      phaseText.textContent = "Respira";
-      counterText.textContent = "";
-      patternLabelDisplay.textContent = "";
-      
-      // Restaurar UI
-      patternSelector.style.transform = "translateY(0)";
-      shareBtn.style.transform = "scale(1)";
-      shareBtn.style.display = "flex";
-
-      if(ctx) {
-         const w = canvas.width / (window.devicePixelRatio || 1);
-         const h = canvas.height / (window.devicePixelRatio || 1);
-         ctx.clearRect(0,0,w,h);
-      }
+      isRunning = false; cancelAnimationFrame(animationFrameId);
+      sphere.style.transform = 'scale(1)'; phaseText.textContent = "Respira"; counterText.textContent="";
+      cycleCounter.textContent = "🔄 0";
+      controlPanel.style.transform = "translateY(0)"; // Restaurar panel
+      shareBtn.style.display = 'flex';
       setRandomPhrase();
     }
 
-    /* --- LISTENERS --- */
-    document.querySelectorAll('.pattern-card').forEach(el => {
-      el.addEventListener('click', () => {
-        document.querySelectorAll('.pattern-card').forEach(o => o.classList.remove('active'));
-        el.classList.add('active');
-        start(el.dataset.pattern);
-      });
-    });
-
+    // Eventos
+    document.querySelectorAll('.pattern-card').forEach(el => el.addEventListener('click', ()=>start(el.dataset.pattern)));
     document.getElementById('resetBtn').addEventListener('click', stop);
-    
-    document.getElementById('soundBtn').addEventListener('click', function() {
-      soundOn = !soundOn;
-      this.textContent = soundOn ? "🔊" : "🔇";
-      initAudio();
-    });
-
-    document.getElementById('metronomeBtn').addEventListener('click', function() {
-      metronomeOn = !metronomeOn;
-      this.style.borderColor = metronomeOn ? "var(--primary)" : "transparent";
-    });
-
-    document.getElementById('tempoSelect').addEventListener('change', function() {
-      tempo = parseInt(this.value);
-      if (isRunning) { recalculatePatternData(); startTime = Date.now(); }
-    });
-
-    window.addEventListener('resize', () => { if (isRunning) initCanvas(); });
-
-    // --- LÓGICA DE URL Y COMPARTIR ---
-    function getQueryParams() {
-      const params = new URLSearchParams(window.location.search);
-      return { p: params.get('p'), to: params.get('para'), msg: params.get('msg') };
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      setRandomPhrase(); // Frase inicial
-      const params = getQueryParams();
-
-      if (params.p && patterns[params.p]) {
-        // MODO PÍLDORA
-        const overlay = document.getElementById('pillOverlay');
-        document.getElementById('pillRecipient').textContent = `Hola, ${params.to || 'Alguien'}`;
-        document.getElementById('pillMessage').textContent = params.msg ? `"${params.msg}"` : '"Tómate un respiro."';
-        
-        // Ocultar UI inicial
-        patternSelector.style.transform = "translateY(110%)";
-        shareBtn.style.display = 'none';
-        
-        overlay.style.display = 'flex';
-
-        document.getElementById('startPillBtn').addEventListener('click', () => {
-          overlay.style.display = 'none';
-          if (params.msg) {
-             phraseEl.textContent = params.msg;
-             lastPhraseIdx = -999; 
-          }
-          start(params.p);
-        });
-      }
-    });
-
+    document.getElementById('soundBtn').addEventListener('click', function(){ soundOn=!soundOn; this.textContent=soundOn?"🔊":"🔇"; initAudio(); });
+    document.getElementById('metronomeBtn').addEventListener('click', function(){ metronomeOn=!metronomeOn; this.style.borderColor=metronomeOn?"var(--primary)":"transparent"; });
+    document.getElementById('tempoSelect').addEventListener('change', function(){ tempo=parseInt(this.value); if(isRunning){ recalculate(); startTime=Date.now(); } });
     shareBtn.addEventListener('click', () => {
-      const pattern = prompt("¿Qué ejercicio? (4-7-8, box, 5-5, 4-4-6-2)", "4-7-8");
-      if (!patterns[pattern]) { alert("Patrón no válido."); return; }
-      
-      const name = prompt("¿Para quién?", "Amigo");
-      const message = prompt("Mensaje:", "Relájate un poco...");
-      
-      const baseUrl = window.location.href.split('?')[0];
-      const finalUrl = `${baseUrl}?p=${pattern}&para=${encodeURIComponent(name||'Amigo')}&msg=${encodeURIComponent(message||'Respira')}`;
-      const text = `Hola ${name}, te mando un respiro: ${finalUrl}`;
-      
-      navigator.clipboard.writeText(text).then(() => alert("¡Enlace copiado! Pégalo en WhatsApp."));
+        const p = prompt("Patrón (4-7-8, box, 5-5, 4-4-6-2):", "4-7-8");
+        if(patterns[p]) {
+            const n = prompt("Nombre:", "Amigo"), m = prompt("Mensaje:", "Respira");
+            const url = `${window.location.href.split('?')[0]}?p=${p}&para=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
+            navigator.clipboard.writeText(`Hola ${n}: ${url}`).then(()=>alert("¡Enlace copiado!"));
+        }
     });
+    window.addEventListener('resize', ()=> { if(isRunning) calcCanvas(); });
 
+    // Init Píldora
+    const params = new URLSearchParams(window.location.search);
+    if(params.get('p') && patterns[params.get('p')]) {
+        document.getElementById('pillOverlay').style.display = 'flex';
+        document.getElementById('pillRecipient').textContent = `Hola, ${params.get('para')||'Ti'}`;
+        document.getElementById('pillMessage').textContent = `"${params.get('msg')||'Respira'}"`;
+        document.getElementById('startPillBtn').addEventListener('click', ()=>{
+            document.getElementById('pillOverlay').style.display='none';
+            if(params.get('msg')) { phraseEl.textContent = params.get('msg'); }
+            start(params.get('p'));
+        });
+        controlPanel.style.display = 'none'; // Ocultar panel en modo píldora al inicio
+        shareBtn.style.display = 'none';
+    } else {
+        setRandomPhrase();
+    }
   </script>
 </body>
 </html>
