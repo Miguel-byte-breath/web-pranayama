@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: Zen Final</title>
+  <title>Respiración: Zen Final 7.2</title>
   <style>
     /* --- 1. BASE & VARIABLES --- */
     :root {
@@ -27,7 +27,7 @@
     .top-bar {
       display: flex; justify-content: space-between; align-items: center;
       padding: 15px 20px; z-index: 40; pointer-events: none;
-      height: 70px; /* Altura fija para estabilidad */
+      height: 70px;
     }
     .top-left, .top-right { pointer-events: auto; display: flex; gap: 10px; align-items: center; }
 
@@ -50,55 +50,33 @@
     /* --- 3. ZONA SEGURA (STAGE) --- */
     .stage-center {
       flex: 1; 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      justify-content: center; /* Centrado vertical */
-      z-index: 10;
-      width: 100%;
-      /* Evita que los elementos se peguen a los bordes */
-      padding: 10px; 
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 10; width: 100%; padding: 10px; 
     }
 
     /* TEXTO DE ACCIÓN (INHALA/EXHALA) - ARRIBA */
     .phase-text {
-      font-size: clamp(2rem, 5vw, 3rem); 
-      font-weight: 300; 
-      letter-spacing: 4px; 
-      color: var(--accent);
-      text-transform: uppercase; 
-      height: 50px; 
-      display: flex; align-items: center; justify-content: center;
-      z-index: 20; /* Encima de la esfera por si acaso */
-      margin-bottom: 10px;
+      font-size: clamp(2rem, 5vw, 3rem); font-weight: 300; letter-spacing: 4px; 
+      color: var(--accent); text-transform: uppercase; 
+      height: 50px; display: flex; align-items: center; justify-content: center;
+      z-index: 20; margin-bottom: 10px;
     }
 
     /* CONTENEDOR DE SEGURIDAD PARA LA ESFERA */
-    /* Este es el truco: Reserva el espacio MÁXIMO que ocupará la esfera */
     .sphere-wrapper {
       position: relative;
-      width: 300px;  /* Ancho base generoso */
-      height: 300px; /* Alto base generoso */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      /* En pantallas muy pequeñas, se ajusta pero mantiene proporción */
-      max-width: 60vh; 
-      max-height: 60vh;
+      width: 300px; height: 300px;
+      display: flex; align-items: center; justify-content: center;
+      max-width: 60vh; max-height: 60vh;
     }
 
     .sphere {
-      width: 180px; 
-      height: 180px; 
-      border-radius: 50%;
+      width: 180px; height: 180px; border-radius: 50%;
       background: radial-gradient(circle at 30% 30%, #a8ff60, #4CAF50);
       box-shadow: 0 20px 60px rgba(76,175,80,0.4);
       display: flex; align-items: center; justify-content: center; 
-      will-change: transform;
-      z-index: 10;
-      /* Responsive relativo al wrapper */
-      max-width: 60%;
-      max-height: 60%;
+      will-change: transform; z-index: 10;
+      max-width: 60%; max-height: 60%;
     }
 
     .counter-big { 
@@ -108,13 +86,9 @@
 
     /* FRASE MOTIVADORA - ABAJO */
     .quote {
-      margin-top: 10px; 
-      padding: 0 20px; 
-      text-align: center; 
-      color: #78909c;
+      margin-top: 10px; padding: 0 20px; text-align: center; color: #78909c;
       font-family: 'Georgia', serif; font-style: italic; 
-      min-height: 50px;
-      display: flex; align-items: center; justify-content: center;
+      min-height: 50px; display: flex; align-items: center; justify-content: center;
       z-index: 20;
     }
 
@@ -122,8 +96,7 @@
     .bottom-viz {
       width: 100%; height: 80px; background: rgba(255,255,255,0.5);
       backdrop-filter: blur(5px); border-top: 1px solid rgba(255,255,255,0.5);
-      position: relative; z-index: 30;
-      flex-shrink: 0; /* No encoger */
+      position: relative; z-index: 30; flex-shrink: 0;
     }
     #breathGraph { width: 100%; height: 100%; display: block; }
 
@@ -139,8 +112,7 @@
     
     .menu-grid {
       display: grid; grid-template-columns: 1fr; gap: 15px;
-      width: 100%; max-width: 400px; max-height: 70vh; overflow-y: auto;
-      padding: 5px;
+      width: 100%; max-width: 400px; max-height: 70vh; overflow-y: auto; padding: 5px;
     }
     
     .menu-card {
@@ -159,28 +131,24 @@
       display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px;
     }
 
-    /* FAB SHARE */
+    /* FAB SHARE - Z-INDEX CORREGIDO (150) */
     .fab {
       position: fixed; bottom: 20px; right: 20px;
       background: var(--accent); color: white; padding: 12px 24px;
       border-radius: 30px; border: none; font-weight: 700;
-      box-shadow: 0 4px 15px rgba(26,95,122,0.4); z-index: 50;
+      box-shadow: 0 4px 15px rgba(26,95,122,0.4); 
+      z-index: 150; /* AHORA FLOTA POR ENCIMA DEL MENÚ (100) */
       display: flex; align-items: center; gap: 8px; cursor: pointer;
     }
     
     /* LANDSCAPE AJUSTES */
     @media (orientation: landscape) {
       .app-layout { flex-direction: row; }
-      /* En horizontal, los controles flotan arriba a la derecha */
       .top-bar { position: absolute; width: 100%; top: 0; padding: 10px 20px; }
       .bottom-viz { position: absolute; bottom: 0; width: 100%; }
-      .stage-center { padding-bottom: 80px; } /* Espacio para visualizador */
-      
+      .stage-center { padding-bottom: 80px; }
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 700px; }
-      
-      .sphere-wrapper {
-        width: 200px; height: 200px; /* Más pequeño en horizontal para caber */
-      }
+      .sphere-wrapper { width: 200px; height: 200px; }
       .sphere { width: 130px; height: 130px; }
     }
   </style>
@@ -247,10 +215,10 @@
     </div>
   </div>
 
-  <button id="shareBtn" class="fab" onclick="sharePill()">📤 Enviar</button>
+  <button id="shareBtn" class="fab" onclick="sharePill()">📤 Enviar Píldora</button>
 
   <script>
-    /* --- MOTOR V7.1 --- */
+    /* --- MOTOR V7.2 --- */
     const patterns = {
       '4-4-6-2': [{t:"INHALA",b:4,y:'rise'},{t:"MANTÉN",b:4,y:'hold_high'},{t:"EXHALA",b:6,y:'fall'},{t:"SOSTÉN",b:2,y:'hold_low'}],
       '4-7-8': [{t:"INHALA",b:4,y:'rise'},{t:"MANTÉN",b:7,y:'hold_high'},{t:"EXHALA",b:8,y:'fall'}],
@@ -292,7 +260,6 @@
     }
 
     function loop() {
-      // LOGIC
       let activeSeg = null;
       if(state.run) {
          const elap = Date.now() - state.start, t = elap % state.dur, cyc = Math.floor(elap / state.dur);
@@ -315,7 +282,6 @@
          }
       }
 
-      // RENDER
       const w = els.cvs.width/2, h = els.cvs.height/2; els.ctx.clearRect(0,0,w,h);
       if(state.coords.length) {
          els.ctx.beginPath(); els.ctx.strokeStyle='#4CAF50'; els.ctx.lineWidth=6; els.ctx.lineCap='round'; els.ctx.lineJoin='round';
@@ -331,7 +297,6 @@
       requestAnimationFrame(loop);
     }
 
-    // ACTIONS
     function prepareData(k) {
       state.pk = k; state.data = []; let acc = 0;
       patterns[k].forEach(x => { const d = x.b * state.tempo; state.data.push({...x, start:acc, end:acc+d, dur:d}); acc += d; });
@@ -354,7 +319,6 @@
       els.share.style.display = 'flex';
     }
 
-    // UTILS
     function toggleSound() { state.snd=!state.snd; document.getElementById('soundBtn').innerText=state.snd?"🔊":"🔇"; initAudio(); }
     function toggleMetronome() { state.met=!state.met; document.getElementById('metronomeBtn').style.background=state.met?"#e8f5e9":"white"; }
     function toggleTempo() { 
@@ -364,15 +328,16 @@
     }
 
     function sharePill() {
-       const p = prompt("Patrón (4-7-8, box...)", "4-7-8");
+       const p = prompt("¿Qué ejercicio quieres enviar? (4-7-8, box, 5-5, o 4-4-6-2)", "4-7-8");
        if(patterns[p]) {
-         const n = prompt("Nombre:", "Amigo"), m = prompt("Mensaje:", "Respira");
-         const u = `${location.href.split('?')[0]}?p=${p}&para=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
-         navigator.clipboard.writeText(u).then(() => alert("Enlace copiado"));
+         // --- CORRECCIÓN SOLICITADA ---
+         const n = prompt("Escribe el nombre del destinatario:", ""); // Sin valor por defecto
+         const m = prompt("Mensaje de dedicatoria:", "Respira");
+         const u = `${location.href.split('?')[0]}?p=${p}&para=${encodeURIComponent(n || 'Amigo')}&msg=${encodeURIComponent(m)}`;
+         navigator.clipboard.writeText(u).then(() => alert("¡Enlace copiado!\n\nAhora pégalo en WhatsApp."));
        }
     }
 
-    // INIT
     window.addEventListener('resize', calcGeometry);
     const q = new URLSearchParams(location.search);
     if(q.get('p') && patterns[q.get('p')]) {
