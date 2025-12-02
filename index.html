@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: Master Edition</title>
+  <title>Respiración: Visualizer Fix</title>
   <style>
     /* --- 1. VARIABLES & BASE --- */
     :root {
@@ -22,7 +22,7 @@
       background: var(--bg);
       color: #37474f;
       font-family: system-ui, -apple-system, sans-serif;
-      height: 100dvh; /* dvh: Clave para iPad/Safari */
+      height: 100dvh;
       width: 100vw;
       overflow: hidden;
       display: flex;
@@ -38,7 +38,7 @@
       position: relative;
     }
 
-    /* ZONA ESFERA (IZQUIERDA EN PC, CENTRO EN MÓVIL) */
+    /* ZONA ESFERA */
     .stage-area {
       flex: 1;
       display: flex;
@@ -51,7 +51,7 @@
       transition: all 0.3s;
     }
 
-    /* ZONA CONTROLES (DERECHA EN PC, BOTTOM EN MÓVIL) */
+    /* ZONA CONTROLES */
     .sidebar-area {
       background: var(--glass);
       backdrop-filter: blur(10px);
@@ -65,8 +65,7 @@
       transition: all 0.3s;
     }
 
-    /* --- 3. BARRA DE HERRAMIENTAS (TOP BAR) --- */
-    /* En móvil está fija arriba. En iPad Horizontal se mueve al sidebar */
+    /* --- 3. BARRA DE HERRAMIENTAS --- */
     .toolbar {
       display: flex;
       justify-content: space-between;
@@ -77,7 +76,7 @@
       top: 0;
       left: 0;
       z-index: 60;
-      pointer-events: none; /* Para no bloquear toques si es transparente */
+      pointer-events: none;
     }
     
     .toolbar-content {
@@ -110,15 +109,14 @@
 
     select { border:none; background:transparent; font-weight:bold; color:#37474f; outline:none; }
 
-    /* --- 4. ESFERA Y TEXTOS (Solución Overlap) --- */
-    /* Movemos la fase ARRIBA de la esfera para que no la tape */
+    /* --- 4. ESFERA Y TEXTOS --- */
     .phase-indicator {
       font-size: clamp(1.5rem, 4vw, 2.5rem);
       color: var(--accent);
       font-weight: 300;
       letter-spacing: 3px;
       text-transform: uppercase;
-      margin-bottom: 40px; /* Separación segura */
+      margin-bottom: 40px;
       height: 40px;
       display: flex; align-items: center; justify-content: center;
       text-shadow: 0 2px 10px rgba(255,255,255,0.8);
@@ -128,7 +126,6 @@
     .sphere-wrapper {
       position: relative;
       display: flex; align-items: center; justify-content: center;
-      /* Espacio reservado para que al crecer no empuje layout */
       width: 300px; height: 300px; 
     }
 
@@ -153,7 +150,7 @@
       height: 50px; display: flex; align-items: center; justify-content: center;
     }
 
-    /* --- 5. PANEL INFERIOR (LISTA) --- */
+    /* --- 5. PANEL INFERIOR --- */
     .exercise-list {
       overflow-y: auto;
       display: grid; grid-template-columns: 1fr; gap: 8px;
@@ -172,48 +169,29 @@
     .visualizer { width: 100%; height: 60px; margin-bottom: 15px; }
     #breathGraph { width: 100%; height: 100%; }
 
-    /* --- 6. MEDIA QUERIES (LA MAGIA RESPONSIVE) --- */
-    
-    /* MODO PAISAJE (LANDSCAPE) - iPad/PC */
+    /* --- 6. MEDIA QUERIES --- */
     @media (orientation: landscape) {
-      .app-container {
-        flex-direction: row; /* Izquierda / Derecha */
-      }
-
-      /* 1. Ocultar la barra superior flotante vieja */
+      .app-container { flex-direction: row; }
       .toolbar { display: none; }
-
-      /* 2. Área Esfera (Izquierda) */
-      .stage-area {
-        flex: 1.5; /* Más ancha */
-        height: 100dvh;
-      }
-      .sphere-wrapper { width: 220px; height: 220px; } /* Ajuste tamaño */
+      .stage-area { flex: 1.5; height: 100dvh; }
+      .sphere-wrapper { width: 220px; height: 220px; }
       .sphere { width: 140px; height: 140px; }
-      .phase-indicator { margin-bottom: 20px; margin-top: 0; }
-
-      /* 3. Área Sidebar (Derecha) - Absorbe los controles */
+      .phase-indicator { margin-bottom: 20px; }
       .sidebar-area {
-        width: 360px; /* Ancho fijo */
-        height: 100dvh;
+        width: 360px; height: 100dvh;
         border-top: none; border-left: var(--border);
         background: rgba(255,255,255,0.7);
         justify-content: flex-start;
       }
-
       .exercise-list { flex: 1; max-height: none; padding-bottom: 80px; }
-
-      /* MOSTRAR CONTROLES DENTRO DEL SIDEBAR (Solo en Landscape) */
       #sidebarControls { display: flex !important; flex-direction: column; gap: 10px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.05); }
       .control-row { display: flex; justify-content: space-between; align-items: center; }
     }
 
-    /* MODO RETRATO (PORTRAIT) */
     @media (orientation: portrait) {
-      #sidebarControls { display: none; } /* Ocultar controles duplicados en sidebar */
+      #sidebarControls { display: none; }
     }
 
-    /* --- FAB BUTTON --- */
     .fab {
       position: fixed; bottom: 20px; right: 20px;
       background: var(--accent); color: white; padding: 12px 20px;
@@ -248,18 +226,15 @@
 
     <div class="stage-area">
       <div class="phase-indicator" id="phaseText">RESPIRA</div>
-      
       <div class="sphere-wrapper">
         <div class="sphere" id="sphere">
           <div class="counter-inner" id="counterText"></div>
         </div>
       </div>
-
       <div class="quote-box" id="phraseContent">...</div>
     </div>
 
     <div class="sidebar-area">
-      
       <div id="sidebarControls">
          <div class="control-row">
             <div class="badge" id="cycleBadgeSide" style="font-size:1.2rem; padding:10px 20px;">🔄 0</div>
@@ -297,19 +272,18 @@
         </div>
       </div>
     </div>
-
   </div>
 
   <button id="shareBtn" class="fab">📤 Enviar Píldora</button>
 
   <script>
-    /* --- LÓGICA V4.0 --- */
+    /* --- LÓGICA V4.1 (Con Bolita Restaurada) --- */
     const patterns={'4-4-6-2':[{t:"Inhala",b:4,y:'rise'},{t:"Mantén",b:4,y:'hold_high'},{t:"Exhala",b:6,y:'fall'},{t:"Sostén",b:2,y:'hold_low'}],'4-7-8':[{t:"Inhala",b:4,y:'rise'},{t:"Mantén",b:7,y:'hold_high'},{t:"Exhala",b:8,y:'fall'}],'box':[{t:"Inhala",b:4,y:'rise'},{t:"Mantén",b:4,y:'hold_high'},{t:"Exhala",b:4,y:'fall'},{t:"Sostén",b:4,y:'hold_low'}],'5-5':[{t:"Inhala",b:5,y:'rise'},{t:"Exhala",b:5,y:'fall'}]};
     const quotes=["El amor es lo que eres.","Vuelve al ahora.","Observa sin juzgar.","Paz en cada aliento.","Suelta lo que pesa."];
 
     let state={pk:null,data:[],start:0,dur:0,tempo:1000,run:false,af:null,cyc:0,snd:false,met:false,ctx:null,lastB:-1};
     
-    // UI Refs (Dual binding for responsiveness)
+    // Referencias DOM
     const els={
       sph:document.getElementById('sphere'), ph:document.getElementById('phaseText'),
       cnt:document.getElementById('counterText'), qt:document.getElementById('phraseContent'),
@@ -325,6 +299,7 @@
       o.connect(g); g.connect(state.ctx.destination); o.start(); o.stop(state.ctx.currentTime+d);
     }
 
+    // --- FUNCIÓN DE DIBUJO (CORREGIDA) ---
     function render(){
       const r=els.cvs.parentNode.getBoundingClientRect();
       els.cvs.width=r.width*2; els.cvs.height=r.height*2; els.ctx.scale(2,2);
@@ -334,6 +309,7 @@
       const px=w/state.data.reduce((a,b)=>a+b.b,0);
       let x=0, pts=[];
       
+      // 1. Calcular puntos
       state.data.forEach(p=>{
         const dw=p.b*px, ex=x+dw; let ey=h-m;
         if(p.y==='rise')ey=m; if(p.y==='hold_high')ey=m;
@@ -341,8 +317,8 @@
         x=ex;
       });
 
-      // Draw Path
-      els.ctx.beginPath(); els.ctx.strokeStyle='rgba(76,175,80,0.3)'; els.ctx.lineWidth=4; els.ctx.lineCap='round';
+      // 2. Dibujar línea verde
+      els.ctx.beginPath(); els.ctx.strokeStyle='rgba(76,175,80,0.4)'; els.ctx.lineWidth=4; els.ctx.lineCap='round'; els.ctx.lineJoin='round';
       let cx=0, cy=h-m;
       state.data.forEach(p=>{
          const dw=p.b*px, ex=cx+dw; let ey=cy;
@@ -353,12 +329,27 @@
       });
       els.ctx.stroke();
 
-      // Draw Ball
+      // 3. DIBUJAR LA BOLITA (RESTAURADO)
       if(state.run){
          const now=(Date.now()-state.start)%state.dur;
-         const seg=pts.find(s=>now>=s.s && now<s.e); // Simple approx visual
-         // Accurate path finding for visualizer is complex, simplifying for brevity:
-         // Just visual feedback on active segment
+         const seg=pts.find(s=>now>=s.s && now<s.e);
+         if(seg){
+             const p=(now-seg.s)/(seg.e-seg.s); // Progreso en el segmento (0 a 1)
+             const bx=seg.x1+(seg.x2-seg.x1)*p; // Posición X
+             const by=seg.y1+(seg.y2-seg.y1)*p; // Posición Y
+             
+             // Dibujar círculo
+             els.ctx.beginPath();
+             els.ctx.fillStyle='#ff7043'; // Naranja visible
+             els.ctx.arc(bx, by, 6, 0, Math.PI * 2);
+             els.ctx.fill();
+             
+             // Brillo
+             els.ctx.shadowColor="rgba(255, 112, 67, 0.6)";
+             els.ctx.shadowBlur=10;
+             els.ctx.fill();
+             els.ctx.shadowBlur=0;
+         }
       }
     }
 
@@ -377,15 +368,14 @@
         const tip=t-p.start;
         els.cnt.textContent=Math.floor(tip/state.tempo)+1;
         
-        // Metronome
         const bk=`${cyc}-${p.t}-${els.cnt.textContent}`;
         if(state.met && state.lastB!==bk){ beep(800,'triangle',0.05); state.lastB=bk; }
 
-        // Scale
         const pr=tip/p.dur; let s=1;
         if(p.y==='rise') s=1+(0.6*pr); else if(p.y==='fall') s=1.6-(0.6*pr); else if(p.y==='hold_high') s=1.6;
         els.sph.style.transform=`scale(${s})`;
       }
+      render(); // Llamar a dibujar la bola en cada frame
       state.af=requestAnimationFrame(loop);
     }
 
@@ -407,6 +397,7 @@
       els.sph.style.transform='scale(1)'; els.ph.textContent="RESPIRA"; els.cnt.textContent="";
       els.cyc.forEach(e=>e.textContent="🔄 0");
       document.getElementById('shareBtn').style.display='flex';
+      render(); // Limpiar bola al parar
     }
 
     // Bindings
@@ -416,7 +407,6 @@
     document.getElementById('metronomeBtn').addEventListener('click',function(){ state.met=!state.met; this.style.background=state.met?"#e8f5e9":"white"; });
     document.getElementById('tempoSelect').addEventListener('change',function(){ state.tempo=parseInt(this.value); if(state.run){ start(state.pk); } });
     
-    // Share & URL
     document.getElementById('shareBtn').addEventListener('click',()=>{
        const p=prompt("Patrón (4-7-8, box...)", "4-7-8");
        if(patterns[p]){
