@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: Zen Menu V7</title>
+  <title>Respiración: Zen Final</title>
   <style>
     /* --- 1. BASE & VARIABLES --- */
     :root {
@@ -18,15 +18,16 @@
       height: 100dvh; width: 100vw; overflow: hidden; display: flex; flex-direction: column;
     }
 
-    /* --- 2. PANTALLA DE RESPIRACIÓN (STAGE) --- */
+    /* --- 2. ESTRUCTURA PRINCIPAL --- */
     .app-layout {
       flex: 1; display: flex; flex-direction: column; position: relative; width: 100%; height: 100%;
     }
 
-    /* BARRA SUPERIOR (SOLO CONTROLES ESENCIALES) */
+    /* TOP BAR */
     .top-bar {
       display: flex; justify-content: space-between; align-items: center;
       padding: 15px 20px; z-index: 40; pointer-events: none;
+      height: 70px; /* Altura fija para estabilidad */
     }
     .top-left, .top-right { pointer-events: auto; display: flex; gap: 10px; align-items: center; }
 
@@ -46,25 +47,75 @@
       color: #546e7a; font-weight: 600; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
-    /* ESFERA Y TEXTOS */
+    /* --- 3. ZONA SEGURA (STAGE) --- */
     .stage-center {
-      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; /* Centrado vertical */
       z-index: 10;
+      width: 100%;
+      /* Evita que los elementos se peguen a los bordes */
+      padding: 10px; 
     }
+
+    /* TEXTO DE ACCIÓN (INHALA/EXHALA) - ARRIBA */
     .phase-text {
-      font-size: clamp(2rem, 6vw, 3rem); font-weight: 300; letter-spacing: 4px; color: var(--accent);
-      text-transform: uppercase; margin-bottom: 20px; height: 50px; display: flex; align-items: center;
+      font-size: clamp(2rem, 5vw, 3rem); 
+      font-weight: 300; 
+      letter-spacing: 4px; 
+      color: var(--accent);
+      text-transform: uppercase; 
+      height: 50px; 
+      display: flex; align-items: center; justify-content: center;
+      z-index: 20; /* Encima de la esfera por si acaso */
+      margin-bottom: 10px;
     }
+
+    /* CONTENEDOR DE SEGURIDAD PARA LA ESFERA */
+    /* Este es el truco: Reserva el espacio MÁXIMO que ocupará la esfera */
+    .sphere-wrapper {
+      position: relative;
+      width: 300px;  /* Ancho base generoso */
+      height: 300px; /* Alto base generoso */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* En pantallas muy pequeñas, se ajusta pero mantiene proporción */
+      max-width: 60vh; 
+      max-height: 60vh;
+    }
+
     .sphere {
-      width: min(50vw, 220px); height: min(50vw, 220px); border-radius: 50%;
+      width: 180px; 
+      height: 180px; 
+      border-radius: 50%;
       background: radial-gradient(circle at 30% 30%, #a8ff60, #4CAF50);
       box-shadow: 0 20px 60px rgba(76,175,80,0.4);
-      display: flex; align-items: center; justify-content: center; will-change: transform;
+      display: flex; align-items: center; justify-content: center; 
+      will-change: transform;
+      z-index: 10;
+      /* Responsive relativo al wrapper */
+      max-width: 60%;
+      max-height: 60%;
     }
-    .counter-big { font-size: 3.5rem; font-weight: 800; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+
+    .counter-big { 
+      font-size: 3.5rem; font-weight: 800; color: white; 
+      text-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+    }
+
+    /* FRASE MOTIVADORA - ABAJO */
     .quote {
-      margin-top: 30px; padding: 0 20px; text-align: center; color: #78909c;
-      font-family: 'Georgia', serif; font-style: italic; height: 40px;
+      margin-top: 10px; 
+      padding: 0 20px; 
+      text-align: center; 
+      color: #78909c;
+      font-family: 'Georgia', serif; font-style: italic; 
+      min-height: 50px;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 20;
     }
 
     /* VISUALIZADOR INFERIOR */
@@ -72,11 +123,11 @@
       width: 100%; height: 80px; background: rgba(255,255,255,0.5);
       backdrop-filter: blur(5px); border-top: 1px solid rgba(255,255,255,0.5);
       position: relative; z-index: 30;
+      flex-shrink: 0; /* No encoger */
     }
     #breathGraph { width: 100%; height: 100%; display: block; }
 
-    /* --- 3. MENÚ DE SELECCIÓN (OVERLAY) --- */
-    /* Este es el truco: Un menú flotante que aparece y desaparece */
+    /* --- 4. MENÚ DE SELECCIÓN (OVERLAY) --- */
     #selectionMenu {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--glass-overlay); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -101,7 +152,7 @@
     .menu-card h3 { color: #37474f; font-size: 1.1rem; margin-bottom: 5px; }
     .menu-card p { color: #90a4ae; font-size: 0.9rem; }
 
-    /* PILL OVERLAY (Para compartir) */
+    /* PILL OVERLAY */
     #pillOverlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(255,255,255,0.98); z-index: 200;
@@ -117,13 +168,20 @@
       display: flex; align-items: center; gap: 8px; cursor: pointer;
     }
     
-    /* Landscape adjustments */
+    /* LANDSCAPE AJUSTES */
     @media (orientation: landscape) {
       .app-layout { flex-direction: row; }
-      .stage-center { order: 1; }
-      .top-bar { position: absolute; width: 100%; top: 0; }
+      /* En horizontal, los controles flotan arriba a la derecha */
+      .top-bar { position: absolute; width: 100%; top: 0; padding: 10px 20px; }
       .bottom-viz { position: absolute; bottom: 0; width: 100%; }
+      .stage-center { padding-bottom: 80px; } /* Espacio para visualizador */
+      
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 700px; }
+      
+      .sphere-wrapper {
+        width: 200px; height: 200px; /* Más pequeño en horizontal para caber */
+      }
+      .sphere { width: 130px; height: 130px; }
     }
   </style>
 </head>
@@ -174,9 +232,13 @@
 
     <div class="stage-center">
       <div class="phase-text" id="phaseText">LISTO</div>
-      <div class="sphere" id="sphere">
-        <div class="counter-big" id="counterText"></div>
+      
+      <div class="sphere-wrapper">
+        <div class="sphere" id="sphere">
+          <div class="counter-big" id="counterText"></div>
+        </div>
       </div>
+      
       <div class="quote" id="phraseContent">Respira...</div>
     </div>
 
@@ -188,7 +250,7 @@
   <button id="shareBtn" class="fab" onclick="sharePill()">📤 Enviar</button>
 
   <script>
-    /* --- MOTOR UNIFICADO V7 --- */
+    /* --- MOTOR V7.1 --- */
     const patterns = {
       '4-4-6-2': [{t:"INHALA",b:4,y:'rise'},{t:"MANTÉN",b:4,y:'hold_high'},{t:"EXHALA",b:6,y:'fall'},{t:"SOSTÉN",b:2,y:'hold_low'}],
       '4-7-8': [{t:"INHALA",b:4,y:'rise'},{t:"MANTÉN",b:7,y:'hold_high'},{t:"EXHALA",b:8,y:'fall'}],
@@ -214,7 +276,7 @@
       o.connect(g); g.connect(state.ctx.destination); o.start(); o.stop(state.ctx.currentTime+d);
     }
 
-    // GEOMETRÍA & RENDER
+    // GEOMETRÍA
     function calcGeometry() {
        const r = els.cvs.parentNode.getBoundingClientRect();
        if(r.width===0) return;
@@ -230,7 +292,7 @@
     }
 
     function loop() {
-      // 1. LÓGICA
+      // LOGIC
       let activeSeg = null;
       if(state.run) {
          const elap = Date.now() - state.start, t = elap % state.dur, cyc = Math.floor(elap / state.dur);
@@ -253,7 +315,7 @@
          }
       }
 
-      // 2. DIBUJO
+      // RENDER
       const w = els.cvs.width/2, h = els.cvs.height/2; els.ctx.clearRect(0,0,w,h);
       if(state.coords.length) {
          els.ctx.beginPath(); els.ctx.strokeStyle='#4CAF50'; els.ctx.lineWidth=6; els.ctx.lineCap='round'; els.ctx.lineJoin='round';
@@ -269,7 +331,7 @@
       requestAnimationFrame(loop);
     }
 
-    // ACCIONES
+    // ACTIONS
     function prepareData(k) {
       state.pk = k; state.data = []; let acc = 0;
       patterns[k].forEach(x => { const d = x.b * state.tempo; state.data.push({...x, start:acc, end:acc+d, dur:d}); acc += d; });
@@ -278,9 +340,8 @@
 
     function start(k) {
       prepareData(k); 
-      els.menu.style.opacity = '0'; setTimeout(()=>els.menu.style.display='none',300); // Ocultar Menú
-      els.share.style.display = 'none'; // Ocultar botón compartir mientras respiras
-      
+      els.menu.style.opacity = '0'; setTimeout(()=>els.menu.style.display='none',300);
+      els.share.style.display = 'none';
       initAudio(); els.qt.innerText = quotes[Math.floor(Math.random()*quotes.length)];
       state.run = true; state.start = Date.now(); state.cyc = 0; 
     }
@@ -289,9 +350,8 @@
       state.run = false;
       els.sph.style.transform = 'scale(1)'; els.ph.innerText = "LISTO"; els.cnt.innerText = "";
       els.cyc.innerText = "🔄 0";
-      
-      els.menu.style.display = 'flex'; setTimeout(()=>els.menu.style.opacity='1',10); // Mostrar Menú
-      els.share.style.display = 'flex'; // Mostrar botón compartir
+      els.menu.style.display = 'flex'; setTimeout(()=>els.menu.style.opacity='1',10);
+      els.share.style.display = 'flex';
     }
 
     // UTILS
@@ -319,15 +379,12 @@
        document.getElementById('pillOverlay').style.display = 'flex';
        document.getElementById('pillRecipient').innerText = `Hola, ${q.get('para') || 'Ti'}`;
        document.getElementById('pillMessage').innerText = `"${q.get('msg')}"`;
-       els.menu.style.display = 'none'; // Ocultar menú si es píldora
+       els.menu.style.display = 'none'; 
        window.closePill = () => { document.getElementById('pillOverlay').style.display='none'; start(q.get('p')); };
     } else {
-       prepareData('4-7-8'); // Pre-cargar geometría para fondo
+       prepareData('4-7-8');
     }
-    loop(); // Arrancar render
+    loop();
   </script>
 </body>
 </html>
-
-
-
