@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: Precision 5.0</title>
+  <title>Respiración: Final V6</title>
   <style>
     /* --- 1. VARIABLES & BASE --- */
     :root {
@@ -20,7 +20,7 @@
       height: 100dvh; width: 100vw; overflow: hidden; display: flex; flex-direction: column;
     }
 
-    /* --- 2. LAYOUT HÍBRIDO --- */
+    /* --- 2. LAYOUT --- */
     .app-container { display: flex; flex-direction: column; height: 100%; width: 100%; }
 
     .stage-area {
@@ -34,7 +34,7 @@
       padding: 15px; box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
     }
 
-    /* --- 3. BARRA SUPERIOR (VERTICAL ONLY) --- */
+    /* --- 3. BARRA SUPERIOR (Móvil) --- */
     .toolbar {
       display: flex; justify-content: space-between; align-items: center; width: 100%;
       padding: 15px 20px; position: absolute; top: 0; left: 0; z-index: 60; pointer-events: none;
@@ -83,7 +83,7 @@
       font-style: italic; color: #78909c; height: 50px; display: flex; align-items: center; justify-content: center;
     }
 
-    /* --- 5. VISUALIZADOR & LISTA --- */
+    /* --- 5. VISUALIZADOR --- */
     .visualizer-container { width: 100%; height: 80px; margin-bottom: 10px; position: relative; }
     #breathGraph { width: 100%; height: 100%; display: block; }
     
@@ -96,12 +96,11 @@
       border: 1px solid transparent; cursor: pointer; text-align: left;
       transition: all 0.2s;
     }
-    .card:hover { background: #fff; }
     .card.active { background: #fff; border-color: var(--primary); box-shadow: 0 4px 12px rgba(76,175,80,0.15); }
     .card-title { font-weight: 700; color: #37474f; font-size: 1rem; }
     .card-desc { font-size: 0.85rem; color: #90a4ae; }
 
-    /* --- 6. MEDIA QUERIES (LANDSCAPE) --- */
+    /* --- 6. MEDIA QUERIES --- */
     @media (orientation: landscape) {
       .app-container { flex-direction: row; }
       .toolbar { display: none; }
@@ -115,14 +114,12 @@
       .phase-indicator { margin-bottom: 10px; font-size: 1.8rem; }
       .exercise-list { flex: 1; max-height: none; padding-bottom: 80px; }
       
-      /* Inyectar controles en sidebar solo en landscape */
       #sidebarControls { display: flex !important; flex-direction: column; gap: 12px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.08); }
       .control-row { display: flex; justify-content: space-between; align-items: center; }
     }
     
     @media (orientation: portrait) { #sidebarControls { display: none; } }
 
-    /* FAB */
     .fab {
       position: fixed; bottom: 25px; right: 25px; background: var(--accent); color: white;
       padding: 14px 24px; border-radius: 30px; border: none; font-weight: 700;
@@ -206,7 +203,7 @@
   <button id="shareBtn" class="fab">📤 Enviar Píldora</button>
 
   <script>
-    /* --- MOTOR DE PRECISIÓN 5.0 --- */
+    /* --- MOTOR UNIFICADO V6.0 --- */
     const patterns = {
       '4-4-6-2': [{t:"Inhala",b:4,y:'rise'},{t:"Mantén",b:4,y:'hold_high'},{t:"Exhala",b:6,y:'fall'},{t:"Sostén",b:2,y:'hold_low'}],
       '4-7-8': [{t:"Inhala",b:4,y:'rise'},{t:"Mantén",b:7,y:'hold_high'},{t:"Exhala",b:8,y:'fall'}],
@@ -215,9 +212,9 @@
     };
     const quotes = ["El amor es lo que eres.", "Vuelve al ahora.", "Observa sin juzgar.", "Paz en cada aliento.", "Suelta lo que pesa.", "Aquí y ahora."];
 
-    let state = { pk:null, data:[], start:0, dur:0, tempo:1000, run:false, af:null, cyc:0, snd:false, met:false, ctx:null, lastB:-1, coords:[] };
+    let state = { pk:'4-7-8', data:[], dur:0, tempo:1000, run:false, start:0, cyc:0, snd:false, met:false, ctx:null, lastB:-1, coords:[] };
     
-    // UI Refs
+    // Referencias UI
     const els = {
       sph:document.getElementById('sphere'), ph:document.getElementById('phaseText'),
       cnt:document.getElementById('counterText'), qt:document.getElementById('phraseContent'),
@@ -233,171 +230,151 @@
       o.connect(g); g.connect(state.ctx.destination); o.start(); o.stop(state.ctx.currentTime+d);
     }
 
-    // --- CÁLCULO DE GEOMETRÍA (EL CEREBRO DEL VISUALIZADOR) ---
+    // 1. CÁLCULO DE COORDENADAS (CSS Pixels)
     function calcGeometry() {
-       if(!state.data.length) return;
        const r = els.cvs.parentNode.getBoundingClientRect();
-       // Doble resolución para nitidez (Retina/HighDPI)
+       if(r.width === 0) return; // Protección si está oculto
+
+       // Escalado Retina
        els.cvs.width = r.width * 2; els.cvs.height = r.height * 2;
-       
-       const w = els.cvs.width, h = els.cvs.height;
-       const m = 20; // Margen vertical
+       els.ctx.scale(2, 2); // VOLVEMOS AL SCALE NATIVO
+
+       const w = r.width; const h = r.height; const m = 15;
        const totalBeats = state.data.reduce((a,b) => a + b.b, 0);
        const pxPerBeat = w / totalBeats;
 
        state.coords = [];
        let cx = 0;
-       
-       // Determinamos punto Y inicial basado en el primer tipo
-       // Normalmente empezamos abajo, salvo que sea 'exhala' (raro) o 'hold_high'
-       let cy = h - m; 
-       if(state.data[0].y === 'hold_high' || state.data[0].y === 'fall') cy = m;
+       // Determinar Y inicial
+       let cy = (state.data[0].y === 'hold_high' || state.data[0].y === 'fall') ? m : h - m;
 
        state.data.forEach(p => {
           const segW = p.b * pxPerBeat;
           const ex = cx + segW;
           let ey = cy;
-
-          // Lógica estricta de Y final
-          if(p.y === 'rise') ey = m;          // Subir -> Top
-          if(p.y === 'fall') ey = h - m;      // Bajar -> Bottom
-          if(p.y === 'hold_high') ey = m;     // Mantener Arriba -> Top
-          if(p.y === 'hold_low') ey = h - m;  // Mantener Abajo -> Bottom
+          if(p.y === 'rise') ey = m;
+          if(p.y === 'fall') ey = h - m;
+          if(p.y === 'hold_high') ey = m;
+          if(p.y === 'hold_low') ey = h - m;
           
-          state.coords.push({
-              x1: cx, y1: cy,
-              x2: ex, y2: ey,
-              start: p.start, end: p.end,
-              dur: p.dur
-          });
-          
-          cx = ex; cy = ey; // El fin de este es el inicio del siguiente
+          state.coords.push({ x1:cx, y1:cy, x2:ex, y2:ey, start:p.start, end:p.end, dur:p.dur });
+          cx = ex; cy = ey;
        });
     }
 
-    // --- RENDER LOOP ---
-    function renderLoop() {
-       const w = els.cvs.width, h = els.cvs.height;
-       els.ctx.clearRect(0,0,w,h);
-       
-       if(!state.coords.length) return;
+    // 2. BUCLE ÚNICO (Lógica + Render)
+    function loop() {
+      // A. LÓGICA DE TIEMPO
+      let progress = 0;
+      let activeSeg = null;
 
-       // 1. DIBUJAR LÍNEA VERDE (Trayectoria)
-       els.ctx.beginPath();
-       els.ctx.strokeStyle = '#4CAF50'; 
-       els.ctx.lineWidth = 8; // Línea más gruesa
-       els.ctx.lineCap = 'round'; els.ctx.lineJoin = 'round';
-       
-       state.coords.forEach((c, i) => {
-           if(i === 0) els.ctx.moveTo(c.x1, c.y1);
-           els.ctx.lineTo(c.x2, c.y2);
-       });
-       els.ctx.stroke();
+      if(state.run) {
+         const elap = Date.now() - state.start;
+         const t = elap % state.dur;
+         const cyc = Math.floor(elap / state.dur);
 
-       // 2. DIBUJAR LÍNEA GUÍA TENUE (Opcional, estética)
-       els.ctx.beginPath(); els.ctx.strokeStyle = 'rgba(76,175,80,0.1)'; els.ctx.lineWidth = 2;
-       els.ctx.moveTo(0, h-20); els.ctx.lineTo(w, h-20); // Base
-       els.ctx.moveTo(0, 20); els.ctx.lineTo(w, 20);     // Topo
-       els.ctx.stroke();
+         if(cyc > state.cyc){ state.cyc = cyc; els.cyc.forEach(e => e.textContent = `🔄 ${cyc}`); }
 
-       // 3. DIBUJAR BOLITA (Interpolada)
-       if(state.run) {
-           const now = (Date.now() - state.start) % state.dur;
-           
-           // Buscar en qué segmento estamos
-           const seg = state.coords.find(s => now >= s.start && now < s.end);
-           
-           if(seg) {
-               // Interpolación Lineal (Lerp)
-               // Progreso de 0 a 1 dentro de ESTE segmento específico
-               const progress = (now - seg.start) / seg.dur;
-               
-               // Calcular posición exacta en la línea
-               const bx = seg.x1 + (seg.x2 - seg.x1) * progress;
-               const by = seg.y1 + (seg.y2 - seg.y1) * progress;
-               
-               // Pintar Bola
-               els.ctx.beginPath();
-               els.ctx.fillStyle = '#ff7043'; // Naranja brillante
-               els.ctx.arc(bx, by, 12, 0, Math.PI * 2); // Bola más grande
-               els.ctx.fill();
-               
-               // Halo/Brillo
-               els.ctx.beginPath();
-               els.ctx.fillStyle = 'rgba(255, 112, 67, 0.4)';
-               els.ctx.arc(bx, by, 20, 0, Math.PI * 2);
-               els.ctx.fill();
-           }
-       }
-       requestAnimationFrame(renderLoop);
-    }
+         const p = state.data.find(x => t >= x.start && t < x.end);
+         activeSeg = state.coords.find(s => t >= s.start && t < s.end);
 
-    function logicLoop() {
-      if(!state.run) return;
-      const elap = Date.now() - state.start, t = elap % state.dur;
-      const cyc = Math.floor(elap / state.dur);
-      if(cyc > state.cyc){ state.cyc = cyc; els.cyc.forEach(e => e.textContent = `🔄 ${cyc}`); }
+         if(p) {
+            // Actualizar textos y sonidos
+            if(els.ph.textContent !== p.t) {
+               els.ph.textContent = p.t;
+               if(state.snd) beep(p.y==='rise'?300:p.y==='fall'?250:400, 'sine', 0.3);
+            }
+            const tip = t - p.start;
+            els.cnt.textContent = Math.floor(tip / state.tempo) + 1;
+            
+            const bk = `${cyc}-${p.t}-${els.cnt.textContent}`;
+            if(state.met && state.lastB !== bk) { beep(800, 'triangle', 0.05); state.lastB = bk; }
 
-      const p = state.data.find(x => t >= x.start && t < x.end);
-      if(p) {
-        if(els.ph.textContent !== p.t) {
-          els.ph.textContent = p.t;
-          if(state.snd) beep(p.y==='rise'?300:p.y==='fall'?250:400, 'sine', 0.3);
-        }
-        const tip = t - p.start;
-        els.cnt.textContent = Math.floor(tip / state.tempo) + 1;
-        
-        const bk = `${cyc}-${p.t}-${els.cnt.textContent}`;
-        if(state.met && state.lastB !== bk) { beep(800, 'triangle', 0.05); state.lastB = bk; }
-
-        const pr = tip / p.dur; let s = 1;
-        if(p.y === 'rise') s = 1 + (0.6 * pr);
-        else if(p.y === 'fall') s = 1.6 - (0.6 * pr);
-        else if(p.y === 'hold_high') s = 1.6;
-        els.sph.style.transform = `scale(${s})`;
+            // Esfera
+            const pr = tip / p.dur; 
+            progress = pr; // Para uso en render
+            let s = 1;
+            if(p.y === 'rise') s = 1 + (0.6 * pr);
+            else if(p.y === 'fall') s = 1.6 - (0.6 * pr);
+            else if(p.y === 'hold_high') s = 1.6;
+            els.sph.style.transform = `scale(${s})`;
+         }
       }
-      state.af = requestAnimationFrame(logicLoop);
+
+      // B. RENDERIZADO CANVAS
+      const w = els.cvs.width / 2; const h = els.cvs.height / 2;
+      els.ctx.clearRect(0,0,w,h);
+      
+      if(state.coords.length > 0) {
+         // Dibujar Línea
+         els.ctx.beginPath();
+         els.ctx.strokeStyle = '#4CAF50'; els.ctx.lineWidth = 6;
+         els.ctx.lineCap = 'round'; els.ctx.lineJoin = 'round';
+         
+         state.coords.forEach((c, i) => {
+             if(i === 0) els.ctx.moveTo(c.x1, c.y1);
+             els.ctx.lineTo(c.x2, c.y2);
+         });
+         els.ctx.stroke();
+
+         // Dibujar Bolita (Si corre)
+         if(state.run && activeSeg) {
+             const segP = (Date.now() - state.start) % state.dur - activeSeg.start;
+             const p = segP / activeSeg.dur;
+             
+             const bx = activeSeg.x1 + (activeSeg.x2 - activeSeg.x1) * p;
+             const by = activeSeg.y1 + (activeSeg.y2 - activeSeg.y1) * p;
+             
+             els.ctx.beginPath();
+             els.ctx.fillStyle = '#ff7043';
+             els.ctx.arc(bx, by, 8, 0, Math.PI * 2);
+             els.ctx.fill();
+             // Brillo
+             els.ctx.beginPath();
+             els.ctx.fillStyle = 'rgba(255, 112, 67, 0.3)';
+             els.ctx.arc(bx, by, 14, 0, Math.PI * 2);
+             els.ctx.fill();
+         }
+      }
+
+      requestAnimationFrame(loop);
     }
 
-    function start(k) {
-      if(state.run) stop(); state.pk = k;
+    // CONTROL
+    function prepareData(k) {
+      state.pk = k;
       document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
       document.querySelector(`.card[data-pattern="${k}"]`)?.classList.add('active');
       
       state.data = []; let acc = 0;
       patterns[k].forEach(x => { const d = x.b * state.tempo; state.data.push({...x, start:acc, end:acc+d, dur:d}); acc += d; });
-      state.dur = acc; 
-      
-      calcGeometry(); // Calcular raíles antes de arrancar
+      state.dur = acc;
+      calcGeometry(); // Calcular raíles
+    }
+
+    function start(k) {
+      if(state.run) stop();
+      prepareData(k);
       initAudio(); els.qt.textContent = quotes[Math.floor(Math.random() * quotes.length)];
-      
-      setTimeout(() => { 
-          state.run = true; state.start = Date.now(); state.cyc = 0; 
-          logicLoop(); // Bucle de lógica (sonido, textos, esfera)
-      }, 50);
+      state.run = true; state.start = Date.now(); state.cyc = 0; 
     }
 
     function stop() {
-      state.run = false; cancelAnimationFrame(state.af);
+      state.run = false; 
       els.sph.style.transform = 'scale(1)'; els.ph.textContent = "RESPIRA"; els.cnt.textContent = "";
       els.cyc.forEach(e => e.textContent = "🔄 0");
       document.getElementById('shareBtn').style.display = 'flex';
+      // No limpiamos canvas, dejamos la línea visible estática
     }
 
-    // Eventos
+    // LISTENERS
     document.querySelectorAll('.card').forEach(c => c.addEventListener('click', () => start(c.dataset.pattern)));
     [document.getElementById('resetBtnTop'), document.getElementById('resetBtnSide')].forEach(b => b.addEventListener('click', stop));
     els.snd.forEach(b => b.addEventListener('click', function(){ state.snd = !state.snd; els.snd.forEach(x => x.textContent = state.snd ? "🔊" : "🔇"); initAudio(); }));
     document.getElementById('metronomeBtn').addEventListener('click', function(){ state.met = !state.met; this.style.background = state.met ? "#e8f5e9" : "white"; });
-    document.getElementById('tempoSelect').addEventListener('change', function(){ state.tempo = parseInt(this.value); if(state.run){ start(state.pk); } });
-    
-    // Resize inteligente
-    window.addEventListener('resize', () => { calcGeometry(); });
-    
-    // Iniciar render visual SIEMPRE (para ver la línea estática)
-    requestAnimationFrame(renderLoop);
+    document.getElementById('tempoSelect').addEventListener('change', function(){ state.tempo = parseInt(this.value); prepareData(state.pk); });
+    window.addEventListener('resize', calcGeometry);
 
-    // Compartir
     document.getElementById('shareBtn').addEventListener('click', () => {
        const p = prompt("Patrón (4-7-8, box...)", "4-7-8");
        if(patterns[p]) {
@@ -407,7 +384,7 @@
        }
     });
 
-    // Carga inicial
+    // INIT
     const q = new URLSearchParams(location.search);
     if(q.get('p') && patterns[q.get('p')]) {
        document.getElementById('pillOverlay').style.display = 'flex';
@@ -415,7 +392,13 @@
        document.getElementById('pillMessage').textContent = `"${q.get('msg')}"`;
        document.getElementById('startPillBtn').onclick = () => { document.getElementById('pillOverlay').style.display = 'none'; start(q.get('p')); };
        document.getElementById('shareBtn').style.display = 'none';
-    }
+    } 
+    
+    // ARRANQUE INICIAL
+    prepareData('4-7-8'); // Cargar datos del defecto
+    loop(); // Arrancar motor gráfico
   </script>
 </body>
 </html>
+
+
