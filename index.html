@@ -3,13 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V21 Harmonic Precision</title>
+  <title>Respiración: V22 Linear Timeline</title>
   <style>
     /* --- 1. BASE & VARIABLES --- */
     :root {
       --primary: #4CAF50; --primary-dark: #2e7d32; --accent: #1a5f7a;
       --bg: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
       --glass-overlay: rgba(255, 255, 255, 0.98);
+      /* Colores de fase para el Timeline */
+      --c-inhale: #4CAF50; /* Verde */
+      --c-hold: #90A4AE;   /* Gris Azulado */
+      --c-exhale: #1a5f7a; /* Azul Oscuro */
     }
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     
@@ -54,10 +58,9 @@
     .stage-container {
       flex: 1; display: flex; width: 100%; position: relative;
       align-items: center; justify-content: center;
-      flex-direction: column; /* Default Vertical */
+      flex-direction: column; 
     }
 
-    /* PANELES LATERALES */
     .panel-side {
       flex: 1; display: flex; flex-direction: column; 
       align-items: center; justify-content: center;
@@ -70,7 +73,6 @@
       margin: 20px 0; flex-shrink: 0;
     }
 
-    /* TEXTOS */
     .phase-text {
       font-size: clamp(2.5rem, 6vw, 3.5rem); 
       font-weight: 300; letter-spacing: 4px; color: var(--accent);
@@ -112,29 +114,23 @@
     }
     .p-num {
       font-size: 0.85rem; color: rgba(255,255,255,0.4); font-weight: 400;
-      transition: all 0.3s ease;
-      display: inline-block;
+      transition: all 0.3s ease; display: inline-block;
     }
-    .p-sep {
-      font-size: 0.8rem; color: rgba(255,255,255,0.2);
-    }
-    
+    .p-sep { font-size: 0.8rem; color: rgba(255,255,255,0.2); }
     .p-num.active {
-      color: #fff;
-      font-weight: 800;
-      transform: scale(1.3);
+      color: #fff; font-weight: 800; transform: scale(1.3);
       text-shadow: 0 0 10px rgba(255,255,255,0.8);
     }
 
-    /* --- 4. VISUALIZADOR --- */
+    /* --- 4. NUEVO VISUALIZADOR (TIMELINE) --- */
     .bottom-viz {
-      flex-shrink: 0; width: min(95vw, 900px); height: 100px; 
-      margin: 0 auto 4vh auto; 
+      flex-shrink: 0; width: min(90vw, 800px); height: 80px; 
+      margin: 0 auto 5vh auto; /* Elevado del fondo */
       position: relative; z-index: 15;
     }
     #breathGraph { width: 100%; height: 100%; display: block; }
 
-    /* --- 5. MENÚS Y PÍLDORAS --- */
+    /* --- 5. MENÚS --- */
     #selectionMenu {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--glass-overlay); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -168,7 +164,6 @@
       z-index: 150; display: flex; align-items: center; gap: 8px; cursor: pointer;
     }
     
-    /* --- MEDIA QUERIES --- */
     @media (orientation: landscape) {
       .app-layout { grid-template-rows: 50px 1fr 70px; }
       .stage-container { flex-direction: row; justify-content: space-between; padding: 0 2vw; }
@@ -178,7 +173,7 @@
       .panel-side:last-child { align-items: flex-start; text-align: left; padding-left: 10px; }
       .phase-text { font-size: 2.2rem; }
       .quote { max-width: 280px; padding: 0; text-align: left; }
-      .bottom-viz { height: 70px; }
+      .bottom-viz { height: 60px; margin-bottom: 10px; } /* Más compacto en landscape */
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 700px; }
     }
   </style>
@@ -255,11 +250,13 @@
 
   <script>
     // --- DATOS ---
+    // Agregamos colores (c) a los datos para el timeline
+    // Verde=Inhala, Gris=Mantén, Azul=Exhala/Sostén
     const patterns = {
-      '4-4-6-2': [{t:"INHALA",b:4,y:'rise'},{t:"MANTÉN",b:4,y:'hold_high'},{t:"EXHALA",b:6,y:'fall'},{t:"SOSTÉN",b:2,y:'hold_low'}],
-      '4-7-8': [{t:"INHALA",b:4,y:'rise'},{t:"MANTÉN",b:7,y:'hold_high'},{t:"EXHALA",b:8,y:'fall'}],
-      'box': [{t:"INHALA",b:4,y:'rise'},{t:"MANTÉN",b:4,y:'hold_high'},{t:"EXHALA",b:4,y:'fall'},{t:"SOSTÉN",b:4,y:'hold_low'}],
-      '5-5': [{t:"INHALA",b:5,y:'rise'},{t:"EXHALA",b:5,y:'fall'}]
+      '4-4-6-2': [{t:"INHALA",b:4,y:'rise',c:'#4CAF50'},{t:"MANTÉN",b:4,y:'hold_high',c:'#90A4AE'},{t:"EXHALA",b:6,y:'fall',c:'#1a5f7a'},{t:"SOSTÉN",b:2,y:'hold_low',c:'#546E7A'}],
+      '4-7-8': [{t:"INHALA",b:4,y:'rise',c:'#4CAF50'},{t:"MANTÉN",b:7,y:'hold_high',c:'#90A4AE'},{t:"EXHALA",b:8,y:'fall',c:'#1a5f7a'}],
+      'box': [{t:"INHALA",b:4,y:'rise',c:'#4CAF50'},{t:"MANTÉN",b:4,y:'hold_high',c:'#90A4AE'},{t:"EXHALA",b:4,y:'fall',c:'#1a5f7a'},{t:"SOSTÉN",b:4,y:'hold_low',c:'#546E7A'}],
+      '5-5': [{t:"INHALA",b:5,y:'rise',c:'#4CAF50'},{t:"EXHALA",b:5,y:'fall',c:'#1a5f7a'}]
     };
     const quotes = ["El amor es lo que eres.", "Vuelve al ahora.", "Observa sin juzgar.", "Paz en cada aliento.", "Suelta lo que pesa."];
 
@@ -284,7 +281,7 @@
 
     // --- RENDERIZADO DEL PATRÓN ---
     function renderPattern(k) {
-      els.pat.innerHTML = ''; // Limpiar
+      els.pat.innerHTML = ''; 
       patterns[k].forEach((step, idx) => {
         const numSpan = document.createElement('span');
         numSpan.textContent = step.b;
@@ -301,7 +298,7 @@
       });
     }
 
-    // --- AUDIO ---
+    // --- AUDIO (Reloj Maestro) ---
     function initAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -358,7 +355,6 @@
       }
 
       if (phase) {
-        // Tono en el beat 1 de la fase
         if (beatInPhase === 1) { 
            let freq = 440;
            if(phase.y === 'rise') freq = 300;
@@ -367,9 +363,7 @@
            else freq = 250;
            playTone(freq, 'sine', 0.2, time);
         }
-        // Tono de metrónomo en CADA beat
         if (state.met) { 
-           // Beat 1 suena diferente para marcar inicio de compás/fase
            playTone(beatInPhase === 1 ? 1200 : 800, 'square', 0.05, time); 
         }
       }
@@ -383,40 +377,8 @@
       if (state.run) scheduleTimerID = setTimeout(scheduler, lookahead);
     }
 
-    // --- VISUALIZADOR ---
-    // Función de easing solo para esfera (suavidad)
+    // --- MOTOR GRÁFICO (TIMELINE LINEAL) ---
     function easeInOutSine(x) { return -(Math.cos(Math.PI * x) - 1) / 2; }
-
-    // Función de interpolación LINEAL para la gráfica (precisión armónica)
-    function getLinearYForTime(tAbs, totalDur) {
-        const tCycle = tAbs % totalDur;
-        const p = state.data.find(seg => tCycle >= seg.start && tCycle < seg.end);
-        
-        let yRatio = 0.2; 
-        if(p) {
-            // Progreso lineal estricto (0.0 a 1.0)
-            const prog = (tCycle - p.start) / p.dur;
-
-            if (p.y === 'rise') {
-                // Sube de 0.2 a 0.8 de forma lineal (o con suavizado muy ligero)
-                // Para armonía perfecta con metrónomo, usaremos una curva muy suave pero predecible
-                // o lineal. El usuario pidió armonía total: lineal para gráfica es más exacto visualmente.
-                // Sin embargo, una curva de respiración natural no es triangular.
-                // Compromiso: Una curva Sine, pero que empieza y acaba EXACTAMENTE en los puntos.
-                yRatio = 0.2 + (0.6 * easeInOutSine(prog)); 
-            }
-            else if (p.y === 'fall') {
-                yRatio = 0.8 - (0.6 * easeInOutSine(prog));
-            }
-            else if (p.y === 'hold_high') {
-                yRatio = 0.8; // Absolutamente plano
-            }
-            else { // hold_low
-                yRatio = 0.2; // Absolutamente plano
-            }
-        }
-        return yRatio;
-    }
 
     function draw() {
       if (!state.run) return;
@@ -432,7 +394,6 @@
       const p = state.data.find(x => timeInCycle >= x.start && timeInCycle < x.end);
 
       if (p) {
-        // Textos
         if (els.ph.textContent !== p.t) els.ph.textContent = p.t;
         
         // Highlight Patrón
@@ -447,12 +408,11 @@
 
         // Contador
         const timeInPhase = timeInCycle - p.start;
-        // Beat actual exacto
         let currentBeat = Math.floor(timeInPhase / state.tempo) + 1;
         currentBeat = Math.min(currentBeat, p.b);
         els.cnt.textContent = currentBeat;
 
-        // Esfera (animación suave)
+        // Esfera (Sigue siendo orgánica/curva)
         const progress = timeInPhase / p.dur; 
         let rawScale = 1;
         if (p.y === 'rise') rawScale = 0.8 + (0.7 * easeInOutSine(progress)); 
@@ -462,46 +422,53 @@
         els.sph.style.transform = `scale(${rawScale})`;
       }
 
-      // ONDA SCROLLING
+      // --- DIBUJO DEL TIMELINE (LINEAL Y PERFECTO) ---
       const w = els.cvs.width / (window.devicePixelRatio||1);
       const h = els.cvs.height / (window.devicePixelRatio||1);
       els.ctx.clearRect(0, 0, w, h);
 
-      const centerX = w / 2;
-      // Posición Y actual exacta
-      const currentYRatio = getLinearYForTime(elapsed, totalCycleDur);
-      const ballY = h - (currentYRatio * h);
-
-      const secondsOnScreen = state.dur; 
-      const pxPerSec = w / secondsOnScreen;
-
+      // 1. Dibujar el Raíl (Fondo Gris)
+      const trackY = h / 2;
       els.ctx.beginPath();
-      els.ctx.strokeStyle = '#4CAF50'; els.ctx.lineWidth = 3;
-      els.ctx.lineCap = 'round'; els.ctx.lineJoin = 'round';
-
-      let first = true;
-      for(let x = 0; x <= w; x += 4) {
-          const pxOffset = x - centerX;
-          const timeOffset = pxOffset / pxPerSec;
-          const tAtPixel = elapsed + timeOffset;
-
-          let tPositive = tAtPixel;
-          // Ajuste fino para wrap-around del ciclo en gráfica
-          while(tPositive < 0) tPositive += totalCycleDur;
-
-          const yR = getLinearYForTime(tPositive, totalCycleDur);
-          const y = h - (yR * h);
-
-          if(first) { els.ctx.moveTo(x, y); first = false; }
-          else { els.ctx.lineTo(x, y); }
-      }
+      els.ctx.strokeStyle = 'rgba(0,0,0,0.05)';
+      els.ctx.lineWidth = 6;
+      els.ctx.lineCap = 'round';
+      els.ctx.moveTo(10, trackY);
+      els.ctx.lineTo(w - 10, trackY);
       els.ctx.stroke();
 
+      // 2. Dibujar los Segmentos de Fase (Proporcionales)
+      const usableWidth = w - 20; // Margen de 10px a cada lado
+      
+      state.data.forEach(phase => {
+          const startRatio = phase.start / totalCycleDur;
+          const durRatio = phase.dur / totalCycleDur;
+          
+          const startX = 10 + (startRatio * usableWidth);
+          const segmentW = durRatio * usableWidth;
+
+          els.ctx.beginPath();
+          els.ctx.strokeStyle = phase.c; // Color de la fase
+          els.ctx.lineWidth = 6;
+          // Pequeño gap visual entre segmentos
+          els.ctx.moveTo(startX + 2, trackY); 
+          els.ctx.lineTo(startX + segmentW - 2, trackY);
+          els.ctx.stroke();
+      });
+
+      // 3. El Cursor (La Bolita de Precisión)
+      // Posición LINEAL basada 100% en tiempo transcurrido
+      const globalProgress = timeInCycle / totalCycleDur;
+      const cursorX = 10 + (globalProgress * usableWidth);
+
       els.ctx.beginPath();
-      els.ctx.fillStyle = '#FF5722';
-      els.ctx.arc(centerX, ballY, 6, 0, Math.PI * 2);
+      els.ctx.fillStyle = '#FF5722'; // Naranja brillante
+      els.ctx.arc(cursorX, trackY, 8, 0, Math.PI * 2);
       els.ctx.fill();
-      els.ctx.strokeStyle = 'white'; els.ctx.lineWidth = 2; els.ctx.stroke();
+      // Anillo blanco para contraste
+      els.ctx.strokeStyle = 'white';
+      els.ctx.lineWidth = 3;
+      els.ctx.stroke();
 
       requestAnimationFrame(draw);
     }
