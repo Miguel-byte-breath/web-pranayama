@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V18 Fixed Ball</title>
+  <title>Respiración: V19 Active Pattern</title>
   <style>
     /* --- 1. BASE & VARIABLES --- */
     :root {
@@ -50,7 +50,7 @@
       color: #546e7a; font-weight: 600; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
-    /* --- 3. ESCENARIO CENTRAL (Safety Zone Layout V16) --- */
+    /* --- 3. ESCENARIO CENTRAL --- */
     .stage-container {
       flex: 1; display: flex; width: 100%; position: relative;
       align-items: center; justify-content: center;
@@ -104,9 +104,27 @@
       text-shadow: 0 2px 10px rgba(0,0,0,0.15); line-height: 1;
     }
     
+    /* PATRÓN INTERACTIVO */
     .sphere-label {
-        font-size: 0.8rem; color: rgba(255,255,255,0.9); font-weight: 600;
-        margin-top: 5px; letter-spacing: 1px;
+        margin-top: 8px; 
+        display: flex; align-items: center; justify-content: center; gap: 4px;
+        z-index: 25;
+    }
+    .p-num {
+      font-size: 0.85rem; color: rgba(255,255,255,0.4); font-weight: 400;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+    .p-sep {
+      font-size: 0.8rem; color: rgba(255,255,255,0.2);
+    }
+    
+    /* CLASE ACTIVA (Highlight) */
+    .p-num.active {
+      color: #fff;
+      font-weight: 800;
+      transform: scale(1.3);
+      text-shadow: 0 0 10px rgba(255,255,255,0.8);
     }
 
     /* --- 4. VISUALIZADOR --- */
@@ -150,7 +168,7 @@
       z-index: 150; display: flex; align-items: center; gap: 8px; cursor: pointer;
     }
     
-    /* --- SAFETY ZONE: LANDSCAPE --- */
+    /* --- MEDIA QUERIES --- */
     @media (orientation: landscape) {
       .app-layout { grid-template-rows: 50px 1fr 70px; }
       .stage-container { flex-direction: row; justify-content: space-between; padding: 0 2vw; }
@@ -218,7 +236,7 @@
         <div class="sphere-wrapper">
           <div class="sphere" id="sphere">
              <div class="counter-big" id="counterText"></div>
-             <div class="sphere-label" id="patternDisplay">4-7-8</div>
+             <div class="sphere-label" id="patternDisplay"></div>
           </div>
         </div>
       </div>
@@ -264,6 +282,27 @@
       pat: document.getElementById('patternDisplay')
     };
 
+    // --- RENDERIZADO DEL PATRÓN (NUEVO) ---
+    function renderPattern(k) {
+      els.pat.innerHTML = ''; // Limpiar
+      patterns[k].forEach((step, idx) => {
+        // Crear número
+        const numSpan = document.createElement('span');
+        numSpan.textContent = step.b;
+        numSpan.className = 'p-num';
+        numSpan.id = `p-step-${idx}`; // ID único para iluminarlo después
+        els.pat.appendChild(numSpan);
+
+        // Crear separador (si no es el último)
+        if (idx < patterns[k].length - 1) {
+          const sep = document.createElement('span');
+          sep.textContent = '-';
+          sep.className = 'p-sep';
+          els.pat.appendChild(sep);
+        }
+      });
+    }
+
     // --- AUDIO ---
     function initAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -294,7 +333,7 @@
       osc.stop(time + dur);
     }
 
-    // --- SCHEDULER (Metrónomo) ---
+    // --- SCHEDULER ---
     function nextBeat() {
       const secondsPerBeat = state.tempo;
       nextNoteTime += secondsPerBeat;
@@ -302,7 +341,7 @@
       const totalBeats = state.data.reduce((acc, p) => acc + p.b, 0);
       if (currentBeatIndex >= totalBeats) {
         currentBeatIndex = 0;
-        state.cyc++; // Se ajusta visualmente en el draw
+        state.cyc++; 
       }
     }
 
@@ -321,7 +360,7 @@
       }
 
       if (phase) {
-        if (beatInPhase === 1) { // Sonido fase
+        if (beatInPhase === 1) { 
            let freq = 440;
            if(phase.y === 'rise') freq = 300;
            else if(phase.y === 'hold_high') freq = 450;
@@ -329,7 +368,7 @@
            else freq = 250;
            playTone(freq, 'sine', 0.2, time);
         }
-        if (state.met) { // Metrónomo
+        if (state.met) { 
            playTone(beatInPhase === 1 ? 1200 : 800, 'square', 0.05, time); 
         }
       }
@@ -343,20 +382,19 @@
       if (state.run) scheduleTimerID = setTimeout(scheduler, lookahead);
     }
 
-    // --- VISUALIZADOR (Modo Osciloscopio) ---
+    // --- VISUALIZADOR ---
     function easeInOutSine(x) { return -(Math.cos(Math.PI * x) - 1) / 2; }
 
-    // Función auxiliar para obtener altura Y en cualquier tiempo T (global)
     function getYForTime(tAbs, totalDur) {
         const tCycle = tAbs % totalDur;
         const p = state.data.find(seg => tCycle >= seg.start && tCycle < seg.end);
-        let yRatio = 0.2; // Base
+        let yRatio = 0.2; 
         if(p) {
             const prog = (tCycle - p.start) / p.dur;
             if (p.y === 'rise') yRatio = 0.2 + (0.6 * easeInOutSine(prog));
             else if (p.y === 'fall') yRatio = 0.8 - (0.6 * easeInOutSine(prog));
             else if (p.y === 'hold_high') yRatio = 0.8;
-            else yRatio = 0.2; // hold_low
+            else yRatio = 0.2; 
         }
         return yRatio;
     }
@@ -368,7 +406,6 @@
       const elapsed = currentTime - state.startAudioTime;
       const totalCycleDur = state.dur;
 
-      // Actualizar Textos
       const cycleCountVisual = Math.floor(elapsed / totalCycleDur);
       els.cyc.textContent = `🔄 ${cycleCountVisual}`;
 
@@ -376,9 +413,25 @@
       const p = state.data.find(x => timeInCycle >= x.start && timeInCycle < x.end);
 
       if (p) {
+        // Actualizar textos
         if (els.ph.textContent !== p.t) els.ph.textContent = p.t;
         
-        // Contador suave
+        // --- ILUMINACIÓN DEL PATRÓN (MAGIA AQUÍ) ---
+        // Encontramos el índice de la fase actual
+        const currentPhaseIdx = state.data.indexOf(p);
+        // Iteramos sobre todos los números para encender/apagar
+        state.data.forEach((_, idx) => {
+            const el = document.getElementById(`p-step-${idx}`);
+            if(el) {
+                if(idx === currentPhaseIdx) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            }
+        });
+
+        // Contador
         const timeInPhase = timeInCycle - p.start;
         let currentBeat = Math.floor(timeInPhase / state.tempo) + 1;
         currentBeat = Math.min(currentBeat, p.b);
@@ -394,21 +447,15 @@
         els.sph.style.transform = `scale(${rawScale})`;
       }
 
-      // DIBUJAR ONDA SCROLLING
+      // ONDA SCROLLING & BOLITA FIJA
       const w = els.cvs.width / (window.devicePixelRatio||1);
       const h = els.cvs.height / (window.devicePixelRatio||1);
       els.ctx.clearRect(0, 0, w, h);
 
-      // BOLITA FIJA EN EL CENTRO
       const centerX = w / 2;
       const currentYRatio = getYForTime(elapsed, totalCycleDur);
       const ballY = h - (currentYRatio * h);
 
-      // Dibujar Onda:
-      // Queremos ver desde (ahora - tiempoAtras) hasta (ahora + tiempoAdelante)
-      // Mapeamos pixeles X a tiempo T.
-      // Si el centro es T = elapsed...
-      // Definimos "Zoom": Cuantos segundos caben en la pantalla. Digamos 1 ciclo completo.
       const secondsOnScreen = state.dur; 
       const pxPerSec = w / secondsOnScreen;
 
@@ -417,18 +464,11 @@
       els.ctx.lineCap = 'round'; els.ctx.lineJoin = 'round';
 
       let first = true;
-      // Dibujamos con menor resolución para rendimiento (step 4px)
       for(let x = 0; x <= w; x += 4) {
-          // Diferencia en pixeles respecto al centro
           const pxOffset = x - centerX;
-          // Diferencia en tiempo
           const timeOffset = pxOffset / pxPerSec;
-          // Tiempo absoluto que representa este pixel
           const tAtPixel = elapsed + timeOffset;
 
-          // Si tAtPixel es negativo, podemos mostrar el final del ciclo anterior (wrapping) 
-          // o simplemente calcular % dur. El modulo maneja negativos en JS un poco mal,
-          // así que nos aseguramos de que sea positivo.
           let tPositive = tAtPixel;
           while(tPositive < 0) tPositive += totalCycleDur;
 
@@ -440,7 +480,6 @@
       }
       els.ctx.stroke();
 
-      // Dibujar Bolita encima
       els.ctx.beginPath();
       els.ctx.fillStyle = '#FF5722';
       els.ctx.arc(centerX, ballY, 6, 0, Math.PI * 2);
@@ -474,7 +513,9 @@
       initAudio(); 
       prepareData(k);
       
-      let displayTxt = k; if(k === 'box') displayTxt = '4-4-4-4'; els.pat.textContent = displayTxt;
+      // RENDERIZAR PATRÓN EN PANTALLA
+      renderPattern(k);
+
       els.menu.style.opacity = '0'; setTimeout(()=>els.menu.style.display='none',300);
       els.share.style.display = 'none';
       els.qt.textContent = quotes[Math.floor(Math.random()*quotes.length)];
@@ -500,8 +541,8 @@
       els.cyc.textContent = "🔄 0";
       els.menu.style.display = 'flex'; setTimeout(()=>els.menu.style.opacity='1',10);
       els.share.style.display = 'flex';
+      els.pat.innerHTML = ''; // Limpiar patrón al salir
       
-      // Dibujo estático de reinicio
       els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
     }
 
@@ -515,7 +556,6 @@
       state.tempo = next; 
       document.getElementById('tempoBtn').innerText = `⚡ ${next===1.0?'1x':next===1.5?'Lento':'Zen'}`;
       
-      // SOLUCIÓN BUG TEMPO: Si corre, reinicia al vuelo (sin ir al menú)
       if(state.run) { 
          start(state.pk); 
       } 
@@ -543,7 +583,8 @@
        window.closePill = () => { document.getElementById('pillOverlay').style.display='none'; start(q.get('p')); };
     } else {
        prepareData('4-7-8');
-       els.pat.textContent = "4-7-8";
+       // Previsualización simple si no corre
+       els.pat.textContent = "4-7-8"; 
     }
     initCanvas();
   </script>
