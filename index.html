@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: Grid V12</title>
+  <title>Respiración: Final V13</title>
   <style>
     /* --- 1. BASE & VARIABLES --- */
     :root {
@@ -20,22 +20,18 @@
       display: flex; flex-direction: column;
     }
 
-    /* --- 2. LAYOUT PRINCIPAL (GRID SYSTEM) --- */
+    /* --- 2. LAYOUT PRINCIPAL --- */
     .app-layout {
-      flex: 1; 
-      display: grid;
-      /* Define filas: Barra Superior | Contenido Central | Visualizador */
-      grid-template-rows: 70px 1fr 100px; 
-      width: 100%; height: 100%;
-      position: relative;
+      flex: 1; display: flex; flex-direction: column; 
+      width: 100%; height: 100%; position: relative;
     }
 
     /* BARRA SUPERIOR */
     .top-bar {
+      flex-shrink: 0; 
       display: flex; justify-content: space-between; align-items: center;
-      padding: 0 20px; z-index: 40; position: relative;
-      /* Fondo sutil para separar si la esfera sube mucho */
-      background: linear-gradient(to bottom, rgba(255,255,255,0.8), transparent);
+      padding: 10px 20px; z-index: 40; pointer-events: none;
+      height: 60px; position: relative;
     }
     .top-left, .top-right { pointer-events: auto; display: flex; gap: 10px; align-items: center; }
 
@@ -56,29 +52,44 @@
       color: #546e7a; font-weight: 600; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
-    /* --- 3. ESCENARIO CENTRAL --- */
+    /* --- 3. ESCENARIO CENTRAL (El corazón del cambio) --- */
     .stage-center {
-      display: flex; flex-direction: column; align-items: center; justify-content: center; 
-      /* Clave: gap dinámico */
-      gap: 2vh; 
-      width: 100%; z-index: 10;
-      overflow: hidden; /* Evita desbordes */
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; /* Por defecto vertical (móvil portrait) */
+      align-items: center; 
+      justify-content: center; 
+      width: 100%; 
+      position: relative; z-index: 10;
+      gap: 20px;
+    }
+
+    /* GRUPO DE TEXTO (Nuevo contenedor para manejar textos juntos) */
+    .text-group {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 20; text-align: center;
+      transition: all 0.5s ease;
     }
 
     .phase-text {
-      font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 300; letter-spacing: 4px; color: var(--accent);
-      text-transform: uppercase; text-align: center;
-      z-index: 20; line-height: 1;
+      font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 300; letter-spacing: 4px; color: var(--accent);
+      text-transform: uppercase; margin-bottom: 5px; line-height: 1.2;
     }
 
-    /* CONTENEDOR ESFERA (GEOMETRÍA SEGURA) */
+    .quote {
+      padding: 0 20px; color: #78909c;
+      font-family: 'Georgia', serif; font-style: italic; 
+      font-size: 1rem; max-width: 400px;
+    }
+
+    /* ESFERA */
     .sphere-wrapper {
       position: relative; 
-      /* En vertical usa ancho, en horizontal usa altura */
-      width: min(60vw, 280px); 
-      height: min(60vw, 280px);
+      /* Tamaño base para vertical */
+      width: min(65vw, 280px); 
+      height: min(65vw, 280px);
       display: flex; align-items: center; justify-content: center;
-      transition: all 0.3s ease;
+      transition: all 0.5s ease;
     }
 
     .sphere {
@@ -88,22 +99,16 @@
       box-shadow: 0 20px 60px rgba(76,175,80,0.4);
       display: flex; align-items: center; justify-content: center; 
       will-change: transform; z-index: 10;
-      /* Escala base */
-      transform: scale(0.7); 
+      transform: scale(0.8); /* Escala inicial segura */
     }
 
     .counter-big { font-size: 3rem; font-weight: 800; color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.1); }
 
-    .quote {
-      padding: 0 20px; text-align: center; color: #78909c;
-      font-family: 'Georgia', serif; font-style: italic; 
-      font-size: 0.9rem; min-height: 25px;
-    }
-
     /* --- 4. VISUALIZADOR --- */
     .bottom-viz {
+      flex-shrink: 0; 
       width: min(95vw, 900px); 
-      height: 100%; 
+      height: 100px; 
       margin: 0 auto;
       position: relative; z-index: 15;
     }
@@ -112,10 +117,10 @@
     /* INDICADOR PATRÓN */
     .pattern-indicator {
       position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-      background: rgba(255,255,255,0.9); padding: 4px 14px; border-radius: 20px;
+      background: rgba(255,255,255,0.8); padding: 4px 14px; border-radius: 20px;
       color: var(--accent); font-weight: 800; font-size: 0.9rem; letter-spacing: 1px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid rgba(255,255,255,0.4);
-      white-space: nowrap; pointer-events: none; z-index: 50;
+      white-space: nowrap; pointer-events: none; z-index: 45;
     }
 
     /* --- 5. MENÚ ZEN --- */
@@ -153,28 +158,50 @@
       z-index: 150; display: flex; align-items: center; gap: 8px; cursor: pointer;
     }
     
-    /* --- MAGIC: MEDIA QUERIES PARA LANDSCAPE MÓVIL --- */
+    /* --- MAGIC: LA SOLUCIÓN DEFINITIVA (LANDSCAPE SPLIT) --- */
     @media (orientation: landscape) {
       .app-layout {
-        /* Compactamos la rejilla verticalmente */
-        grid-template-rows: 50px 1fr 70px;
+        /* Poco espacio vertical? Compactamos la barra */
+        padding-top: 5px; 
       }
       
-      .top-bar { padding: 0 30px; } /* Más margen lateral */
+      .top-bar { height: 50px; padding: 0 30px; }
+
+      .stage-center { 
+        /* ¡AQUÍ ESTÁ LA CLAVE! Cambiamos a fila (izquierda-derecha) */
+        flex-direction: row; 
+        justify-content: center;
+        align-items: center;
+        gap: 5vw; /* Espacio entre textos y esfera */
+        padding-bottom: 20px; /* Dejar sitio a la onda */
+      }
       
-      /* Ajuste crítico: La esfera depende de la ALTURA (vh), no del ancho */
+      /* LADO IZQUIERDO: TEXTOS */
+      .text-group {
+        width: 45%; 
+        align-items: flex-end; /* Alineados hacia la esfera */
+        text-align: right; 
+        padding-right: 20px;
+      }
+      
+      .phase-text { font-size: 2.2rem; } /* Tamaño controlado */
+      .quote { padding: 0; font-size: 0.95rem; }
+
+      /* LADO DERECHO: ESFERA */
       .sphere-wrapper {
-        width: 38vh;  /* Bastante más pequeño de base */
-        height: 38vh;
+        width: 45%;
+        /* Usamos la altura disponible para definir el tamaño */
+        height: 50vh; 
+        width: 50vh; /* Mantener cuadrado */
+        justify-content: flex-start; /* Pegado hacia el texto */
       }
       
-      /* Textos más compactos */
-      .phase-text { font-size: 1.5rem; margin-bottom: 0; }
-      .quote { font-size: 0.8rem; margin-top: 0; display: block; }
+      .sphere {
+        /* Ajustamos escala base para que al crecer (1.5x) no se salga */
+        transform: scale(0.6); 
+      }
       
-      /* El visualizador no necesita ser tan alto */
-      .bottom-viz { height: 70px; }
-      
+      .bottom-viz { height: 60px; } /* Onda más compacta */
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 700px; }
     }
   </style>
@@ -227,7 +254,11 @@
     </div>
 
     <div class="stage-center">
-      <div class="phase-text" id="phaseText">LISTO</div>
+      
+      <div class="text-group">
+        <div class="phase-text" id="phaseText">LISTO</div>
+        <div class="quote" id="phraseContent">Respira...</div>
+      </div>
       
       <div class="sphere-wrapper">
         <div class="sphere" id="sphere">
@@ -235,7 +266,6 @@
         </div>
       </div>
       
-      <div class="quote" id="phraseContent">Respira...</div>
     </div>
 
     <div class="bottom-viz">
@@ -301,7 +331,6 @@
        const elapsed = now - state.start;
 
        els.ctx.clearRect(0, 0, w, h);
-
        const viewDuration = state.dur * 1.5; 
        const pxPerMs = w / viewDuration; 
 
@@ -365,14 +394,16 @@
             state.lastB = beatKey;
         }
 
-        // ESFERA RESPONSIVA (Límites de escala)
         const progress = tip / p.dur; 
         let rawScale = 1;
-        // Limitamos la escala máxima a 1.25 para que no se coma la pantalla
-        if (p.y === 'rise') rawScale = 0.7 + (0.55 * easeInOutSine(progress)); 
-        else if (p.y === 'fall') rawScale = 1.25 - (0.55 * easeInOutSine(progress));
-        else if (p.y === 'hold_high') rawScale = 1.25;
-        else rawScale = 0.7;
+        
+        // --- ESCALADO INTELIGENTE (Detecta si es móvil o PC por la clase o width) ---
+        // En landscape, la escala base es menor (definida en CSS scale(0.6)), 
+        // así que multiplicamos por un factor relativo.
+        if (p.y === 'rise') rawScale = 0.8 + (0.7 * easeInOutSine(progress)); 
+        else if (p.y === 'fall') rawScale = 1.5 - (0.7 * easeInOutSine(progress));
+        else if (p.y === 'hold_high') rawScale = 1.5;
+        else rawScale = 0.8;
         
         els.sph.style.transform = `scale(${rawScale})`;
       }
@@ -403,7 +434,7 @@
 
     function stop() {
       state.run = false;
-      els.sph.style.transform = 'scale(0.7)';
+      els.sph.style.transform = 'scale(0.8)';
       els.ph.textContent = "LISTO"; els.cnt.textContent = "";
       els.cyc.textContent = "🔄 0";
       els.menu.style.display = 'flex'; setTimeout(()=>els.menu.style.opacity='1',10);
