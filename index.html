@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V19 Active Pattern</title>
+  <title>Respiración: V20 Visual Balance</title>
   <style>
     /* --- 1. BASE & VARIABLES --- */
     :root {
@@ -119,7 +119,7 @@
       font-size: 0.8rem; color: rgba(255,255,255,0.2);
     }
     
-    /* CLASE ACTIVA (Highlight) */
+    /* Highlight activo */
     .p-num.active {
       color: #fff;
       font-weight: 800;
@@ -130,7 +130,9 @@
     /* --- 4. VISUALIZADOR --- */
     .bottom-viz {
       flex-shrink: 0; width: min(95vw, 900px); height: 100px; 
-      margin: 0 auto; position: relative; z-index: 15;
+      /* AJUSTE FINAL: Margen inferior para elevar la línea */
+      margin: 0 auto 4vh auto; 
+      position: relative; z-index: 15;
     }
     #breathGraph { width: 100%; height: 100%; display: block; }
 
@@ -282,18 +284,16 @@
       pat: document.getElementById('patternDisplay')
     };
 
-    // --- RENDERIZADO DEL PATRÓN (NUEVO) ---
+    // --- RENDERIZADO DEL PATRÓN ---
     function renderPattern(k) {
       els.pat.innerHTML = ''; // Limpiar
       patterns[k].forEach((step, idx) => {
-        // Crear número
         const numSpan = document.createElement('span');
         numSpan.textContent = step.b;
         numSpan.className = 'p-num';
-        numSpan.id = `p-step-${idx}`; // ID único para iluminarlo después
+        numSpan.id = `p-step-${idx}`; 
         els.pat.appendChild(numSpan);
 
-        // Crear separador (si no es el último)
         if (idx < patterns[k].length - 1) {
           const sep = document.createElement('span');
           sep.textContent = '-';
@@ -413,21 +413,15 @@
       const p = state.data.find(x => timeInCycle >= x.start && timeInCycle < x.end);
 
       if (p) {
-        // Actualizar textos
         if (els.ph.textContent !== p.t) els.ph.textContent = p.t;
         
-        // --- ILUMINACIÓN DEL PATRÓN (MAGIA AQUÍ) ---
-        // Encontramos el índice de la fase actual
+        // Highlight Patrón
         const currentPhaseIdx = state.data.indexOf(p);
-        // Iteramos sobre todos los números para encender/apagar
         state.data.forEach((_, idx) => {
             const el = document.getElementById(`p-step-${idx}`);
             if(el) {
-                if(idx === currentPhaseIdx) {
-                    el.classList.add('active');
-                } else {
-                    el.classList.remove('active');
-                }
+                if(idx === currentPhaseIdx) el.classList.add('active');
+                else el.classList.remove('active');
             }
         });
 
@@ -447,7 +441,7 @@
         els.sph.style.transform = `scale(${rawScale})`;
       }
 
-      // ONDA SCROLLING & BOLITA FIJA
+      // ONDA SCROLLING
       const w = els.cvs.width / (window.devicePixelRatio||1);
       const h = els.cvs.height / (window.devicePixelRatio||1);
       els.ctx.clearRect(0, 0, w, h);
@@ -512,8 +506,6 @@
     function start(k) {
       initAudio(); 
       prepareData(k);
-      
-      // RENDERIZAR PATRÓN EN PANTALLA
       renderPattern(k);
 
       els.menu.style.opacity = '0'; setTimeout(()=>els.menu.style.display='none',300);
@@ -541,7 +533,7 @@
       els.cyc.textContent = "🔄 0";
       els.menu.style.display = 'flex'; setTimeout(()=>els.menu.style.opacity='1',10);
       els.share.style.display = 'flex';
-      els.pat.innerHTML = ''; // Limpiar patrón al salir
+      els.pat.innerHTML = ''; 
       
       els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
     }
@@ -583,7 +575,6 @@
        window.closePill = () => { document.getElementById('pillOverlay').style.display='none'; start(q.get('p')); };
     } else {
        prepareData('4-7-8');
-       // Previsualización simple si no corre
        els.pat.textContent = "4-7-8"; 
     }
     initCanvas();
