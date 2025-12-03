@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: Zen Final 7.3</title>
+  <title>Respiración: Wave Edition V8</title>
   <style>
-    /* --- 1. VARIABLES & BASE --- */
+    /* --- 1. BASE & VARIABLES --- */
     :root {
       --primary: #4CAF50; --primary-dark: #2e7d32; --accent: #1a5f7a;
       --bg: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
@@ -27,26 +27,24 @@
     .top-bar {
       display: flex; justify-content: space-between; align-items: center;
       padding: 15px 20px; z-index: 40; pointer-events: none;
-      height: 70px; position: relative; /* Para posicionar el centro absoluto */
+      height: 70px; position: relative;
     }
     .top-left, .top-right { pointer-events: auto; display: flex; gap: 10px; align-items: center; }
 
-    /* --- NUEVO: INDICADOR DE PATRÓN CENTRAL --- */
+    /* INDICADOR DE PATRÓN */
     .pattern-indicator {
       position: absolute;
       left: 50%; top: 50%; transform: translate(-50%, -50%);
-      background: rgba(255,255,255,0.95);
-      padding: 6px 16px;
+      background: rgba(255,255,255,0.8); /* Más sutil */
+      padding: 4px 14px;
       border-radius: 20px;
       color: var(--accent);
       font-weight: 800;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       letter-spacing: 1px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      border: 1px solid rgba(255,255,255,0.6);
-      white-space: nowrap;
-      pointer-events: none; /* No bloquea clicks */
-      z-index: 45;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border: 1px solid rgba(255,255,255,0.4);
+      white-space: nowrap; pointer-events: none; z-index: 45;
     }
 
     .badge {
@@ -101,10 +99,14 @@
       z-index: 20;
     }
 
+    /* VISUALIZADOR INFERIOR (MINIMALISTA) */
     .bottom-viz {
-      width: 100%; height: 80px; background: rgba(255,255,255,0.5);
-      backdrop-filter: blur(5px); border-top: 1px solid rgba(255,255,255,0.5);
-      position: relative; z-index: 30; flex-shrink: 0;
+      width: 100%; 
+      height: 120px; /* Un poco más alto para la onda */
+      background: transparent; /* TOTALMENTE TRANSPARENTE */
+      border: none; /* SIN BORDES */
+      position: relative; z-index: 5; flex-shrink: 0;
+      overflow: hidden;
     }
     #breathGraph { width: 100%; height: 100%; display: block; }
 
@@ -150,7 +152,7 @@
     @media (orientation: landscape) {
       .app-layout { flex-direction: row; }
       .top-bar { position: absolute; width: 100%; top: 0; padding: 10px 20px; }
-      .bottom-viz { position: absolute; bottom: 0; width: 100%; }
+      .bottom-viz { position: absolute; bottom: 0; width: 100%; height: 100px; }
       .stage-center { padding-bottom: 80px; }
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 700px; }
       .sphere-wrapper { width: 200px; height: 200px; }
@@ -190,7 +192,6 @@
   </div>
 
   <div class="app-layout">
-    
     <div class="top-bar">
       <div class="top-left">
         <button class="btn-text" onclick="stop()">❮ Menú</button>
@@ -232,7 +233,7 @@
     };
     const quotes = ["El amor es lo que eres.", "Vuelve al ahora.", "Observa sin juzgar.", "Paz en cada aliento.", "Suelta lo que pesa."];
 
-    let state = { pk:null, data:[], dur:0, tempo:1000, run:false, start:0, cyc:0, snd:false, met:false, ctx:null, lastB:-1, coords:[] };
+    let state = { pk:null, data:[], dur:0, tempo:1000, run:false, start:0, cyc:0, snd:false, met:false, ctx:null, lastB:-1 };
     
     const els = {
       menu: document.getElementById('selectionMenu'),
@@ -240,7 +241,7 @@
       cnt: document.getElementById('counterText'), qt: document.getElementById('phraseContent'),
       cvs: document.getElementById('breathGraph'), ctx: document.getElementById('breathGraph').getContext('2d'),
       cyc: document.getElementById('cycleBadge'), share: document.getElementById('shareBtn'),
-      pat: document.getElementById('patternDisplay') // Referencia al nuevo indicador
+      pat: document.getElementById('patternDisplay')
     };
 
     function initAudio(){ if(!state.ctx) state.ctx=new(window.AudioContext||window.webkitAudioContext)(); }
@@ -250,34 +251,90 @@
       o.connect(g); g.connect(state.ctx.destination); o.start(); o.stop(state.ctx.currentTime+d);
     }
 
-    function calcGeometry() {
-       const r = els.cvs.parentNode.getBoundingClientRect();
-       if(r.width===0) return;
-       els.cvs.width = r.width * 2; els.cvs.height = r.height * 2; els.ctx.scale(2, 2);
-       const w = r.width, h = r.height, m = 15, totalB = state.data.reduce((a,b)=>a+b.b,0), px = w/totalB;
-       state.coords = []; let cx = 0, cy = (state.data[0].y.includes('hold_high') || state.data[0].y === 'fall') ? m : h-m;
+    // --- NUEVO MOTOR DE ONDA (WAVE ENGINE) ---
+    function getYAtTime(t) {
+       // Devuelve la altura (0 a 1) en un momento t del ciclo
+       const p = state.data.find(x => t >= x.start && t < x.end);
+       if(!p) return 0.1; // Default low
+       const prog = (t - p.start) / p.dur;
+       
+       if(p.y === 'rise') return 0.2 + (0.6 * prog); // Sube de 20% a 80%
+       if(p.y === 'hold_high') return 0.8;           // Mantiene arriba
+       if(p.y === 'fall') return 0.8 - (0.6 * prog); // Baja de 80% a 20%
+       return 0.2;                                   // Mantiene abajo
+    }
 
-       state.data.forEach(p => {
-          const sw = p.b * px, ex = cx + sw; let ey = cy;
-          if(p.y==='rise') ey=m; if(p.y==='fall') ey=h-m; if(p.y==='hold_high') ey=m; if(p.y==='hold_low') ey=h-m;
-          state.coords.push({x1:cx,y1:cy,x2:ex,y2:ey,start:p.start,end:p.end,dur:p.dur}); cx=ex; cy=ey;
-       });
+    function drawWave() {
+       const w = els.cvs.width; const h = els.cvs.height;
+       const now = Date.now();
+       const pxPerMs = w / (state.dur * 1.5); // Escala: 1.5 ciclos caben en pantalla
+       
+       els.ctx.clearRect(0,0,w,h);
+       
+       // Dibujar Onda (Pasado -> Futuro)
+       els.ctx.beginPath();
+       els.ctx.strokeStyle = '#4CAF50'; els.ctx.lineWidth = 4; els.ctx.lineCap = 'round'; els.ctx.lineJoin = 'round';
+       
+       // Iteramos píxel a píxel (o cada 5px para rendimiento)
+       let first = true;
+       for(let x = 0; x <= w; x+=5) {
+           // Calcular qué tiempo corresponde a este píxel X
+           // El centro (w/2) es AHORA. 
+           // Izquierda es pasado, Derecha es futuro.
+           const timeOffset = (x - w/2) / pxPerMs; 
+           let tWorld = (now - state.start) + timeOffset;
+           
+           // Ajustar tWorld a un ciclo válido (modulo)
+           // Usamos matemáticas para manejar tiempos negativos correctamente
+           let tInCycle = tWorld % state.dur;
+           if(tInCycle < 0) tInCycle += state.dur;
+
+           const yRatio = getYAtTime(tInCycle);
+           const y = h - (yRatio * h); // Invertir Y (Canvas 0 es arriba)
+
+           if(first) { els.ctx.moveTo(x,y); first=false; }
+           else { els.ctx.lineTo(x,y); }
+       }
+       els.ctx.stroke();
+
+       // DIBUJAR BOLITA FIJA (En el centro X)
+       const centerX = w/2;
+       // La altura Y es la del tiempo "AHORA" (offset 0)
+       const nowInCycle = (now - state.start) % state.dur;
+       const centerYRatio = getYAtTime(nowInCycle);
+       const centerY = h - (centerYRatio * h);
+
+       // Halo
+       els.ctx.beginPath();
+       els.ctx.fillStyle = 'rgba(255, 112, 67, 0.3)';
+       els.ctx.arc(centerX, centerY, 15, 0, Math.PI * 2);
+       els.ctx.fill();
+
+       // Núcleo
+       els.ctx.beginPath();
+       els.ctx.fillStyle = '#ff7043';
+       els.ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+       els.ctx.fill();
     }
 
     function loop() {
-      let activeSeg = null;
       if(state.run) {
-         const elap = Date.now() - state.start, t = elap % state.dur, cyc = Math.floor(elap / state.dur);
+         const now = Date.now();
+         const elap = now - state.start;
+         const t = elap % state.dur; 
+         const cyc = Math.floor(elap / state.dur);
+
          if(cyc > state.cyc) { state.cyc = cyc; els.cyc.innerText = `🔄 ${cyc}`; }
          
          const p = state.data.find(x => t >= x.start && t < x.end);
-         activeSeg = state.coords.find(s => t >= s.start && t < s.end);
-
+         
          if(p) {
             if(els.ph.innerText !== p.t) {
                els.ph.innerText = p.t; if(state.snd) beep(p.y==='rise'?300:p.y==='fall'?250:400,'sine',0.3);
             }
-            const tip = t - p.start; els.cnt.innerText = Math.floor(tip/state.tempo)+1;
+            const tip = t - p.start; 
+            els.cnt.innerText = Math.floor(tip/state.tempo)+1;
+            
             const bk = `${cyc}-${p.t}-${els.cnt.innerText}`;
             if(state.met && state.lastB !== bk) { beep(800,'triangle',0.05); state.lastB = bk; }
 
@@ -286,35 +343,29 @@
             els.sph.style.transform = `scale(${s})`;
          }
       }
-
-      const w = els.cvs.width/2, h = els.cvs.height/2; els.ctx.clearRect(0,0,w,h);
-      if(state.coords.length) {
-         els.ctx.beginPath(); els.ctx.strokeStyle='#4CAF50'; els.ctx.lineWidth=6; els.ctx.lineCap='round'; els.ctx.lineJoin='round';
-         state.coords.forEach((c,i)=>{ if(i===0)els.ctx.moveTo(c.x1,c.y1); els.ctx.lineTo(c.x2,c.y2); }); els.ctx.stroke();
-
-         if(state.run && activeSeg) {
-             const prog = ((Date.now() - state.start) % state.dur - activeSeg.start) / activeSeg.dur;
-             const bx = activeSeg.x1+(activeSeg.x2-activeSeg.x1)*prog, by = activeSeg.y1+(activeSeg.y2-activeSeg.y1)*prog;
-             els.ctx.beginPath(); els.ctx.fillStyle='#ff7043'; els.ctx.arc(bx,by,8,0,Math.PI*2); els.ctx.fill();
-             els.ctx.beginPath(); els.ctx.fillStyle='rgba(255,112,67,0.3)'; els.ctx.arc(bx,by,14,0,Math.PI*2); els.ctx.fill();
+      
+      // Render siempre (incluso parado, para mostrar la línea estática)
+      if(state.data.length > 0) {
+         // Ajuste de resolución
+         const r = els.cvs.parentNode.getBoundingClientRect();
+         if(r.width !== els.cvs.width || r.height !== els.cvs.height) {
+            els.cvs.width = r.width; els.cvs.height = r.height;
          }
+         drawWave();
       }
+      
       requestAnimationFrame(loop);
     }
 
     function prepareData(k) {
       state.pk = k; state.data = []; let acc = 0;
       patterns[k].forEach(x => { const d = x.b * state.tempo; state.data.push({...x, start:acc, end:acc+d, dur:d}); acc += d; });
-      state.dur = acc; calcGeometry();
+      state.dur = acc;
     }
 
     function start(k) {
-      prepareData(k); 
-      
-      // Actualizar el Texto del Patrón
-      let displayTxt = k;
-      if(k === 'box') displayTxt = '4-4-4-4';
-      els.pat.innerText = displayTxt;
+      prepareData(k);
+      let displayTxt = k; if(k === 'box') displayTxt = '4-4-4-4'; els.pat.innerText = displayTxt;
 
       els.menu.style.opacity = '0'; setTimeout(()=>els.menu.style.display='none',300);
       els.share.style.display = 'none';
@@ -348,7 +399,6 @@
        }
     }
 
-    window.addEventListener('resize', calcGeometry);
     const q = new URLSearchParams(location.search);
     if(q.get('p') && patterns[q.get('p')]) {
        document.getElementById('pillOverlay').style.display = 'flex';
@@ -358,7 +408,7 @@
        window.closePill = () => { document.getElementById('pillOverlay').style.display='none'; start(q.get('p')); };
     } else {
        prepareData('4-7-8');
-       els.pat.innerText = "4-7-8"; // Valor inicial
+       els.pat.innerText = "4-7-8"; 
     }
     loop();
   </script>
