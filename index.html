@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: Panoramic V11</title>
+  <title>Respiración: Final V11.1</title>
   <style>
     /* --- 1. BASE & VARIABLES --- */
     :root {
@@ -22,25 +22,20 @@
 
     /* --- 2. LAYOUT PRINCIPAL --- */
     .app-layout {
-      flex: 1; 
-      display: flex; 
-      flex-direction: column; 
-      width: 100%; 
-      height: 100%;
-      position: relative;
+      flex: 1; display: flex; flex-direction: column; 
+      width: 100%; height: 100%; position: relative;
     }
 
-    /* BARRA SUPERIOR (Fix V10.1 mantenido) */
+    /* BARRA SUPERIOR */
     .top-bar {
       flex-shrink: 0; 
       display: flex; justify-content: space-between; align-items: center;
       padding: 15px 20px; z-index: 40; pointer-events: none;
-      height: 70px;
-      position: relative; 
+      height: 70px; position: relative; 
     }
     .top-left, .top-right { pointer-events: auto; display: flex; gap: 10px; align-items: center; }
 
-    /* BOTONES */
+    /* UI ELEMENTS */
     .badge {
       background: var(--primary-dark); color: white; padding: 6px 14px; border-radius: 20px;
       font-weight: 700; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(46,125,50,0.2);
@@ -93,19 +88,13 @@
       padding: 0 20px; text-align: center; color: #78909c;
       font-family: 'Georgia', serif; font-style: italic; 
       font-size: 0.9rem; min-height: 30px;
+      transition: opacity 0.5s;
     }
 
-    /* --- 4. VISUALIZADOR DE ONDA (PANORÁMICO V11) --- */
-    /* Aquí está la magia del ancho adaptable */
+    /* --- 4. VISUALIZADOR DE ONDA PANORÁMICO --- */
     .bottom-viz {
       flex-shrink: 0; 
-      
-      /* ANCHO INTELIGENTE:
-         - Móvil: 90% de la pantalla (90vw) para dejar margenes.
-         - Tablet/PC: Máximo 900px (aprox 3 esferas de ancho). 
-      */
       width: min(90vw, 900px); 
-      
       height: 100px; 
       margin: 0 auto 20px auto; 
       position: relative; z-index: 15;
@@ -148,7 +137,6 @@
       background: rgba(255,255,255,0.98); z-index: 200;
       display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px;
     }
-
     .fab {
       position: fixed; bottom: 20px; right: 20px;
       background: var(--accent); color: white; padding: 12px 24px;
@@ -157,25 +145,29 @@
       z-index: 150; display: flex; align-items: center; gap: 8px; cursor: pointer;
     }
     
-    /* --- MEDIA QUERIES (LANDSCAPE ACTUALIZADO) --- */
+    /* --- MEDIA QUERIES (LANDSCAPE OPTIMIZADO) --- */
     @media (orientation: landscape) {
       .app-layout { flex-direction: row; }
       .top-bar { position: absolute; width: 100%; top: 0; padding: 10px 20px; }
       
-      /* Visualizador en Landscape */
       .bottom-viz { 
-        position: absolute; 
-        bottom: 10px; 
-        left: 50%;
-        transform: translateX(-50%); /* Centrado perfecto */
-        /* Mantiene la lógica: ancho adaptable hasta 900px */
-        width: min(90vw, 900px); 
-        margin: 0;
+        position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+        width: min(90vw, 900px); margin: 0;
       }
       
-      .stage-center { padding-bottom: 80px; justify-content: center; gap: 15px; }
+      .stage-center { padding-bottom: 80px; justify-content: center; gap: 10px; }
+      
+      /* --- CORRECCIÓN CLAVE DE TAMAÑO --- */
+      .sphere-wrapper { 
+        /* Usamos vh (altura) en lugar de pixeles fijos para que nunca sea demasiado grande */
+        width: min(45vh, 220px); 
+        height: min(45vh, 220px); 
+      }
+      
+      /* Ajuste fino de la frase */
+      .quote { font-size: 0.85rem; margin-top: 5px; }
+
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 700px; }
-      .sphere-wrapper { width: 200px; height: 200px; }
     }
   </style>
 </head>
@@ -304,8 +296,6 @@
 
        els.ctx.clearRect(0, 0, w, h);
 
-       // 1.5 ciclos visibles, independientemente del ancho.
-       // Al ser más ancho, la onda se verá más "alargada" y relajante.
        const viewDuration = state.dur * 1.5; 
        const pxPerMs = w / viewDuration; 
 
