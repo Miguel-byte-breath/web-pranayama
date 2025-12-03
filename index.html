@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: Precision V15.1</title>
+  <title>Respiración: Final V16 Safety Zone</title>
   <style>
     /* --- 1. BASE & VARIABLES --- */
     :root {
@@ -52,7 +52,7 @@
       color: #546e7a; font-weight: 600; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
-    /* --- 3. ESCENARIO CENTRAL (Symmetric Layout) --- */
+    /* --- 3. ESCENARIO CENTRAL (FLEXIBLE) --- */
     .stage-container {
       flex: 1;
       display: flex; 
@@ -60,7 +60,7 @@
       position: relative;
       align-items: center;
       justify-content: center;
-      flex-direction: column; /* Default: Vertical */
+      flex-direction: column; /* Default: Vertical (Móvil Portrait) */
     }
 
     /* PANELES LATERALES (Textos) */
@@ -69,8 +69,6 @@
       display: flex; flex-direction: column; 
       align-items: center; justify-content: center;
       z-index: 20;
-      transition: all 0.3s;
-      min-height: 60px; 
       width: 100%; 
     }
 
@@ -79,9 +77,10 @@
       z-index: 10;
       display: flex; align-items: center; justify-content: center;
       margin: 20px 0; 
+      flex-shrink: 0; /* Evita que la esfera se aplaste */
     }
 
-    /* TIPOGRAFÍA */
+    /* TEXTOS */
     .phase-text {
       font-size: clamp(2.5rem, 6vw, 3.5rem); 
       font-weight: 300; letter-spacing: 4px; color: var(--accent);
@@ -93,11 +92,13 @@
       font-family: 'Georgia', serif; font-style: italic; 
       font-size: 1rem; text-align: center;
       max-width: 400px;
+      transition: opacity 0.5s;
     }
 
-    /* ESFERA */
+    /* ESFERA: CONTENEDOR Y FORMA */
     .sphere-wrapper {
       position: relative; 
+      /* Tamaño base para portrait */
       width: min(60vw, 260px); 
       height: min(60vw, 260px);
       display: flex; align-items: center; justify-content: center;
@@ -109,7 +110,9 @@
       background: radial-gradient(circle at 30% 30%, #a8ff60, #4CAF50);
       box-shadow: 0 20px 60px rgba(76,175,80,0.4);
       display: flex; align-items: center; justify-content: center; flex-direction: column;
-      will-change: transform; transform: scale(0.7); 
+      will-change: transform; 
+      /* Escala base controlada por JS, empieza en 0.8 */
+      transform: scale(0.8); 
     }
 
     .counter-big { 
@@ -165,34 +168,43 @@
       z-index: 150; display: flex; align-items: center; gap: 8px; cursor: pointer;
     }
     
-    /* --- MEDIA QUERIES: AJUSTE FINO LANDSCAPE --- */
+    /* --- MAGIC: SOLUCIÓN ANTI-SOLAPAMIENTO (SAFETY ZONE) --- */
     @media (orientation: landscape) {
       .app-layout { grid-template-rows: 50px 1fr 70px; }
       
       .stage-container {
         flex-direction: row; 
         justify-content: space-between; 
-        padding: 0 5vw; 
+        padding: 0 2vw; /* Pequeño margen global */
       }
 
+      /* LA CLAVE: Definimos un contenedor muy grande (52vh).
+         Esto empuja los textos hacia los lados automáticamente gracias a Flexbox.
+         La esfera crecerá dentro de este espacio sin salirse jamás. */
+      .sphere-wrapper {
+        width: 52vh; height: 52vh; 
+      }
+      
+      /* La esfera empieza pequeña (60% del contenedor).
+         Al crecer (1.5x), llegará al 90% (0.6 * 1.5 = 0.9).
+         ¡Nunca toca el borde del 100%! */
+      .sphere {
+        width: 60%; height: 60%;
+      }
+
+      /* Alineación de Textos */
       .panel-side:first-child { 
-        align-items: flex-end; text-align: right; padding-right: 30px; 
+        align-items: flex-end; text-align: right; 
+        padding-right: 10px; /* Acercar al borde de seguridad */
       }
       .panel-side:last-child {
-        align-items: flex-start; text-align: left; padding-left: 30px;
+        align-items: flex-start; text-align: left; 
+        padding-left: 10px; /* Acercar al borde de seguridad */
       }
 
-      .panel-center { flex-shrink: 0; margin: 0; }
-      
-      /* AJUSTE SOLICITADO: Reducción de tamaño en horizontal para no tocar la línea */
-      .sphere-wrapper {
-        width: 40vh; height: 40vh; 
-      }
-
-      .phase-text { font-size: 2.5rem; }
-      .quote { max-width: 300px; padding: 0; text-align: left; }
+      .phase-text { font-size: 2.2rem; }
+      .quote { max-width: 280px; padding: 0; text-align: left; }
       .bottom-viz { height: 70px; }
-      
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 700px; }
     }
   </style>
@@ -242,6 +254,7 @@
     </div>
 
     <div class="stage-container">
+      
       <div class="panel-side">
         <div class="phase-text" id="phaseText">LISTO</div>
       </div>
@@ -258,6 +271,7 @@
       <div class="panel-side">
         <div class="quote" id="phraseContent">Respira...</div>
       </div>
+      
     </div>
 
     <div class="bottom-viz">
@@ -377,8 +391,7 @@
         }
 
         const tip = t - p.start;
-        // SOLUCIÓN CLAVE: Clamp para evitar el "bug del 8 en el 7"
-        // Aseguramos que el beat actual nunca supere el máximo de la fase.
+        // FIX: Evitar que el contador salte al siguiente (ej. 8 en ciclo de 7)
         const rawBeat = Math.floor(tip / state.tempo) + 1;
         const currentBeat = Math.min(rawBeat, p.b);
         
@@ -392,6 +405,7 @@
 
         const progress = tip / p.dur; 
         let rawScale = 1;
+        // Escala adaptada al safety wrapper (0.8 -> 1.5)
         if (p.y === 'rise') rawScale = 0.8 + (0.7 * easeInOutSine(progress)); 
         else if (p.y === 'fall') rawScale = 1.5 - (0.7 * easeInOutSine(progress));
         else if (p.y === 'hold_high') rawScale = 1.5;
