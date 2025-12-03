@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: Professional Sync V17</title>
+  <title>Respiración: V18 Fixed Ball</title>
   <style>
     /* --- 1. BASE & VARIABLES --- */
     :root {
@@ -49,9 +49,8 @@
       background: white; border: none; padding: 8px 16px; border-radius: 20px;
       color: #546e7a; font-weight: 600; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
-    .btn-text.active { background: #e8f5e9; color: var(--primary-dark); border: 1px solid var(--primary); }
 
-    /* --- 3. ESCENARIO CENTRAL (Safety Zone Layout) --- */
+    /* --- 3. ESCENARIO CENTRAL (Safety Zone Layout V16) --- */
     .stage-container {
       flex: 1; display: flex; width: 100%; position: relative;
       align-items: center; justify-content: center;
@@ -154,19 +153,11 @@
     /* --- SAFETY ZONE: LANDSCAPE --- */
     @media (orientation: landscape) {
       .app-layout { grid-template-rows: 50px 1fr 70px; }
-      
-      .stage-container {
-        flex-direction: row; justify-content: space-between; padding: 0 2vw;
-      }
-
-      /* Contenedor de seguridad expandido: 52vh */
+      .stage-container { flex-direction: row; justify-content: space-between; padding: 0 2vw; }
       .sphere-wrapper { width: 52vh; height: 52vh; }
-      /* Esfera base al 60% para poder crecer hasta el 90% sin tocar bordes */
       .sphere { width: 60%; height: 60%; }
-
       .panel-side:first-child { align-items: flex-end; text-align: right; padding-right: 10px; }
       .panel-side:last-child { align-items: flex-start; text-align: left; padding-left: 10px; }
-
       .phase-text { font-size: 2.2rem; }
       .quote { max-width: 280px; padding: 0; text-align: left; }
       .bottom-viz { height: 70px; }
@@ -254,14 +245,14 @@
     };
     const quotes = ["El amor es lo que eres.", "Vuelve al ahora.", "Observa sin juzgar.", "Paz en cada aliento.", "Suelta lo que pesa."];
 
-    // --- VARIABLES DE ESTADO Y AUDIO CLOCK ---
+    // --- ESTADO ---
     let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, startAudioTime:0, cyc:0, snd:false, met:false };
     let audioCtx = null;
     let nextNoteTime = 0.0;
-    let currentBeatIndex = 0; // Índice global del beat en el ciclo
+    let currentBeatIndex = 0;
     let scheduleTimerID = null;
-    const lookahead = 25.0; // ms (frecuencia de revisión)
-    const scheduleAheadTime = 0.1; // s (cuánto miramos al futuro)
+    const lookahead = 25.0; 
+    const scheduleAheadTime = 0.1;
 
     // Elementos DOM
     const els = {
@@ -273,34 +264,25 @@
       pat: document.getElementById('patternDisplay')
     };
 
-    // --- MOTOR DE AUDIO ---
+    // --- AUDIO ---
     function initAudio() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
     }
 
     function playTone(freq, type, dur, time) {
-      if (!state.snd && !state.met) return; // Si todo está mudo, no crea nodos
-      // Crear ganancia maestra para controlar si suena o no (Mute lógico)
+      if (!state.snd && !state.met) return; 
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-      
       osc.type = type;
       osc.frequency.setValueAtTime(freq, time);
       
-      // Volumen base
       let vol = 0.0;
-      if (state.snd) vol = 0.05; // Sonido de fase
-      if (state.met && type === 'square') vol = 0.05; // Metrónomo (sobreescribe si es beat tick)
-      if (state.met && state.snd && type === 'square') vol = 0.08; // Si ambos, un poco más fuerte
+      if (state.snd) vol = 0.05; 
+      if (state.met && type === 'square') vol = 0.05; 
+      if (state.met && state.snd && type === 'square') vol = 0.08; 
       
-      // Si solo metrónomo y esto es tono de fase (sine), silencio
       if (!state.snd && state.met && type !== 'square') vol = 0;
-      // Si solo sonido fase y esto es metrónomo (square), silencio
       if (state.snd && !state.met && type === 'square') vol = 0;
 
       gain.gain.setValueAtTime(vol, time);
@@ -312,22 +294,19 @@
       osc.stop(time + dur);
     }
 
-    // --- PLANIFICADOR (SCHEDULER) ---
+    // --- SCHEDULER (Metrónomo) ---
     function nextBeat() {
       const secondsPerBeat = state.tempo;
       nextNoteTime += secondsPerBeat;
       currentBeatIndex++; 
-      // Calculamos beat total del ciclo
       const totalBeats = state.data.reduce((acc, p) => acc + p.b, 0);
       if (currentBeatIndex >= totalBeats) {
         currentBeatIndex = 0;
-        state.cyc++;
-        // Actualización visual de ciclo en el próximo frame visual (se sincronizará solo por tiempo)
+        state.cyc++; // Se ajusta visualmente en el draw
       }
     }
 
     function scheduleNote(beatNumber, time) {
-      // Determinar en qué fase estamos basado en el beatNumber
       let accumulatedBeats = 0;
       let phase = null;
       let beatInPhase = 0;
@@ -342,8 +321,7 @@
       }
 
       if (phase) {
-        // Tono de Cambio de Fase (Solo en beat 1 de cada fase)
-        if (beatInPhase === 1) {
+        if (beatInPhase === 1) { // Sonido fase
            let freq = 440;
            if(phase.y === 'rise') freq = 300;
            else if(phase.y === 'hold_high') freq = 450;
@@ -351,141 +329,135 @@
            else freq = 250;
            playTone(freq, 'sine', 0.2, time);
         }
-
-        // Click de Metrónomo (Todos los beats)
-        if (state.met) {
-           // Tono más agudo para el 1 de la fase
+        if (state.met) { // Metrónomo
            playTone(beatInPhase === 1 ? 1200 : 800, 'square', 0.05, time); 
         }
       }
     }
 
     function scheduler() {
-      // Mientras haya notas que tocar en el futuro cercano (0.1s)
       while (nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
         scheduleNote(currentBeatIndex, nextNoteTime);
         nextBeat();
       }
-      if (state.run) {
-        scheduleTimerID = setTimeout(scheduler, lookahead);
-      }
+      if (state.run) scheduleTimerID = setTimeout(scheduler, lookahead);
     }
 
-    // --- MOTOR VISUAL (RENDER LOOP) ---
+    // --- VISUALIZADOR (Modo Osciloscopio) ---
     function easeInOutSine(x) { return -(Math.cos(Math.PI * x) - 1) / 2; }
+
+    // Función auxiliar para obtener altura Y en cualquier tiempo T (global)
+    function getYForTime(tAbs, totalDur) {
+        const tCycle = tAbs % totalDur;
+        const p = state.data.find(seg => tCycle >= seg.start && tCycle < seg.end);
+        let yRatio = 0.2; // Base
+        if(p) {
+            const prog = (tCycle - p.start) / p.dur;
+            if (p.y === 'rise') yRatio = 0.2 + (0.6 * easeInOutSine(prog));
+            else if (p.y === 'fall') yRatio = 0.8 - (0.6 * easeInOutSine(prog));
+            else if (p.y === 'hold_high') yRatio = 0.8;
+            else yRatio = 0.2; // hold_low
+        }
+        return yRatio;
+    }
 
     function draw() {
       if (!state.run) return;
       
-      // TIEMPO MAESTRO: Diferencia entre ahora y el inicio (Audio Time)
       const currentTime = audioCtx.currentTime;
       const elapsed = currentTime - state.startAudioTime;
-      
-      // Ciclos y Fase
-      // Recalculamos ciclo actual para display visual seguro
-      // (state.cyc del scheduler va adelantado para audio, este es para visual)
-      const totalCycleDur = state.dur; // en segundos
+      const totalCycleDur = state.dur;
+
+      // Actualizar Textos
       const cycleCountVisual = Math.floor(elapsed / totalCycleDur);
       els.cyc.textContent = `🔄 ${cycleCountVisual}`;
 
       const timeInCycle = elapsed % totalCycleDur;
-
-      // Buscar Fase Actual
-      // state.data ahora guarda tiempos en segundos
       const p = state.data.find(x => timeInCycle >= x.start && timeInCycle < x.end);
 
       if (p) {
-        // Texto Fase
         if (els.ph.textContent !== p.t) els.ph.textContent = p.t;
-
-        // Contador: Calculamos beat basado en tiempo transcurrido en fase
+        
+        // Contador suave
         const timeInPhase = timeInCycle - p.start;
-        // Clamp para evitar que muestre el siguiente numero por milisegundos
         let currentBeat = Math.floor(timeInPhase / state.tempo) + 1;
         currentBeat = Math.min(currentBeat, p.b);
         els.cnt.textContent = currentBeat;
 
-        // Esfera: Escalado Suave
+        // Esfera
         const progress = timeInPhase / p.dur; 
         let rawScale = 1;
-        // Escalas adaptadas al safety zone (0.8 a 1.5)
         if (p.y === 'rise') rawScale = 0.8 + (0.7 * easeInOutSine(progress)); 
         else if (p.y === 'fall') rawScale = 1.5 - (0.7 * easeInOutSine(progress));
         else if (p.y === 'hold_high') rawScale = 1.5;
         else rawScale = 0.8;
-        
         els.sph.style.transform = `scale(${rawScale})`;
       }
 
-      // Dibujar Onda
-      drawWave(timeInCycle, totalCycleDur);
+      // DIBUJAR ONDA SCROLLING
+      const w = els.cvs.width / (window.devicePixelRatio||1);
+      const h = els.cvs.height / (window.devicePixelRatio||1);
+      els.ctx.clearRect(0, 0, w, h);
+
+      // BOLITA FIJA EN EL CENTRO
+      const centerX = w / 2;
+      const currentYRatio = getYForTime(elapsed, totalCycleDur);
+      const ballY = h - (currentYRatio * h);
+
+      // Dibujar Onda:
+      // Queremos ver desde (ahora - tiempoAtras) hasta (ahora + tiempoAdelante)
+      // Mapeamos pixeles X a tiempo T.
+      // Si el centro es T = elapsed...
+      // Definimos "Zoom": Cuantos segundos caben en la pantalla. Digamos 1 ciclo completo.
+      const secondsOnScreen = state.dur; 
+      const pxPerSec = w / secondsOnScreen;
+
+      els.ctx.beginPath();
+      els.ctx.strokeStyle = '#4CAF50'; els.ctx.lineWidth = 3;
+      els.ctx.lineCap = 'round'; els.ctx.lineJoin = 'round';
+
+      let first = true;
+      // Dibujamos con menor resolución para rendimiento (step 4px)
+      for(let x = 0; x <= w; x += 4) {
+          // Diferencia en pixeles respecto al centro
+          const pxOffset = x - centerX;
+          // Diferencia en tiempo
+          const timeOffset = pxOffset / pxPerSec;
+          // Tiempo absoluto que representa este pixel
+          const tAtPixel = elapsed + timeOffset;
+
+          // Si tAtPixel es negativo, podemos mostrar el final del ciclo anterior (wrapping) 
+          // o simplemente calcular % dur. El modulo maneja negativos en JS un poco mal,
+          // así que nos aseguramos de que sea positivo.
+          let tPositive = tAtPixel;
+          while(tPositive < 0) tPositive += totalCycleDur;
+
+          const yR = getYForTime(tPositive, totalCycleDur);
+          const y = h - (yR * h);
+
+          if(first) { els.ctx.moveTo(x, y); first = false; }
+          else { els.ctx.lineTo(x, y); }
+      }
+      els.ctx.stroke();
+
+      // Dibujar Bolita encima
+      els.ctx.beginPath();
+      els.ctx.fillStyle = '#FF5722';
+      els.ctx.arc(centerX, ballY, 6, 0, Math.PI * 2);
+      els.ctx.fill();
+      els.ctx.strokeStyle = 'white'; els.ctx.lineWidth = 2; els.ctx.stroke();
+
       requestAnimationFrame(draw);
-    }
-
-    function drawWave(timeInCycle, totalDur) {
-       const w = els.cvs.width / (window.devicePixelRatio||1);
-       const h = els.cvs.height / (window.devicePixelRatio||1);
-       els.ctx.clearRect(0, 0, w, h);
-
-       // Dibujar línea estática
-       els.ctx.beginPath();
-       els.ctx.strokeStyle = '#4CAF50'; els.ctx.lineWidth = 3;
-       els.ctx.lineCap = 'round'; els.ctx.lineJoin = 'round';
-       
-       let first = true;
-       // Iteramos pixeles para dibujar la curva
-       for(let x = 0; x <= w; x += 5) {
-           const tProp = x / w; // 0 a 1
-           const tAbs = tProp * totalDur;
-           
-           // Encontrar altura Y para este punto del tiempo
-           const p = state.data.find(seg => tAbs >= seg.start && tAbs < seg.end);
-           let yRatio = 0.2;
-           if(p) {
-               const prog = (tAbs - p.start) / p.dur;
-               if (p.y === 'rise') yRatio = 0.2 + (0.6 * easeInOutSine(prog));
-               else if (p.y === 'fall') yRatio = 0.8 - (0.6 * easeInOutSine(prog));
-               else if (p.y === 'hold_high') yRatio = 0.8;
-               else yRatio = 0.2;
-           }
-           const y = h - (yRatio * h);
-           if(first) { els.ctx.moveTo(x, y); first = false; }
-           else { els.ctx.lineTo(x, y); }
-       }
-       els.ctx.stroke();
-
-       // DIBUJAR BOLITA
-       // La posición X es puramente lineal respecto al tiempo del ciclo.
-       // Esto garantiza sincronía visual perfecta con el barrido del ciclo.
-       const ballX = (timeInCycle / totalDur) * w;
-       
-       // Calcular Y de la bolita (misma lógica que la línea)
-       const p = state.data.find(seg => timeInCycle >= seg.start && timeInCycle < seg.end);
-       let ballYRatio = 0.2;
-       if(p) {
-           const prog = (timeInCycle - p.start) / p.dur;
-           if (p.y === 'rise') ballYRatio = 0.2 + (0.6 * easeInOutSine(prog));
-           else if (p.y === 'fall') ballYRatio = 0.8 - (0.6 * easeInOutSine(prog));
-           else if (p.y === 'hold_high') ballYRatio = 0.8;
-       }
-       const ballY = h - (ballYRatio * h);
-
-       els.ctx.beginPath();
-       els.ctx.fillStyle = '#FF5722';
-       els.ctx.arc(ballX, ballY, 6, 0, Math.PI * 2);
-       els.ctx.fill();
-       els.ctx.strokeStyle = 'white'; els.ctx.lineWidth = 2; els.ctx.stroke();
     }
 
     function prepareData(k) {
       state.pk = k; state.data = []; let acc = 0;
-      // Convertir beats a segundos
       patterns[k].forEach(x => { 
-          const d = x.b * state.tempo; // Duración en segundos
+          const d = x.b * state.tempo; 
           state.data.push({...x, start:acc, end:acc+d, dur:d}); 
           acc += d; 
       });
-      state.dur = acc; // Duración total ciclo en segundos
+      state.dur = acc;
     }
 
     function initCanvas() {
@@ -499,7 +471,7 @@
 
     // --- CONTROLES ---
     function start(k) {
-      initAudio(); // Importante: Iniciar contexto en gesto de usuario
+      initAudio(); 
       prepareData(k);
       
       let displayTxt = k; if(k === 'box') displayTxt = '4-4-4-4'; els.pat.textContent = displayTxt;
@@ -510,13 +482,11 @@
       setTimeout(() => {
         initCanvas();
         state.run = true;
-        // RESET DE RELOJ MAESTRO
         state.startAudioTime = audioCtx.currentTime;
         nextNoteTime = audioCtx.currentTime;
         currentBeatIndex = 0;
         state.cyc = 0;
         
-        // Arrancar motores
         scheduler(); 
         requestAnimationFrame(draw);
       }, 50);
@@ -530,23 +500,24 @@
       els.cyc.textContent = "🔄 0";
       els.menu.style.display = 'flex'; setTimeout(()=>els.menu.style.opacity='1',10);
       els.share.style.display = 'flex';
+      
+      // Dibujo estático de reinicio
+      els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
     }
 
     function toggleSound() { state.snd=!state.snd; document.getElementById('soundBtn').textContent=state.snd?"🔊":"🔇"; if(state.run) initAudio(); }
     function toggleMetronome() { state.met=!state.met; document.getElementById('metronomeBtn').classList.toggle('active'); }
     
     function toggleTempo() { 
-      const t = [1.0, 1.5, 2.0]; // Segundos por beat
+      const t = [1.0, 1.5, 2.0]; 
       const idx = t.indexOf(state.tempo); 
       const next = t[(idx+1)%t.length];
       state.tempo = next; 
       document.getElementById('tempoBtn').innerText = `⚡ ${next===1.0?'1x':next===1.5?'Lento':'Zen'}`;
       
-      // Si está corriendo, reiniciamos para evitar saltos matemáticos complejos
+      // SOLUCIÓN BUG TEMPO: Si corre, reinicia al vuelo (sin ir al menú)
       if(state.run) { 
-          stop();
-          // Opcional: reiniciar automáticamente
-          // start(state.pk); 
+         start(state.pk); 
       } 
     }
 
@@ -575,9 +546,6 @@
        els.pat.textContent = "4-7-8";
     }
     initCanvas();
-    // Dibujo inicial estático
-    state.data=[{start:0,end:100,dur:100,y:'rise'}]; // Fake data for initial draw
-    drawWave(0, 100);
   </script>
 </body>
 </html>
