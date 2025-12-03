@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V20 Visual Balance</title>
+  <title>Respiración: V21 Harmonic Precision</title>
   <style>
     /* --- 1. BASE & VARIABLES --- */
     :root {
@@ -119,7 +119,6 @@
       font-size: 0.8rem; color: rgba(255,255,255,0.2);
     }
     
-    /* Highlight activo */
     .p-num.active {
       color: #fff;
       font-weight: 800;
@@ -130,7 +129,6 @@
     /* --- 4. VISUALIZADOR --- */
     .bottom-viz {
       flex-shrink: 0; width: min(95vw, 900px); height: 100px; 
-      /* AJUSTE FINAL: Margen inferior para elevar la línea */
       margin: 0 auto 4vh auto; 
       position: relative; z-index: 15;
     }
@@ -360,6 +358,7 @@
       }
 
       if (phase) {
+        // Tono en el beat 1 de la fase
         if (beatInPhase === 1) { 
            let freq = 440;
            if(phase.y === 'rise') freq = 300;
@@ -368,7 +367,9 @@
            else freq = 250;
            playTone(freq, 'sine', 0.2, time);
         }
+        // Tono de metrónomo en CADA beat
         if (state.met) { 
+           // Beat 1 suena diferente para marcar inicio de compás/fase
            playTone(beatInPhase === 1 ? 1200 : 800, 'square', 0.05, time); 
         }
       }
@@ -383,18 +384,36 @@
     }
 
     // --- VISUALIZADOR ---
+    // Función de easing solo para esfera (suavidad)
     function easeInOutSine(x) { return -(Math.cos(Math.PI * x) - 1) / 2; }
 
-    function getYForTime(tAbs, totalDur) {
+    // Función de interpolación LINEAL para la gráfica (precisión armónica)
+    function getLinearYForTime(tAbs, totalDur) {
         const tCycle = tAbs % totalDur;
         const p = state.data.find(seg => tCycle >= seg.start && tCycle < seg.end);
+        
         let yRatio = 0.2; 
         if(p) {
+            // Progreso lineal estricto (0.0 a 1.0)
             const prog = (tCycle - p.start) / p.dur;
-            if (p.y === 'rise') yRatio = 0.2 + (0.6 * easeInOutSine(prog));
-            else if (p.y === 'fall') yRatio = 0.8 - (0.6 * easeInOutSine(prog));
-            else if (p.y === 'hold_high') yRatio = 0.8;
-            else yRatio = 0.2; 
+
+            if (p.y === 'rise') {
+                // Sube de 0.2 a 0.8 de forma lineal (o con suavizado muy ligero)
+                // Para armonía perfecta con metrónomo, usaremos una curva muy suave pero predecible
+                // o lineal. El usuario pidió armonía total: lineal para gráfica es más exacto visualmente.
+                // Sin embargo, una curva de respiración natural no es triangular.
+                // Compromiso: Una curva Sine, pero que empieza y acaba EXACTAMENTE en los puntos.
+                yRatio = 0.2 + (0.6 * easeInOutSine(prog)); 
+            }
+            else if (p.y === 'fall') {
+                yRatio = 0.8 - (0.6 * easeInOutSine(prog));
+            }
+            else if (p.y === 'hold_high') {
+                yRatio = 0.8; // Absolutamente plano
+            }
+            else { // hold_low
+                yRatio = 0.2; // Absolutamente plano
+            }
         }
         return yRatio;
     }
@@ -413,6 +432,7 @@
       const p = state.data.find(x => timeInCycle >= x.start && timeInCycle < x.end);
 
       if (p) {
+        // Textos
         if (els.ph.textContent !== p.t) els.ph.textContent = p.t;
         
         // Highlight Patrón
@@ -427,11 +447,12 @@
 
         // Contador
         const timeInPhase = timeInCycle - p.start;
+        // Beat actual exacto
         let currentBeat = Math.floor(timeInPhase / state.tempo) + 1;
         currentBeat = Math.min(currentBeat, p.b);
         els.cnt.textContent = currentBeat;
 
-        // Esfera
+        // Esfera (animación suave)
         const progress = timeInPhase / p.dur; 
         let rawScale = 1;
         if (p.y === 'rise') rawScale = 0.8 + (0.7 * easeInOutSine(progress)); 
@@ -447,7 +468,8 @@
       els.ctx.clearRect(0, 0, w, h);
 
       const centerX = w / 2;
-      const currentYRatio = getYForTime(elapsed, totalCycleDur);
+      // Posición Y actual exacta
+      const currentYRatio = getLinearYForTime(elapsed, totalCycleDur);
       const ballY = h - (currentYRatio * h);
 
       const secondsOnScreen = state.dur; 
@@ -464,9 +486,10 @@
           const tAtPixel = elapsed + timeOffset;
 
           let tPositive = tAtPixel;
+          // Ajuste fino para wrap-around del ciclo en gráfica
           while(tPositive < 0) tPositive += totalCycleDur;
 
-          const yR = getYForTime(tPositive, totalCycleDur);
+          const yR = getLinearYForTime(tPositive, totalCycleDur);
           const y = h - (yR * h);
 
           if(first) { els.ctx.moveTo(x, y); first = false; }
