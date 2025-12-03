@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: Symmetric V15</title>
+  <title>Respiración: Precision V15.1</title>
   <style>
     /* --- 1. BASE & VARIABLES --- */
     :root {
@@ -52,7 +52,7 @@
       color: #546e7a; font-weight: 600; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
-    /* --- 3. ESCENARIO CENTRAL (FLEXIBLE) --- */
+    /* --- 3. ESCENARIO CENTRAL (Symmetric Layout) --- */
     .stage-container {
       flex: 1;
       display: flex; 
@@ -60,30 +60,28 @@
       position: relative;
       align-items: center;
       justify-content: center;
-      /* Por defecto (Móvil Vertical): Columna */
-      flex-direction: column; 
+      flex-direction: column; /* Default: Vertical */
     }
 
-    /* PANELES DE CONTENIDO */
+    /* PANELES LATERALES (Textos) */
     .panel-side {
       flex: 1;
       display: flex; flex-direction: column; 
       align-items: center; justify-content: center;
       z-index: 20;
       transition: all 0.3s;
-      min-height: 60px; /* Espacio reservado */
-      width: 100%; /* Full width en vertical */
+      min-height: 60px; 
+      width: 100%; 
     }
 
     .panel-center {
       position: relative;
       z-index: 10;
       display: flex; align-items: center; justify-content: center;
-      /* Margenes para separar en vertical */
       margin: 20px 0; 
     }
 
-    /* TEXTOS */
+    /* TIPOGRAFÍA */
     .phase-text {
       font-size: clamp(2.5rem, 6vw, 3.5rem); 
       font-weight: 300; letter-spacing: 4px; color: var(--accent);
@@ -119,7 +117,6 @@
       text-shadow: 0 2px 10px rgba(0,0,0,0.15); line-height: 1;
     }
     
-    /* Etiqueta pequeña dentro de la esfera para pureza total */
     .sphere-label {
         font-size: 0.8rem; color: rgba(255,255,255,0.9); font-weight: 600;
         margin-top: 5px; letter-spacing: 1px;
@@ -168,40 +165,28 @@
       z-index: 150; display: flex; align-items: center; gap: 8px; cursor: pointer;
     }
     
-    /* --- MAGIC: LAYOUT HORIZONTAL PURO --- */
+    /* --- MEDIA QUERIES: AJUSTE FINO LANDSCAPE --- */
     @media (orientation: landscape) {
       .app-layout { grid-template-rows: 50px 1fr 70px; }
       
       .stage-container {
-        /* CAMBIO A FILA: Izquierda - Centro - Derecha */
         flex-direction: row; 
-        justify-content: space-between; /* Repartir espacio */
-        padding: 0 5vw; /* Margen lateral seguro */
+        justify-content: space-between; 
+        padding: 0 5vw; 
       }
 
-      /* Panel Izquierdo: Acción */
       .panel-side:first-child { 
-        align-items: flex-end; /* Pegado hacia la esfera (derecha) */
-        text-align: right;
-        padding-right: 30px; 
+        align-items: flex-end; text-align: right; padding-right: 30px; 
       }
-      
-      /* Panel Derecho: Frase */
       .panel-side:last-child {
-        align-items: flex-start; /* Pegado hacia la esfera (izquierda) */
-        text-align: left;
-        padding-left: 30px;
+        align-items: flex-start; text-align: left; padding-left: 30px;
       }
 
-      /* Panel Central: Esfera */
-      .panel-center {
-        flex-shrink: 0; /* No encoger */
-        margin: 0;
-      }
+      .panel-center { flex-shrink: 0; margin: 0; }
       
+      /* AJUSTE SOLICITADO: Reducción de tamaño en horizontal para no tocar la línea */
       .sphere-wrapper {
-        /* Usar altura para tamaño seguro en landscape */
-        width: 50vh; height: 50vh;
+        width: 40vh; height: 40vh; 
       }
 
       .phase-text { font-size: 2.5rem; }
@@ -257,7 +242,6 @@
     </div>
 
     <div class="stage-container">
-      
       <div class="panel-side">
         <div class="phase-text" id="phaseText">LISTO</div>
       </div>
@@ -274,7 +258,6 @@
       <div class="panel-side">
         <div class="quote" id="phraseContent">Respira...</div>
       </div>
-      
     </div>
 
     <div class="bottom-viz">
@@ -394,7 +377,11 @@
         }
 
         const tip = t - p.start;
-        const currentBeat = Math.floor(tip / state.tempo) + 1;
+        // SOLUCIÓN CLAVE: Clamp para evitar el "bug del 8 en el 7"
+        // Aseguramos que el beat actual nunca supere el máximo de la fase.
+        const rawBeat = Math.floor(tip / state.tempo) + 1;
+        const currentBeat = Math.min(rawBeat, p.b);
+        
         els.cnt.textContent = currentBeat;
 
         const beatKey = `${state.cyc}-${p.t}-${currentBeat}`;
