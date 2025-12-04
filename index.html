@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V33 Social Flow</title>
+  <title>Respiración: V34 Perfect Sync</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -219,7 +219,7 @@
     }
     .menu-card.custom-card h3 { color: var(--accent); }
 
-    /* --- OVERLAYS ESTILO UNIFICADO (CUSTOM & SHARE CONFIG) --- */
+    /* --- OVERLAYS ESTILO UNIFICADO --- */
     #customOverlay, #shareConfigOverlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(255, 255, 255, 0.98); z-index: 150;
@@ -238,7 +238,6 @@
         display: flex; align-items: center; justify-content: center;
     }
     
-    /* INPUT GRANDE (Para Patrones) */
     .big-input {
         font-size: 2.8rem; font-family: 'Manrope', sans-serif; font-weight: 300;
         border: none; border-bottom: 2px solid var(--accent);
@@ -247,7 +246,6 @@
         outline: none; padding-bottom: 5px; border-radius: 0;
     }
     
-    /* INPUTS NORMALES (Para Texto Share) */
     .normal-input {
         width: 80%; max-width: 300px; padding: 12px; margin: 10px 0;
         border: 1px solid #cfd8dc; border-radius: 10px;
@@ -357,9 +355,13 @@
           <input type="tel" id="pillPatternInput" class="big-input" placeholder="4-7-8" maxlength="7" value="">
            <div class="info-bubble" onclick="toggleTooltip(this)">?
               <div class="info-tooltip">
-                  <strong>Formato Patrón:</strong><br><br>
-                  Ej: <strong>4-7-8</strong> o <strong>4-4-4-4</strong><br>
-                  Introduce solo los números, nosotros ponemos los guiones.
+                  <strong>Instrucciones:</strong><br><br>
+                  Escribe 4 números. El sistema pone los guiones.<br><br>
+                  1. Inhala (Verde)<br>
+                  2. Mantén (Naranja)<br>
+                  3. Exhala (Azul)<br>
+                  4. Sostén (Naranja)<br><br>
+                  Usa <strong>0</strong> para saltar fase.
               </div>
           </div>
       </div>
@@ -541,7 +543,6 @@
       shareModal: document.getElementById('shareModal'),
       shareText: document.getElementById('shareText'),
       
-      // Overlays Input
       customOverlay: document.getElementById('customOverlay'),
       customInput: document.getElementById('customPatternInput'),
       
@@ -551,10 +552,10 @@
       pillMessageInput: document.getElementById('pillMessageInput')
     };
 
-    // --- MAGIC INPUT HELPER (Reusable) ---
+    // --- MAGIC INPUT HELPER ---
     function formatPatternInput(input) {
         let val = input.value.replace(/\D/g, '');
-        if(val.length > 5) val = val.substring(0, 5); // Allow up to 5 digits flexibility
+        if(val.length > 5) val = val.substring(0, 5); 
         let formatted = '';
         for(let i=0; i < val.length; i++) {
             if(i > 0) formatted += '-';
@@ -563,7 +564,6 @@
         input.value = formatted;
     }
 
-    // Attach logic to both inputs
     els.customInput.addEventListener('input', (e) => formatPatternInput(e.target));
     els.pillPatternInput.addEventListener('input', (e) => formatPatternInput(e.target));
 
@@ -590,7 +590,7 @@
             {t:"MANTÉN", y:'hold_high', c:C_HOLD},
             {t:"EXHALA", y:'fall', c:C_EXHALE},
             {t:"SOSTÉN", y:'hold_low', c:C_HOLD},
-            {t:"PAUSA", y:'hold_low', c:C_HOLD} // Extra phases support
+            {t:"PAUSA", y:'hold_low', c:C_HOLD}
         ];
 
         let newPattern = [];
@@ -613,7 +613,6 @@
       if (audioCtx.state === 'suspended') audioCtx.resume();
     }
     
-    // (Resto de funciones de audio y scheduler iguales que V32)
     function playTone(freq, type, dur, time) {
       if (!state.snd && !state.met) return; 
       const osc = audioCtx.createOscillator();
@@ -761,12 +760,10 @@
     function toggleSound() { state.snd=!state.snd; document.getElementById('soundBtn').textContent=state.snd?"🔊":"🔇"; if(state.run) initAudio(); }
     function toggleMetronome() { state.met=!state.met; document.getElementById('metronomeBtn').classList.toggle('active'); }
 
-    // --- SHARE SYSTEM V33 (NEW VISUAL CONFIG) ---
+    // --- SHARE CONFIGURATION ---
     function openShareConfig() {
-        // Pre-fill if a standard pattern was selected recently
         let lastP = state.pk;
         if(lastP && lastP !== 'custom') els.pillPatternInput.value = lastP;
-        
         els.shareConfigOverlay.style.display = 'flex';
         els.pillPatternInput.focus();
     }
@@ -775,7 +772,6 @@
        let p = els.pillPatternInput.value.trim();
        if(!p) { alert("Falta el patrón numérico."); return; }
        
-       // Si no es un patrón estándar, validamos formato básico
        if(!patterns[p] && p.split('-').length < 2) {
            alert("Patrón inválido. Ej: 4-7-8"); return;
        }
@@ -783,8 +779,8 @@
        const n = els.pillNameInput.value.trim() || 'Amigo';
        const m = els.pillMessageInput.value.trim() || 'Respira conmigo...';
        
-       els.shareConfigOverlay.style.display = 'none'; // Close config
-       els.load.style.display = 'flex'; // Show loading
+       els.shareConfigOverlay.style.display = 'none'; 
+       els.load.style.display = 'flex'; 
 
        const baseUrl = location.href.split('?')[0];
        const longUrl = `${baseUrl}?p=${p}&para=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
@@ -807,11 +803,10 @@
     }
     function closePill() { document.getElementById('pillOverlay').style.display='none'; }
 
-    // URL PARSER (Auto-Create Pattern from URL)
+    // URL PARSER
     const q = new URLSearchParams(location.search);
     if(q.get('p')) {
         let pCode = q.get('p');
-        // If pattern unknown, try to parse it as custom (e.g. 3-3-6-2)
         if(!patterns[pCode]) {
              const parts = pCode.split(/[- ,]+/).map(n=>parseInt(n)).filter(n=>!isNaN(n));
              if(parts.length >= 2) {
