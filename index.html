@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V32 Creative First</title>
+  <title>Respiración: V33 Social Flow</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -177,7 +177,6 @@
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    /* BARRA DE ACCIONES */
     .menu-actions {
         display: flex; gap: 15px; margin-bottom: 30px; width: 100%; justify-content: center;
     }
@@ -220,8 +219,8 @@
     }
     .menu-card.custom-card h3 { color: var(--accent); }
 
-    /* --- CUSTOM OVERLAY (SCROLL & SAFE) --- */
-    #customOverlay {
+    /* --- OVERLAYS ESTILO UNIFICADO (CUSTOM & SHARE CONFIG) --- */
+    #customOverlay, #shareConfigOverlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(255, 255, 255, 0.98); z-index: 150;
         display: none; 
@@ -231,18 +230,32 @@
         backdrop-filter: blur(15px); text-align: center;
     }
     
+    .overlay-title { font-family:'Cinzel'; color:var(--text-main); margin-bottom:10px; font-size: 1.5rem; }
+    .overlay-subtitle { color:var(--text-muted); margin-bottom:30px; font-size: 0.95rem; }
+
     .custom-input-container {
-        position: relative; margin: 30px 0;
+        position: relative; margin: 15px 0;
         display: flex; align-items: center; justify-content: center;
     }
-    #customPatternInput {
-        font-size: 3rem; font-family: 'Manrope', sans-serif; font-weight: 300;
+    
+    /* INPUT GRANDE (Para Patrones) */
+    .big-input {
+        font-size: 2.8rem; font-family: 'Manrope', sans-serif; font-weight: 300;
         border: none; border-bottom: 2px solid var(--accent);
         background: transparent; color: var(--text-main);
         width: 280px; text-align: center; letter-spacing: 2px;
-        outline: none; padding-bottom: 10px; border-radius: 0;
+        outline: none; padding-bottom: 5px; border-radius: 0;
     }
     
+    /* INPUTS NORMALES (Para Texto Share) */
+    .normal-input {
+        width: 80%; max-width: 300px; padding: 12px; margin: 10px 0;
+        border: 1px solid #cfd8dc; border-radius: 10px;
+        font-family: 'Manrope', sans-serif; font-size: 1rem; color: var(--text-main);
+        background: #fcfcfc; outline: none; text-align: center;
+    }
+    .normal-input:focus { border-color: var(--accent); background: white; }
+
     .info-bubble {
         width: 32px; height: 32px; 
         background: var(--text-muted); color: white; border-radius: 50%;
@@ -253,7 +266,7 @@
     }
     
     .info-tooltip {
-        position: absolute; top: 50px; left: 50%; transform: translateX(-80%);
+        position: absolute; top: 50px; left: 50%; transform: translateX(-85%);
         width: 260px; background: #37474f; color: white; padding: 15px;
         border-radius: 12px; font-size: 0.9rem; line-height: 1.5;
         opacity: 0; visibility: hidden; transition: all 0.3s ease; 
@@ -265,7 +278,7 @@
         border-width: 6px; border-style: solid; border-color: transparent transparent #37474f transparent;
     }
 
-    /* --- OVERLAYS SHARE --- */
+    /* --- OVERLAYS SHARE FINAL --- */
     #pillOverlay, #shareModal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(255,255,255,0.95); z-index: 200;
@@ -299,7 +312,7 @@
       .sphere { width: 65%; height: 65%; }
       .bottom-viz { height: 70px; width: 80%; }
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 800px; gap:25px; }
-      #customOverlay { padding-top: 10vh; justify-content: center; }
+      #customOverlay, #shareConfigOverlay { padding-top: 5vh; justify-content: center; }
     }
   </style>
 </head>
@@ -311,21 +324,21 @@
   </div>
 
   <div id="customOverlay">
-      <h2 style="font-family:'Cinzel'; color:var(--text-main); margin-bottom:10px;">Diseña tu Respiración</h2>
-      <p style="color:var(--text-muted); margin-bottom:30px;">Introduce 4 tiempos (0-9)</p>
+      <h2 class="overlay-title">Diseña tu Respiración</h2>
+      <p class="overlay-subtitle">Introduce 4 tiempos (0-9)</p>
       
       <div class="custom-input-container">
-          <input type="tel" id="customPatternInput" placeholder="4-2-6-0" maxlength="7" value="">
+          <input type="tel" id="customPatternInput" class="big-input" placeholder="4-2-6-0" maxlength="7" value="">
           
           <div class="info-bubble" onclick="toggleTooltip(this)">?
               <div class="info-tooltip">
                   <strong>Instrucciones:</strong><br><br>
                   Escribe 4 números. El sistema pone los guiones.<br><br>
-                  1. <strong>Inhala</strong> (Verde)<br>
-                  2. <strong>Mantén</strong> (Naranja)<br>
-                  3. <strong>Exhala</strong> (Azul)<br>
-                  4. <strong>Sostén</strong> (Naranja)<br><br>
-                  Usa <strong>0</strong> para saltar una fase.
+                  1. Inhala (Verde)<br>
+                  2. Mantén (Naranja)<br>
+                  3. Exhala (Azul)<br>
+                  4. Sostén (Naranja)<br><br>
+                  Usa <strong>0</strong> para saltar fase.
               </div>
           </div>
       </div>
@@ -333,6 +346,30 @@
       <div style="display:flex; flex-direction:column; gap:15px; margin-bottom: 50px;">
           <button class="btn-text" style="background:var(--primary); color:white; padding:15px 40px; font-size:1.1rem; border:none;" onclick="startCustom()">Comenzar</button>
           <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="document.getElementById('customOverlay').style.display='none'">Cancelar</button>
+      </div>
+  </div>
+
+  <div id="shareConfigOverlay">
+      <h2 class="overlay-title">Enviar Píldora</h2>
+      <p class="overlay-subtitle">Configura el regalo</p>
+
+      <div class="custom-input-container">
+          <input type="tel" id="pillPatternInput" class="big-input" placeholder="4-7-8" maxlength="7" value="">
+           <div class="info-bubble" onclick="toggleTooltip(this)">?
+              <div class="info-tooltip">
+                  <strong>Formato Patrón:</strong><br><br>
+                  Ej: <strong>4-7-8</strong> o <strong>4-4-4-4</strong><br>
+                  Introduce solo los números, nosotros ponemos los guiones.
+              </div>
+          </div>
+      </div>
+
+      <input type="text" id="pillNameInput" class="normal-input" placeholder="¿Para quién es?" maxlength="20">
+      <input type="text" id="pillMessageInput" class="normal-input" placeholder="Mensaje (opcional)" maxlength="50">
+
+      <div style="display:flex; flex-direction:column; gap:15px; margin-top:20px; margin-bottom: 50px;">
+          <button class="btn-text" style="background:var(--accent); color:white; padding:15px 40px; font-size:1.1rem; border:none;" onclick="generateShareLink()">Generar Enlace</button>
+          <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="document.getElementById('shareConfigOverlay').style.display='none'">Cancelar</button>
       </div>
   </div>
 
@@ -350,7 +387,7 @@
     <div class="menu-title">ELIGE TU RITMO</div>
     
     <div class="menu-actions">
-        <button class="action-btn" onclick="sharePill()">
+        <button class="action-btn" onclick="openShareConfig()">
             <span>📤 Enviar Píldora</span>
         </button>
         <button class="action-btn" id="installBtn" onclick="installApp()">
@@ -432,33 +469,28 @@
     let deferredPrompt;
     const installBtn = document.getElementById('installBtn');
     
-    // Escuchar si el navegador permite instalación nativa (Chrome Android)
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      installBtn.style.display = 'flex'; // Asegurar que se ve
+      installBtn.style.display = 'flex';
     });
 
     async function installApp() {
         if (deferredPrompt) {
-            // Caso 1: Android/Chrome Nativo
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
             deferredPrompt = null;
         } else {
-            // Caso 2: Fallback Manual (Detectar iOS vs Android)
             const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-            
             if (isIOS) {
-                alert("Para instalar en iPhone/iPad:\n\n1. Toca el botón 'Compartir' (el cuadrado con flecha ⍐).\n2. Busca y selecciona 'Añadir a pantalla de inicio'.");
+                alert("Para instalar en iPhone/iPad:\n\n1. Toca el botón 'Compartir' (cuadrado con flecha ⍐).\n2. Selecciona 'Añadir a pantalla de inicio'.");
             } else {
-                // Mensaje específico para Android
-                alert("Para instalar en Android:\n\n1. Ve al menú del navegador (los tres puntos ⋮).\n2. Selecciona 'Instalar aplicación' o 'Añadir a pantalla de inicio'.");
+                alert("Para instalar en Android:\n\n1. Ve al menú del navegador (tres puntos ⋮).\n2. Selecciona 'Instalar aplicación' o 'Añadir a pantalla de inicio'.");
             }
         }
     }
 
-    // --- CONFIGURACIÓN ---
+    // --- CONFIGURACIÓN & PATRONES ---
     const C_INHALE = '#4CAF50'; 
     const C_HOLD   = '#FF9800'; 
     const C_EXHALE = '#2196F3'; 
@@ -508,27 +540,39 @@
       load: document.getElementById('loadingOverlay'),
       shareModal: document.getElementById('shareModal'),
       shareText: document.getElementById('shareText'),
+      
+      // Overlays Input
       customOverlay: document.getElementById('customOverlay'),
-      customInput: document.getElementById('customPatternInput')
+      customInput: document.getElementById('customPatternInput'),
+      
+      shareConfigOverlay: document.getElementById('shareConfigOverlay'),
+      pillPatternInput: document.getElementById('pillPatternInput'),
+      pillNameInput: document.getElementById('pillNameInput'),
+      pillMessageInput: document.getElementById('pillMessageInput')
     };
 
-    // --- MAGIC INPUT ---
-    els.customInput.addEventListener('input', function(e) {
-        let val = e.target.value.replace(/\D/g, '');
-        if(val.length > 4) val = val.substring(0, 4);
+    // --- MAGIC INPUT HELPER (Reusable) ---
+    function formatPatternInput(input) {
+        let val = input.value.replace(/\D/g, '');
+        if(val.length > 5) val = val.substring(0, 5); // Allow up to 5 digits flexibility
         let formatted = '';
         for(let i=0; i < val.length; i++) {
             if(i > 0) formatted += '-';
             formatted += val[i];
         }
-        e.target.value = formatted;
-    });
+        input.value = formatted;
+    }
+
+    // Attach logic to both inputs
+    els.customInput.addEventListener('input', (e) => formatPatternInput(e.target));
+    els.pillPatternInput.addEventListener('input', (e) => formatPatternInput(e.target));
 
     window.toggleTooltip = function(el) {
         const tip = el.querySelector('.info-tooltip');
         tip.classList.toggle('visible');
     }
 
+    // --- CUSTOM PATTERN LOGIC ---
     function openCustomModal() {
         els.customOverlay.style.display = 'flex';
         els.customInput.value = ''; 
@@ -539,58 +583,37 @@
         const val = els.customInput.value.trim();
         const parts = val.split('-').map(n => parseInt(n)).filter(n => !isNaN(n));
         
-        if (parts.length !== 4) {
-            alert("Por favor, introduce 4 números (ej: 4-7-8-0).");
-            return;
-        }
+        if (parts.length < 2) { alert("Introduce al menos 2 tiempos."); return; }
 
         const defs = [
             {t:"INHALA", y:'rise', c:C_INHALE},
             {t:"MANTÉN", y:'hold_high', c:C_HOLD},
             {t:"EXHALA", y:'fall', c:C_EXHALE},
-            {t:"SOSTÉN", y:'hold_low', c:C_HOLD}
+            {t:"SOSTÉN", y:'hold_low', c:C_HOLD},
+            {t:"PAUSA", y:'hold_low', c:C_HOLD} // Extra phases support
         ];
 
         let newPattern = [];
         parts.forEach((beats, i) => {
+            let defIdx = i % defs.length;
             if (beats > 0) { 
-                newPattern.push({ t: defs[i].t, b: beats, y: defs[i].y, c: defs[i].c });
+                newPattern.push({ t: defs[defIdx].t, b: beats, y: defs[defIdx].y, c: defs[defIdx].c });
             }
         });
 
-        if (newPattern.length === 0) {
-            alert("El patrón debe tener al menos una fase mayor a 0.");
-            return;
-        }
-
+        if (newPattern.length === 0) return;
         patterns['custom'] = newPattern;
         els.customOverlay.style.display = 'none';
         start('custom');
     }
 
-    // --- RENDER PATRÓN ---
-    function renderPattern(k) {
-      els.pat.innerHTML = ''; 
-      patterns[k].forEach((step, idx) => {
-        const numSpan = document.createElement('span');
-        numSpan.textContent = step.b;
-        numSpan.className = 'p-num';
-        numSpan.id = `p-step-${idx}`; 
-        els.pat.appendChild(numSpan);
-        if (idx < patterns[k].length - 1) {
-          const sep = document.createElement('span');
-          sep.textContent = '-';
-          sep.className = 'p-sep';
-          els.pat.appendChild(sep);
-        }
-      });
-    }
-
-    // --- AUDIO & ENGINE ---
+    // --- ENGINE CORE ---
     function initAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
     }
+    
+    // (Resto de funciones de audio y scheduler iguales que V32)
     function playTone(freq, type, dur, time) {
       if (!state.snd && !state.met) return; 
       const osc = audioCtx.createOscillator();
@@ -607,23 +630,15 @@
       osc.connect(gain); gain.connect(audioCtx.destination);
       osc.start(time); osc.stop(time + dur);
     }
-
     function nextBeat() {
-      const secondsPerBeat = state.tempo;
-      nextNoteTime += secondsPerBeat;
-      currentBeatIndex++; 
+      const secondsPerBeat = state.tempo; nextNoteTime += secondsPerBeat; currentBeatIndex++; 
       const totalBeats = state.data.reduce((acc, p) => acc + p.b, 0);
       if (currentBeatIndex >= totalBeats) { currentBeatIndex = 0; state.cyc++; }
     }
-
     function scheduleNote(beatNumber, time) {
-      let accumulatedBeats = 0;
-      let phase = null;
-      let beatInPhase = 0;
+      let accumulatedBeats = 0; let phase = null; let beatInPhase = 0;
       for (let p of state.data) {
-        if (beatNumber < accumulatedBeats + p.b) {
-          phase = p; beatInPhase = beatNumber - accumulatedBeats + 1; break;
-        }
+        if (beatNumber < accumulatedBeats + p.b) { phase = p; beatInPhase = beatNumber - accumulatedBeats + 1; break; }
         accumulatedBeats += p.b;
       }
       if (phase) {
@@ -636,7 +651,6 @@
         if (state.met) playTone(beatInPhase === 1 ? 1200 : 800, 'square', 0.05, time); 
       }
     }
-
     function scheduler() {
       while (nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
         scheduleNote(currentBeatIndex, nextNoteTime); nextBeat();
@@ -646,7 +660,6 @@
 
     // --- DRAW LOOP ---
     function easeInOutSine(x) { return -(Math.cos(Math.PI * x) - 1) / 2; }
-
     function draw() {
       if (!state.run) return;
       const currentTime = audioCtx.currentTime;
@@ -720,7 +733,7 @@
       const rect = els.cvs.getBoundingClientRect(); els.cvs.width = rect.width * dpr; els.cvs.height = rect.height * dpr; els.ctx.scale(dpr, dpr);
     }
 
-    // --- CONTROLES ---
+    // --- MAIN CONTROLS ---
     function start(k) {
       initAudio(); prepareData(k); renderPattern(k);
       els.menu.style.opacity = '0'; setTimeout(()=>els.menu.style.display='none',400);
@@ -748,25 +761,42 @@
     function toggleSound() { state.snd=!state.snd; document.getElementById('soundBtn').textContent=state.snd?"🔊":"🔇"; if(state.run) initAudio(); }
     function toggleMetronome() { state.met=!state.met; document.getElementById('metronomeBtn').classList.toggle('active'); }
 
-    // --- SHARE ---
-    async function sharePill() {
-       let p = prompt("Patrón (4-7-8, box...):", "4-7-8");
-       if(!p || !patterns[p]) { 
-           if(p && p.split('-').length === 4) { /* ok */ }
-           else return;
-       }
-       
-       const n = prompt("Nombre:", ""); const m = prompt("Mensaje:", "Respira");
-       const baseUrl = location.href.split('?')[0];
-       const longUrl = `${baseUrl}?p=${p}&para=${encodeURIComponent(n||'Amigo')}&msg=${encodeURIComponent(m)}`;
-       
-       els.load.style.display = 'flex'; 
-       let finalUrl = longUrl;
-       try { const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
-             if(response.ok) finalUrl = await response.text(); } catch(e) {}
-       els.load.style.display = 'none';
+    // --- SHARE SYSTEM V33 (NEW VISUAL CONFIG) ---
+    function openShareConfig() {
+        // Pre-fill if a standard pattern was selected recently
+        let lastP = state.pk;
+        if(lastP && lastP !== 'custom') els.pillPatternInput.value = lastP;
+        
+        els.shareConfigOverlay.style.display = 'flex';
+        els.pillPatternInput.focus();
+    }
 
-       els.shareText.value = `🌿 *Píldora de Respiración para ti*\n\nHola ${n||'Amigo'}, ${m}.\n\nToca aquí:\n${finalUrl}`;
+    async function generateShareLink() {
+       let p = els.pillPatternInput.value.trim();
+       if(!p) { alert("Falta el patrón numérico."); return; }
+       
+       // Si no es un patrón estándar, validamos formato básico
+       if(!patterns[p] && p.split('-').length < 2) {
+           alert("Patrón inválido. Ej: 4-7-8"); return;
+       }
+
+       const n = els.pillNameInput.value.trim() || 'Amigo';
+       const m = els.pillMessageInput.value.trim() || 'Respira conmigo...';
+       
+       els.shareConfigOverlay.style.display = 'none'; // Close config
+       els.load.style.display = 'flex'; // Show loading
+
+       const baseUrl = location.href.split('?')[0];
+       const longUrl = `${baseUrl}?p=${p}&para=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
+       
+       let finalUrl = longUrl;
+       try { 
+           const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
+           if(response.ok) finalUrl = await response.text(); 
+       } catch(e) {}
+
+       els.load.style.display = 'none';
+       els.shareText.value = `🌿 *Píldora de Respiración para ti*\n\nHola ${n}, ${m}.\n\nToca aquí:\n${finalUrl}`;
        els.shareModal.style.display = 'flex';
     }
 
@@ -776,21 +806,25 @@
       try { navigator.clipboard.writeText(els.shareText.value).then(() => alert("¡Copiado!")); } catch(e) { document.execCommand('copy'); alert("¡Copiado!"); }
     }
     function closePill() { document.getElementById('pillOverlay').style.display='none'; }
-    function closeShare() { els.shareModal.style.display = 'none'; }
 
-    // URL PARSER
+    // URL PARSER (Auto-Create Pattern from URL)
     const q = new URLSearchParams(location.search);
     if(q.get('p')) {
         let pCode = q.get('p');
+        // If pattern unknown, try to parse it as custom (e.g. 3-3-6-2)
         if(!patterns[pCode]) {
              const parts = pCode.split(/[- ,]+/).map(n=>parseInt(n)).filter(n=>!isNaN(n));
-             if(parts.length === 4) {
-                 const defs = [{t:"INHALA",y:'rise',c:C_INHALE},{t:"MANTÉN",y:'hold_high',c:C_HOLD},{t:"EXHALA",y:'fall',c:C_EXHALE},{t:"SOSTÉN",y:'hold_low',c:C_HOLD}];
+             if(parts.length >= 2) {
+                 const defs = [{t:"INHALA",y:'rise',c:C_INHALE},{t:"MANTÉN",y:'hold_high',c:C_HOLD},{t:"EXHALA",y:'fall',c:C_EXHALE},{t:"SOSTÉN",y:'hold_low',c:C_HOLD},{t:"PAUSA", y:'hold_low', c:C_HOLD}];
                  let newP = [];
-                 parts.forEach((b,i)=> { if(b>0) newP.push({t:defs[i].t, b:b, y:defs[i].y, c:defs[i].c}); });
+                 parts.forEach((b,i)=> { 
+                     let d = defs[i % defs.length];
+                     if(b>0) newP.push({t:d.t, b:b, y:d.y, c:d.c}); 
+                 });
                  if(newP.length > 0) patterns[pCode] = newP;
              }
         }
+        
         if(patterns[pCode]) {
            document.getElementById('pillOverlay').style.display = 'flex';
            document.getElementById('pillRecipient').textContent = `Hola, ${q.get('para') || 'Ti'}`;
