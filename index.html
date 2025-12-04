@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V28 Freedom Edition</title>
+  <title>Respiración: V29 Frictionless</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -197,14 +197,14 @@
     .menu-card h3 { color: #37474f; font-size: 1.2rem; margin-bottom: 6px; font-weight: 600; font-family: 'Manrope', sans-serif;}
     .menu-card p { color: #78909c; font-size: 0.95rem; font-weight: 300; }
 
-    /* TARJETA ESPECIAL CUSTOM */
+    /* TARJETA CUSTOM */
     .menu-card.custom-card {
         border: 1px dashed var(--accent);
         background: rgba(255, 255, 255, 0.25);
     }
     .menu-card.custom-card h3 { color: var(--accent); }
 
-    /* --- CUSTOM OVERLAY (MODAL) --- */
+    /* --- CUSTOM OVERLAY --- */
     #customOverlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(255, 255, 255, 0.95); z-index: 150;
@@ -214,36 +214,45 @@
     
     .custom-input-container {
         position: relative; margin: 30px 0;
+        display: flex; align-items: center; justify-content: center;
     }
     #customPatternInput {
         font-size: 3rem; font-family: 'Manrope', sans-serif; font-weight: 300;
         border: none; border-bottom: 2px solid var(--accent);
         background: transparent; color: var(--text-main);
-        width: 300px; text-align: center; letter-spacing: 5px;
+        width: 280px; text-align: center; letter-spacing: 2px;
         outline: none; padding-bottom: 10px;
     }
     
-    /* BOLA INFORMATIVA */
+    /* BOLA INFORMATIVA (Mejorada para táctil) */
     .info-bubble {
-        display: inline-flex; width: 24px; height: 24px; 
+        width: 28px; height: 28px; 
         background: var(--text-muted); color: white; border-radius: 50%;
-        align-items: center; justify-content: center; font-size: 0.9rem; font-weight: bold;
-        cursor: help; margin-left: 10px; vertical-align: middle; position: relative;
+        display: flex; align-items: center; justify-content: center; 
+        font-size: 1rem; font-weight: bold; cursor: pointer; 
+        margin-left: 15px; position: relative;
+        user-select: none; -webkit-tap-highlight-color: transparent;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
+    
+    /* Tooltip ahora controlado por clase .visible */
     .info-tooltip {
-        position: absolute; top: 40px; left: 50%; transform: translateX(-50%);
-        width: 260px; background: #37474f; color: white; padding: 15px;
-        border-radius: 10px; font-size: 0.85rem; line-height: 1.5;
-        opacity: 0; visibility: hidden; transition: opacity 0.3s; pointer-events: none;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        position: absolute; top: 45px; left: 50%; transform: translateX(-50%);
+        width: 280px; background: #37474f; color: white; padding: 15px;
+        border-radius: 12px; font-size: 0.9rem; line-height: 1.5;
+        opacity: 0; visibility: hidden; transition: all 0.3s ease; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 200;
+        text-align: left;
+    }
+    .info-tooltip.visible {
+        opacity: 1; visibility: visible; top: 50px; /* Pequeño movimiento al aparecer */
     }
     .info-tooltip::before {
         content:''; position: absolute; top: -6px; left: 50%; margin-left: -6px;
         border-width: 6px; border-style: solid; border-color: transparent transparent #37474f transparent;
     }
-    .info-bubble:hover .info-tooltip { opacity: 1; visibility: visible; }
 
-    /* --- OVERLAYS SHARE & LOADING --- */
+    /* --- OVERLAYS SHARE --- */
     #pillOverlay, #shareModal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(255,255,255,0.95); z-index: 200;
@@ -300,12 +309,17 @@
       <p style="color:var(--text-muted); margin-bottom:30px;">Introduce 4 tiempos (0-9)</p>
       
       <div class="custom-input-container">
-          <input type="text" id="customPatternInput" placeholder="4-2-6-0" maxlength="7" value="4-2-6-0">
-          <div class="info-bubble">?
+          <input type="tel" id="customPatternInput" placeholder="4-2-6-0" maxlength="7" value="">
+          
+          <div class="info-bubble" onclick="toggleTooltip(this)">?
               <div class="info-tooltip">
-                  <b>Formato:</b> Inhala - Mantén - Exhala - Sostén.<br><br>
-                  Ejemplo: <b>3-3-6-0</b><br>
-                  Usa <b>'0'</b> para saltar una fase (ej. sin pausa final).
+                  <strong>Instrucciones:</strong><br><br>
+                  Escribe 4 números seguidos. El sistema pondrá los guiones por ti.<br><br>
+                  1. <strong>Inhala</strong> (Verde)<br>
+                  2. <strong>Mantén</strong> (Naranja)<br>
+                  3. <strong>Exhala</strong> (Azul)<br>
+                  4. <strong>Sostén</strong> (Naranja)<br><br>
+                  Usa <strong>0</strong> para saltar una fase.
               </div>
           </div>
       </div>
@@ -397,12 +411,11 @@
   <button id="shareBtn" class="fab" onclick="sharePill()">📤 Enviar Píldora</button>
 
   <script>
-    // --- COLORES ---
+    // --- CONFIGURACIÓN ---
     const C_INHALE = '#4CAF50'; 
     const C_HOLD   = '#FF9800'; 
     const C_EXHALE = '#2196F3'; 
 
-    // Lista inicial de patrones
     let patterns = {
       '4-4-6-2': [
           {t:"INHALA", b:4, y:'rise', c:C_INHALE},
@@ -452,25 +465,48 @@
       customInput: document.getElementById('customPatternInput')
     };
 
-    // --- LÓGICA DE PATRÓN CUSTOM ---
+    // --- MAGIC INPUT & TOOLTIP ---
+    
+    // Auto-formateo del input (4-7-8-0)
+    els.customInput.addEventListener('input', function(e) {
+        // Eliminar todo lo que no sea número
+        let val = e.target.value.replace(/\D/g, '');
+        
+        // Limitar a 4 dígitos
+        if(val.length > 4) val = val.substring(0, 4);
+        
+        // Añadir guiones
+        let formatted = '';
+        for(let i=0; i < val.length; i++) {
+            if(i > 0) formatted += '-';
+            formatted += val[i];
+        }
+        
+        e.target.value = formatted;
+    });
+
+    // Toggle Tooltip en click (para móvil)
+    window.toggleTooltip = function(el) {
+        const tip = el.querySelector('.info-tooltip');
+        tip.classList.toggle('visible');
+    }
+
     function openCustomModal() {
         els.customOverlay.style.display = 'flex';
+        els.customInput.value = ''; // Limpiar input
         els.customInput.focus();
     }
 
     function startCustom() {
         const val = els.customInput.value.trim();
-        // Validar formato (ej: 4-2-6-0)
-        // Permitimos números 0-9 separados por guiones, espacios o comas
-        const parts = val.split(/[- ,]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
+        // Separamos por guiones y convertimos a números
+        const parts = val.split('-').map(n => parseInt(n)).filter(n => !isNaN(n));
         
         if (parts.length !== 4) {
-            alert("Por favor, introduce exactamente 4 números. Usa '0' si quieres saltar una fase.");
+            alert("Por favor, introduce 4 números (ej: 4-7-8-0).");
             return;
         }
 
-        // Construir el objeto de patrón dinámicamente
-        // Mapeo fijo: 0:Inhala, 1:Mantén, 2:Exhala, 3:Sostén
         const defs = [
             {t:"INHALA", y:'rise', c:C_INHALE},
             {t:"MANTÉN", y:'hold_high', c:C_HOLD},
@@ -480,13 +516,8 @@
 
         let newPattern = [];
         parts.forEach((beats, i) => {
-            if (beats > 0) { // Solo añadimos la fase si tiene tiempo > 0
-                newPattern.push({
-                    t: defs[i].t,
-                    b: beats,
-                    y: defs[i].y,
-                    c: defs[i].c
-                });
+            if (beats > 0) { 
+                newPattern.push({ t: defs[i].t, b: beats, y: defs[i].y, c: defs[i].c });
             }
         });
 
@@ -495,13 +526,12 @@
             return;
         }
 
-        // Guardar como 'custom' en el objeto patterns
         patterns['custom'] = newPattern;
         els.customOverlay.style.display = 'none';
         start('custom');
     }
 
-    // --- RENDER PATRÓN VISUAL ---
+    // --- RENDER PATRÓN ---
     function renderPattern(k) {
       els.pat.innerHTML = ''; 
       patterns[k].forEach((step, idx) => {
@@ -519,7 +549,7 @@
       });
     }
 
-    // --- AUDIO & ENGINE (Igual que V27) ---
+    // --- MOTOR DE AUDIO ---
     function initAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -686,17 +716,11 @@
     async function sharePill() {
        let p = state.pk || "4-7-8"; 
        if(p === 'custom') {
-           // Si es custom, habría que serializarlo en la URL, pero para simplificar, 
-           // pedimos patrón estándar o creamos lógica compleja. 
-           // V28 Simple: Solo comparte estándar. 
-           p = prompt("Patrón a compartir (4-7-8, box...)", "4-7-8");
-       } else {
-           const change = confirm(`¿Compartir el patrón actual (${p})? Cancelar para elegir otro.`);
-           if(!change) p = prompt("Patrón (4-7-8, box...)", "4-7-8");
-       }
+           p = prompt("Introduce los números (ej. 4-7-8-0) para compartir:", "4-7-8-0");
+           if (!p) return;
+           // Hack rápido: simular un custom pattern si el usuario lo comparte manualmente
+       } 
        
-       if(!patterns[p]) { alert("Solo se pueden compartir patrones predefinidos por ahora."); return; }
-
        const n = prompt("Nombre:", ""); const m = prompt("Mensaje:", "Respira");
        const baseUrl = location.href.split('?')[0];
        const longUrl = `${baseUrl}?p=${p}&para=${encodeURIComponent(n||'Amigo')}&msg=${encodeURIComponent(m)}`;
@@ -719,19 +743,36 @@
     function closePill() { document.getElementById('pillOverlay').style.display='none'; }
     function closeShare() { els.shareModal.style.display = 'none'; }
 
-    window.addEventListener('resize', () => { if(state.run) initCanvas(); });
-    
-    // Init Pill
+    // PARSER EN URL (Soporte básico para custom shared manual)
     const q = new URLSearchParams(location.search);
-    if(q.get('p') && patterns[q.get('p')]) {
-       document.getElementById('pillOverlay').style.display = 'flex';
-       document.getElementById('pillRecipient').textContent = `Hola, ${q.get('para') || 'Ti'}`;
-       document.getElementById('pillMessage').textContent = `"${q.get('msg')}"`;
-       els.menu.style.display = 'none'; 
-       window.closePill = () => { document.getElementById('pillOverlay').style.display='none'; start(q.get('p')); };
+    if(q.get('p')) {
+        let pCode = q.get('p');
+        // Si el patrón no existe, asumimos que es un custom code (ej 3-3-3-3)
+        if(!patterns[pCode]) {
+             // Intentar parsear al vuelo
+             const parts = pCode.split(/[- ,]+/).map(n=>parseInt(n)).filter(n=>!isNaN(n));
+             if(parts.length === 4) {
+                 const defs = [{t:"INHALA",y:'rise',c:C_INHALE},{t:"MANTÉN",y:'hold_high',c:C_HOLD},{t:"EXHALA",y:'fall',c:C_EXHALE},{t:"SOSTÉN",y:'hold_low',c:C_HOLD}];
+                 let newP = [];
+                 parts.forEach((b,i)=> { if(b>0) newP.push({t:defs[i].t, b:b, y:defs[i].y, c:defs[i].c}); });
+                 if(newP.length > 0) {
+                     patterns[pCode] = newP; // Registrar dinámicamente
+                 }
+             }
+        }
+        
+        if(patterns[pCode]) {
+           document.getElementById('pillOverlay').style.display = 'flex';
+           document.getElementById('pillRecipient').textContent = `Hola, ${q.get('para') || 'Ti'}`;
+           document.getElementById('pillMessage').textContent = `"${q.get('msg')}"`;
+           els.menu.style.display = 'none'; 
+           window.closePill = () => { document.getElementById('pillOverlay').style.display='none'; start(pCode); };
+        }
     } else {
        prepareData('4-7-8'); els.pat.textContent = "4-7-8"; 
     }
+    
+    window.addEventListener('resize', () => { if(state.run) initCanvas(); });
     initCanvas();
   </script>
 </body>
