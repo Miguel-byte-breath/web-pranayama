@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V34 Perfect Sync</title>
+  <title>Respiración: V35 Resurrection</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -467,32 +467,7 @@
   </div>
 
   <script>
-    // --- PWA INSTALL LOGIC ---
-    let deferredPrompt;
-    const installBtn = document.getElementById('installBtn');
-    
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.style.display = 'flex';
-    });
-
-    async function installApp() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            deferredPrompt = null;
-        } else {
-            const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-            if (isIOS) {
-                alert("Para instalar en iPhone/iPad:\n\n1. Toca el botón 'Compartir' (cuadrado con flecha ⍐).\n2. Selecciona 'Añadir a pantalla de inicio'.");
-            } else {
-                alert("Para instalar en Android:\n\n1. Ve al menú del navegador (tres puntos ⋮).\n2. Selecciona 'Instalar aplicación' o 'Añadir a pantalla de inicio'.");
-            }
-        }
-    }
-
-    // --- CONFIGURACIÓN & PATRONES ---
+    // --- VARIABLES Y CONFIGURACIÓN ---
     const C_INHALE = '#4CAF50'; 
     const C_HOLD   = '#FF9800'; 
     const C_EXHALE = '#2196F3'; 
@@ -520,9 +495,10 @@
           {t:"EXHALA", b:5, y:'fall', c:C_EXHALE}
       ]
     };
+    
     const quotes = ["El amor es lo que eres.", "Vuelve al ahora.", "Observa sin juzgar.", "Paz en cada aliento.", "Suelta lo que pesa."];
 
-    // --- ESTADO ---
+    // --- ESTADO Y AUDIO ---
     let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, startAudioTime:0, cyc:0, snd:false, met:false };
     let audioCtx = null;
     let nextNoteTime = 0.0;
@@ -531,7 +507,7 @@
     const lookahead = 25.0; 
     const scheduleAheadTime = 0.1;
 
-    // DOM
+    // --- DOM REFERENCES ---
     const els = {
       menu: document.getElementById('selectionMenu'),
       sph: document.getElementById('sphere'), ph: document.getElementById('phaseText'),
@@ -552,7 +528,7 @@
       pillMessageInput: document.getElementById('pillMessageInput')
     };
 
-    // --- MAGIC INPUT HELPER ---
+    // --- HELPER DE INPUT MÁGICO ---
     function formatPatternInput(input) {
         let val = input.value.replace(/\D/g, '');
         if(val.length > 5) val = val.substring(0, 5); 
@@ -564,19 +540,41 @@
         input.value = formatted;
     }
 
-    els.customInput.addEventListener('input', (e) => formatPatternInput(e.target));
-    els.pillPatternInput.addEventListener('input', (e) => formatPatternInput(e.target));
+    if(els.customInput) els.customInput.addEventListener('input', (e) => formatPatternInput(e.target));
+    if(els.pillPatternInput) els.pillPatternInput.addEventListener('input', (e) => formatPatternInput(e.target));
 
     window.toggleTooltip = function(el) {
         const tip = el.querySelector('.info-tooltip');
-        tip.classList.toggle('visible');
+        if(tip) tip.classList.toggle('visible');
     }
 
-    // --- CUSTOM PATTERN LOGIC ---
+    // --- PWA INSTALL ---
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'flex';
+    });
+
+    async function installApp() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            await deferredPrompt.userChoice;
+            deferredPrompt = null;
+        } else {
+            const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+            alert(isIOS 
+              ? "Para instalar en iOS:\n1. Toca 'Compartir' (⍐)\n2. Selecciona 'Añadir a inicio'."
+              : "Para instalar en Android:\n1. Toca menú (⋮)\n2. Selecciona 'Instalar aplicación'.");
+        }
+    }
+
+    // --- LÓGICA DE PATRONES ---
     function openCustomModal() {
         els.customOverlay.style.display = 'flex';
-        els.customInput.value = ''; 
-        els.customInput.focus();
+        els.customInput.value = ''; els.customInput.focus();
     }
 
     function startCustom() {
@@ -607,33 +605,33 @@
         start('custom');
     }
 
-    // --- ENGINE CORE ---
+    // --- MOTOR AUDIOVISUAL ---
     function initAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
+      if (audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
     }
-    
+
     function playTone(freq, type, dur, time) {
       if (!state.snd && !state.met) return; 
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = type; osc.frequency.setValueAtTime(freq, time);
-      let vol = 0.0;
-      if (state.snd) vol = 0.05; 
-      if (state.met && type === 'square') vol = 0.05; 
-      if (state.met && state.snd && type === 'square') vol = 0.08; 
-      if (!state.snd && state.met && type !== 'square') vol = 0;
-      if (state.snd && !state.met && type === 'square') vol = 0;
-      gain.gain.setValueAtTime(vol, time);
-      gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.start(time); osc.stop(time + dur);
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type; osc.frequency.setValueAtTime(freq, time);
+        
+        let vol = 0.0;
+        if (state.snd) vol = 0.05; 
+        if (state.met && type === 'square') vol = 0.05; 
+        if (state.met && state.snd && type === 'square') vol = 0.08; 
+        if (!state.snd && state.met && type !== 'square') vol = 0;
+        if (state.snd && !state.met && type === 'square') vol = 0;
+
+        gain.gain.setValueAtTime(vol, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(time); osc.stop(time + dur);
+      } catch(e) {}
     }
-    function nextBeat() {
-      const secondsPerBeat = state.tempo; nextNoteTime += secondsPerBeat; currentBeatIndex++; 
-      const totalBeats = state.data.reduce((acc, p) => acc + p.b, 0);
-      if (currentBeatIndex >= totalBeats) { currentBeatIndex = 0; state.cyc++; }
-    }
+
     function scheduleNote(beatNumber, time) {
       let accumulatedBeats = 0; let phase = null; let beatInPhase = 0;
       for (let p of state.data) {
@@ -650,6 +648,13 @@
         if (state.met) playTone(beatInPhase === 1 ? 1200 : 800, 'square', 0.05, time); 
       }
     }
+
+    function nextBeat() {
+      const secondsPerBeat = state.tempo; nextNoteTime += secondsPerBeat; currentBeatIndex++; 
+      const totalBeats = state.data.reduce((acc, p) => acc + p.b, 0);
+      if (currentBeatIndex >= totalBeats) { currentBeatIndex = 0; state.cyc++; }
+    }
+
     function scheduler() {
       while (nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
         scheduleNote(currentBeatIndex, nextNoteTime); nextBeat();
@@ -657,14 +662,13 @@
       if (state.run) scheduleTimerID = setTimeout(scheduler, lookahead);
     }
 
-    // --- DRAW LOOP ---
-    function easeInOutSine(x) { return -(Math.cos(Math.PI * x) - 1) / 2; }
     function draw() {
       if (!state.run) return;
       const currentTime = audioCtx.currentTime;
       const elapsed = currentTime - state.startAudioTime;
       const totalCycleDur = state.dur;
       const cycleCountVisual = Math.floor(elapsed / totalCycleDur);
+      
       els.cyc.textContent = `🔄 ${cycleCountVisual}`;
       const timeInCycle = elapsed % totalCycleDur;
       const p = state.data.find(x => timeInCycle >= x.start && timeInCycle < x.end);
@@ -672,28 +676,38 @@
       if (p) {
         if (els.ph.textContent !== p.t) { els.ph.textContent = p.t; els.ph.style.color = p.c; }
         els.sph.style.setProperty('--c-phase', p.c);
+        
+        // Highlight active phase number
         const currentPhaseIdx = state.data.indexOf(p);
         state.data.forEach((_, idx) => {
             const el = document.getElementById(`p-step-${idx}`);
-            if(el) { if(idx === currentPhaseIdx) el.classList.add('active'); else el.classList.remove('active'); }
+            if(el) { 
+                if(idx === currentPhaseIdx) el.classList.add('active'); 
+                else el.classList.remove('active'); 
+            }
         });
+
         const timeInPhase = timeInCycle - p.start;
         let currentBeat = Math.floor(timeInPhase / state.tempo) + 1;
         currentBeat = Math.min(currentBeat, p.b);
         els.cnt.textContent = currentBeat;
+
+        // Scale animation
         const progress = timeInPhase / p.dur; 
+        const ease = -(Math.cos(Math.PI * progress) - 1) / 2;
         let rawScale = 1;
-        if (p.y === 'rise') rawScale = 0.8 + (0.7 * easeInOutSine(progress)); 
-        else if (p.y === 'fall') rawScale = 1.5 - (0.7 * easeInOutSine(progress));
+        if (p.y === 'rise') rawScale = 0.8 + (0.7 * ease); 
+        else if (p.y === 'fall') rawScale = 1.5 - (0.7 * ease);
         else if (p.y === 'hold_high') rawScale = 1.5; else rawScale = 0.8;
         els.sph.style.transform = `scale(${rawScale})`;
       }
 
+      // Canvas Logic
       const w = els.cvs.width / (window.devicePixelRatio||1);
       const h = els.cvs.height / (window.devicePixelRatio||1);
       els.ctx.clearRect(0, 0, w, h);
       const centerX = w / 2; const trackY = h / 2; const trackH = 14; 
-      const secondsOnScreen = 7 * state.tempo; const pxPerSec = w / secondsOnScreen;
+      const pxPerSec = w / (7 * state.tempo);
 
       for (let c = cycleCountVisual - 1; c <= cycleCountVisual + 1; c++) {
           const cycleStartTime = c * totalCycleDur;
@@ -703,6 +717,7 @@
               const xStart = centerX + (pStartAbs - elapsed) * pxPerSec;
               const xEnd = centerX + (pEndAbs - elapsed) * pxPerSec;
               if(xEnd < 0 || xStart > w) return;
+              
               els.ctx.fillStyle = phase.c;
               els.ctx.fillRect(xStart, trackY - trackH/2, xEnd - xStart, trackH);
               els.ctx.strokeStyle = 'rgba(255,255,255,0.9)'; els.ctx.lineWidth = 2;
@@ -716,31 +731,66 @@
       els.ctx.beginPath(); els.ctx.fillStyle = '#FFFFFF'; els.ctx.arc(centerX, trackY, 9, 0, Math.PI * 2); els.ctx.fill();
       els.ctx.strokeStyle = 'rgba(0,0,0,0.1)'; els.ctx.lineWidth = 1; els.ctx.stroke();
       els.ctx.beginPath(); els.ctx.fillStyle = '#37474f'; els.ctx.moveTo(centerX - 6, trackY - 25); els.ctx.lineTo(centerX + 6, trackY - 25); els.ctx.lineTo(centerX, trackY - 15); els.ctx.fill();
+      
       requestAnimationFrame(draw);
     }
 
     function prepareData(k) {
+      if(!patterns[k]) return false;
       state.pk = k; state.data = []; let acc = 0;
       patterns[k].forEach(x => { 
           const d = x.b * state.tempo; 
           state.data.push({...x, start:acc, end:acc+d, dur:d}); acc += d; 
       });
       state.dur = acc;
+      return true;
     }
+
     function initCanvas() {
       if(!els.cvs) return; const dpr = window.devicePixelRatio || 1;
       const rect = els.cvs.getBoundingClientRect(); els.cvs.width = rect.width * dpr; els.cvs.height = rect.height * dpr; els.ctx.scale(dpr, dpr);
     }
 
-    // --- MAIN CONTROLS ---
+    function renderPattern(k) {
+      if(!patterns[k]) return;
+      els.pat.innerHTML = ''; 
+      patterns[k].forEach((step, idx) => {
+        const numSpan = document.createElement('span');
+        numSpan.textContent = step.b;
+        numSpan.className = 'p-num';
+        numSpan.id = `p-step-${idx}`; 
+        els.pat.appendChild(numSpan);
+        if (idx < patterns[k].length - 1) {
+          const sep = document.createElement('span');
+          sep.textContent = '-';
+          sep.className = 'p-sep';
+          els.pat.appendChild(sep);
+        }
+      });
+    }
+
+    // --- FUNCIONES CONTROL PRINCIPAL ---
     function start(k) {
-      initAudio(); prepareData(k); renderPattern(k);
-      els.menu.style.opacity = '0'; setTimeout(()=>els.menu.style.display='none',400);
+      if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
+      
+      initAudio(); 
+      renderPattern(k);
+      els.menu.style.opacity = '0'; 
+      setTimeout(()=>els.menu.style.display='none', 400);
       els.qt.textContent = quotes[Math.floor(Math.random()*quotes.length)];
+
       setTimeout(() => {
-        initCanvas(); state.run = true; state.startAudioTime = audioCtx.currentTime; nextNoteTime = audioCtx.currentTime;
-        currentBeatIndex = 0; state.cyc = 0; scheduler(); requestAnimationFrame(draw);
-      }, 50);
+        initCanvas(); 
+        state.run = true; 
+        // Reset Audio Time safely
+        state.startAudioTime = audioCtx ? audioCtx.currentTime : 0;
+        nextNoteTime = state.startAudioTime;
+        currentBeatIndex = 0; 
+        state.cyc = 0; 
+        
+        if(audioCtx) scheduler(); 
+        requestAnimationFrame(draw);
+      }, 100);
     }
 
     function stop() {
@@ -760,7 +810,7 @@
     function toggleSound() { state.snd=!state.snd; document.getElementById('soundBtn').textContent=state.snd?"🔊":"🔇"; if(state.run) initAudio(); }
     function toggleMetronome() { state.met=!state.met; document.getElementById('metronomeBtn').classList.toggle('active'); }
 
-    // --- SHARE CONFIGURATION ---
+    // --- SHARE LOGIC ---
     function openShareConfig() {
         let lastP = state.pk;
         if(lastP && lastP !== 'custom') els.pillPatternInput.value = lastP;
@@ -772,6 +822,7 @@
        let p = els.pillPatternInput.value.trim();
        if(!p) { alert("Falta el patrón numérico."); return; }
        
+       // Validación simple
        if(!patterns[p] && p.split('-').length < 2) {
            alert("Patrón inválido. Ej: 4-7-8"); return;
        }
@@ -803,10 +854,11 @@
     }
     function closePill() { document.getElementById('pillOverlay').style.display='none'; }
 
-    // URL PARSER
+    // --- URL PARSER ON LOAD ---
     const q = new URLSearchParams(location.search);
     if(q.get('p')) {
         let pCode = q.get('p');
+        // Parse custom from URL if needed
         if(!patterns[pCode]) {
              const parts = pCode.split(/[- ,]+/).map(n=>parseInt(n)).filter(n=>!isNaN(n));
              if(parts.length >= 2) {
