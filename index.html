@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V30 Grand Finale</title>
+  <title>Respiración: V31 Native Feel</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -162,7 +164,7 @@
     /* --- 5. MENÚ --- */
     #selectionMenu {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(238, 252, 253, 0.95); /* Menos transparencia para mejor lectura */
+      background: rgba(238, 252, 253, 0.95);
       z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 30px; transition: opacity 0.4s ease;
     }
@@ -175,13 +177,13 @@
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    /* NUEVA BARRA DE ACCIONES DEL MENÚ */
+    /* BARRA DE ACCIONES */
     .menu-actions {
         display: flex; gap: 15px; margin-bottom: 30px; width: 100%; justify-content: center;
     }
     .action-btn {
         background: white; border: 1px solid rgba(0,0,0,0.05);
-        padding: 10px 20px; border-radius: 30px;
+        padding: 12px 20px; border-radius: 30px;
         color: var(--accent); font-weight: 600; font-size: 0.9rem;
         box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer;
         display: flex; align-items: center; gap: 8px;
@@ -191,7 +193,7 @@
 
     .menu-grid {
       display: grid; grid-template-columns: 1fr; gap: 15px;
-      width: 100%; max-width: 450px; max-height: 60vh; overflow-y: auto; 
+      width: 100%; max-width: 450px; max-height: 55vh; overflow-y: auto; 
       padding: 5px;
     }
 
@@ -218,15 +220,14 @@
     }
     .menu-card.custom-card h3 { color: var(--accent); }
 
-    /* --- CUSTOM OVERLAY (SCROLLABLE & SAFE) --- */
+    /* --- CUSTOM OVERLAY (SCROLL & SAFE) --- */
     #customOverlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(255, 255, 255, 0.98); z-index: 150;
         display: none; 
-        /* Flex para centrar, pero permitir scroll si el teclado empuja */
         flex-direction: column; align-items: center; justify-content: flex-start; 
-        padding-top: 20vh;
-        overflow-y: auto; /* Scroll habilitado */
+        padding-top: 15vh;
+        overflow-y: auto; 
         backdrop-filter: blur(15px); text-align: center;
     }
     
@@ -426,23 +427,33 @@
   </div>
 
   <script>
-    // --- PWA INSTALL LOGIC ---
+    // --- PWA INSTALL LOGIC (MEJORADA PARA ANDROID/IOS) ---
     let deferredPrompt;
     const installBtn = document.getElementById('installBtn');
     
+    // Escuchar si el navegador permite instalación nativa (Chrome Android)
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      installBtn.style.display = 'flex';
+      installBtn.style.display = 'flex'; // Asegurar que se ve
     });
 
     async function installApp() {
         if (deferredPrompt) {
+            // Caso 1: Android/Chrome Nativo
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
             deferredPrompt = null;
         } else {
-            alert("Para instalar en iOS/Android:\n1. Toca el botón 'Compartir' del navegador.\n2. Busca 'Añadir a pantalla de inicio'.");
+            // Caso 2: Fallback Manual (Detectar iOS vs Android)
+            const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+            
+            if (isIOS) {
+                alert("Para instalar en iPhone/iPad:\n\n1. Toca el botón 'Compartir' (el cuadrado con flecha ⍐).\n2. Busca y selecciona 'Añadir a pantalla de inicio'.");
+            } else {
+                // Mensaje específico para Android solicitado
+                alert("Para instalar en Android:\n\n1. Ve al menú del navegador (los tres puntos ⋮).\n2. Selecciona 'Instalar aplicación' o 'Añadir a pantalla de inicio'.");
+            }
         }
     }
 
@@ -740,7 +751,6 @@
     async function sharePill() {
        let p = prompt("Patrón (4-7-8, box...):", "4-7-8");
        if(!p || !patterns[p]) { 
-           // Si no está definido, probamos a ver si es custom
            if(p && p.split('-').length === 4) { /* ok */ }
            else return;
        }
@@ -767,7 +777,7 @@
     function closePill() { document.getElementById('pillOverlay').style.display='none'; }
     function closeShare() { els.shareModal.style.display = 'none'; }
 
-    // URL PARSER (Custom)
+    // URL PARSER
     const q = new URLSearchParams(location.search);
     if(q.get('p')) {
         let pCode = q.get('p');
