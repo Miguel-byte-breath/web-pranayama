@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V31 Native Feel</title>
+  <title>Respiración: V32 Creative First</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -359,6 +359,11 @@
     </div>
 
     <div class="menu-grid">
+      <div class="menu-card custom-card" onclick="openCustomModal()">
+        <h3>✨ Crear Personalizado</h3>
+        <p>Define tus propios tiempos (0-9)</p>
+      </div>
+      
       <div class="menu-card" onclick="start('4-4-6-2')">
         <h3>4-4-6-2 • Relax Profundo</h3>
         <p>Baja pulsaciones rápidamente</p>
@@ -374,10 +379,6 @@
       <div class="menu-card" onclick="start('5-5')">
         <h3>5-5 • Coherencia</h3>
         <p>Equilibrio total (In 5, Ex 5)</p>
-      </div>
-      <div class="menu-card custom-card" onclick="openCustomModal()">
-        <h3>✨ Crear Personalizado</h3>
-        <p>Define tus propios tiempos (0-9)</p>
       </div>
     </div>
   </div>
@@ -427,7 +428,7 @@
   </div>
 
   <script>
-    // --- PWA INSTALL LOGIC (MEJORADA PARA ANDROID/IOS) ---
+    // --- PWA INSTALL LOGIC ---
     let deferredPrompt;
     const installBtn = document.getElementById('installBtn');
     
@@ -451,7 +452,7 @@
             if (isIOS) {
                 alert("Para instalar en iPhone/iPad:\n\n1. Toca el botón 'Compartir' (el cuadrado con flecha ⍐).\n2. Busca y selecciona 'Añadir a pantalla de inicio'.");
             } else {
-                // Mensaje específico para Android solicitado
+                // Mensaje específico para Android
                 alert("Para instalar en Android:\n\n1. Ve al menú del navegador (los tres puntos ⋮).\n2. Selecciona 'Instalar aplicación' o 'Añadir a pantalla de inicio'.");
             }
         }
