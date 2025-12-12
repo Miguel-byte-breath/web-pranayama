@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V35 Resurrection</title>
+  <title>Respiración: V36.1 Melodic Update</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -178,7 +178,7 @@
     }
 
     .menu-actions {
-        display: flex; gap: 15px; margin-bottom: 30px; width: 100%; justify-content: center;
+        display: flex; gap: 15px; margin-bottom: 20px; width: 100%; justify-content: center;
     }
     .action-btn {
         background: white; border: 1px solid rgba(0,0,0,0.05);
@@ -189,10 +189,23 @@
         transition: transform 0.2s, box-shadow 0.2s;
     }
     .action-btn:active { transform: scale(0.95); }
+    
+    /* --- SPOTIFY PLAYER --- */
+    .music-player-container {
+        width: 100%; max-width: 450px;
+        margin-bottom: 25px;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 131, 143, 0.1);
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(8px);
+        transition: transform 0.3s ease;
+    }
+    .music-player-container:hover { transform: scale(1.02); }
 
     .menu-grid {
       display: grid; grid-template-columns: 1fr; gap: 15px;
-      width: 100%; max-width: 450px; max-height: 55vh; overflow-y: auto; 
+      width: 100%; max-width: 450px; max-height: 45vh; overflow-y: auto; 
       padding: 5px;
     }
 
@@ -395,6 +408,10 @@
         <button class="action-btn" id="installBtn" onclick="installApp()">
             <span>⭐ Instalar App</span>
         </button>
+    </div>
+
+    <div class="music-player-container">
+        <iframe style="border-radius:12px" src="https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM?si=znLveekJTcaBbVaacvRCow&pi=XuhfAaXqRVCGV" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
     </div>
 
     <div class="menu-grid">
@@ -782,7 +799,6 @@
       setTimeout(() => {
         initCanvas(); 
         state.run = true; 
-        // Reset Audio Time safely
         state.startAudioTime = audioCtx ? audioCtx.currentTime : 0;
         nextNoteTime = state.startAudioTime;
         currentBeatIndex = 0; 
@@ -822,7 +838,6 @@
        let p = els.pillPatternInput.value.trim();
        if(!p) { alert("Falta el patrón numérico."); return; }
        
-       // Validación simple
        if(!patterns[p] && p.split('-').length < 2) {
            alert("Patrón inválido. Ej: 4-7-8"); return;
        }
@@ -858,7 +873,6 @@
     const q = new URLSearchParams(location.search);
     if(q.get('p')) {
         let pCode = q.get('p');
-        // Parse custom from URL if needed
         if(!patterns[pCode]) {
              const parts = pCode.split(/[- ,]+/).map(n=>parseInt(n)).filter(n=>!isNaN(n));
              if(parts.length >= 2) {
