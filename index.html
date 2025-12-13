@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V37.6 Magic Fix</title>
+  <title>Respiración: V37.7 Real Magic</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -190,7 +190,7 @@
     }
     .action-btn:active { transform: scale(0.95); }
     
-    /* --- SPOTIFY PLAYER --- */
+    /* --- SPOTIFY PLAYER (ESTILO) --- */
     .music-player-container {
         width: 100%; max-width: 450px;
         height: 85px; 
@@ -491,8 +491,8 @@
     const C_HOLD   = '#FF9800'; 
     const C_EXHALE = '#2196F3'; 
 
-    // --- COLECCIÓN DE LISTAS "PIANO MÁGICO" (IDs REALES DE SPOTIFY) ---
-    // Usamos la API oficial de Embed para que funcione perfecto en cualquier web
+    // --- COLECCIÓN DE LISTAS "PIANO MÁGICO" ---
+    // IDs reales de Spotify de las mejores listas de piano/relax
     const PIANO_PLAYLISTS = [
       "37i9dQZF1DX4sWSpwq3LiO", // Peaceful Piano
       "37i9dQZF1DX6sQe2tuITYb", // Calm Piano
@@ -502,8 +502,10 @@
     ];
 
     function getRandomPlaylistUrl() {
+        // Seleccionamos un ID aleatorio
         const id = PIANO_PLAYLISTS[Math.floor(Math.random() * PIANO_PLAYLISTS.length)];
-        // URL OFICIAL DE SPOTIFY EMBED - 100% FIABLE
+        // Construimos la URL *OFICIAL* de Spotify Embed. Esta SÍ funciona.
+        // open.spotify.com/embed/playlist/...
         return `https://open.spotify.com/embed/playlist/${id}?utm_source=generator&theme=0`;
     }
 
@@ -815,7 +817,7 @@
     function start(k) {
       if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
       
-      // AUTO STOP MÚSICA (PRAGMÁTICO) - Silenciamos el frame
+      // APAGAR MÚSICA (CORTAR EL FRAME)
       if(els.spotify) els.spotify.src = ""; 
 
       initAudio(); 
@@ -845,8 +847,7 @@
       els.pat.innerHTML = ''; 
       els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
 
-      // MÚSICA MÁGICA: CARGAR UNA NUEVA
-      // Al volver al menú, se genera una nueva URL segura de Spotify
+      // RESTAURAR MÚSICA CON OTRA LISTA MÁGICA
       if(els.spotify) els.spotify.src = getRandomPlaylistUrl(); 
     }
 
