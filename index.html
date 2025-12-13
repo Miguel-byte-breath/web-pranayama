@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V38.2 Oficial</title>
+  <title>Respiración: V39.0 Final Spotify</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -190,15 +190,15 @@
     }
     .action-btn:active { transform: scale(0.95); }
     
-    /* --- SPOTIFY PLAYER (ESTILO) --- */
+    /* --- SPOTIFY PLAYER (CONTENEDOR) --- */
     .music-player-container {
         width: 100%; max-width: 450px;
-        height: 80px; /* Tamaño compacto estándar */
+        height: 80px; /* Tamaño compacto estandar */
         margin-bottom: 25px;
         border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 131, 143, 0.1);
-        background: #000000; /* Fondo negro para evitar flashes blancos */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        background: #000000; /* Fondo negro para carga */
         border: none;
         transition: transform 0.3s ease;
         display: block; 
@@ -491,20 +491,20 @@
     const C_HOLD   = '#FF9800'; 
     const C_EXHALE = '#2196F3'; 
 
-    // --- COLECCIÓN DE LISTAS "PIANO MÁGICO" (IDs REALES DE SPOTIFY) ---
-    // Peaceful Piano, Calm Piano, Piano & Chill, Minimalism, Ambient
+    // --- COLECCIÓN DE LISTAS (IDs REALES) ---
     const PIANO_PLAYLISTS = [
-      "37i9dQZF1DX4sWSpwq3LiO", 
-      "37i9dQZF1DX6sQe2tuITYb", 
-      "37i9dQZF1DXb3MrsM0jXN1", 
-      "37i9dQZF1DWZXB782X91E8", 
-      "37i9dQZF1DX3OGO9HzNeg2"  
+      "37i9dQZF1DX4sWSpwq3LiO", // Peaceful Piano
+      "37i9dQZF1DX6sQe2tuITYb", // Calm Piano
+      "37i9dQZF1DXb3MrsM0jXN1", // Piano & Chill
+      "37i9dQZF1DWZeKCadgRdKQ"  // Deep Focus
     ];
 
     function getRandomPlaylistUrl() {
+        // Seleccionamos un ID aleatorio
         const id = PIANO_PLAYLISTS[Math.floor(Math.random() * PIANO_PLAYLISTS.length)];
-        // URL OFICIAL DE SPOTIFY EMBED (HTTPS)
-        // ESTA ES LA CORRECCIÓN CLAVE: Usamos open.spotify.com
+        
+        // --- AQUÍ ESTÁ LA SOLUCIÓN DEFINITIVA ---
+        // Usamos el dominio oficial: open.spotify.com/embed
         return `https://open.spotify.com/embed/playlist/${id}?utm_source=generator&theme=0`;
     }
 
@@ -816,7 +816,8 @@
     function start(k) {
       if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
       
-      // AUTO-STOP MÚSICA: VACIAR SRC
+      // AUTO STOP MÚSICA
+      // Vaciamos el src para detener la reproducción
       if(els.spotify) els.spotify.src = ""; 
 
       initAudio(); 
@@ -846,8 +847,7 @@
       els.pat.innerHTML = ''; 
       els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
 
-      // RESTAURAR MÚSICA: CARGAR NUEVA LISTA MÁGICA
-      // Usando la URL OFICIAL DE SPOTIFY
+      // RESTAURAR MÚSICA: CARGAMOS NUEVA URL OFICIAL
       if(els.spotify) els.spotify.src = getRandomPlaylistUrl(); 
     }
 
