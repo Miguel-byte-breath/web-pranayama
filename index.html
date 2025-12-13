@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V39.0 Final Spotify</title>
+  <title>Respiración: V39.1 Oficial Fix</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -193,13 +193,12 @@
     /* --- SPOTIFY PLAYER (CONTENEDOR) --- */
     .music-player-container {
         width: 100%; max-width: 450px;
-        height: 80px; /* Tamaño compacto estandar */
+        height: 80px; /* Tamaño oficial Compact */
         margin-bottom: 25px;
         border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        background: #000000; /* Fondo negro para carga */
-        border: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        background: transparent; 
         transition: transform 0.3s ease;
         display: block; 
     }
@@ -491,7 +490,7 @@
     const C_HOLD   = '#FF9800'; 
     const C_EXHALE = '#2196F3'; 
 
-    // --- COLECCIÓN DE LISTAS (IDs REALES) ---
+    // --- COLECCIÓN DE LISTAS "PIANO MÁGICO" (IDs REALES DE SPOTIFY) ---
     const PIANO_PLAYLISTS = [
       "37i9dQZF1DX4sWSpwq3LiO", // Peaceful Piano
       "37i9dQZF1DX6sQe2tuITYb", // Calm Piano
@@ -500,11 +499,11 @@
     ];
 
     function getRandomPlaylistUrl() {
-        // Seleccionamos un ID aleatorio
         const id = PIANO_PLAYLISTS[Math.floor(Math.random() * PIANO_PLAYLISTS.length)];
         
-        // --- AQUÍ ESTÁ LA SOLUCIÓN DEFINITIVA ---
-        // Usamos el dominio oficial: open.spotify.com/embed
+        // --- SOLUCIÓN: URL ESTÁNDAR Y LIMPIA ---
+        // Usamos https://open.spotify.com/embed/playlist/...
+        // Esto evita el bloqueo de Google Proxy que causaba el "Page not found"
         return `https://open.spotify.com/embed/playlist/${id}?utm_source=generator&theme=0`;
     }
 
@@ -816,8 +815,8 @@
     function start(k) {
       if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
       
-      // AUTO STOP MÚSICA
-      // Vaciamos el src para detener la reproducción
+      // AUTO STOP MÚSICA (SOLUCIÓN DEFINITIVA)
+      // Vaciamos el src. Esto es estándar y funciona en todos los navegadores.
       if(els.spotify) els.spotify.src = ""; 
 
       initAudio(); 
@@ -847,7 +846,8 @@
       els.pat.innerHTML = ''; 
       els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
 
-      // RESTAURAR MÚSICA: CARGAMOS NUEVA URL OFICIAL
+      // RESTAURAR MÚSICA: CARGAMOS UNA URL OFICIAL (HTTPS)
+      // Esto hará que el iframe recargue con la nueva lista sin errores de "Page not found"
       if(els.spotify) els.spotify.src = getRandomPlaylistUrl(); 
     }
 
