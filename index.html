@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V38.1 Estabilidad Total</title>
+  <title>Respiración: V38.2 Oficial</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -193,13 +193,13 @@
     /* --- SPOTIFY PLAYER (ESTILO) --- */
     .music-player-container {
         width: 100%; max-width: 450px;
-        height: 155px; /* Altura ajustada para que se vea bien la playlist */
+        height: 80px; /* Tamaño compacto estándar */
         margin-bottom: 25px;
         border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 4px 15px rgba(0, 131, 143, 0.1);
-        background: #ffffff; 
-        border: 1px solid rgba(255,255,255,0.5);
+        background: #000000; /* Fondo negro para evitar flashes blancos */
+        border: none;
         transition: transform 0.3s ease;
         display: block; 
     }
@@ -413,7 +413,7 @@
     </div>
 
     <div class="music-player-container">
-        <iframe id="spotifyFrame" style="border-radius:12px" src="" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        <iframe id="spotifyFrame" style="border-radius:12px" src="" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
     </div>
 
     <div class="menu-grid">
@@ -503,8 +503,8 @@
 
     function getRandomPlaylistUrl() {
         const id = PIANO_PLAYLISTS[Math.floor(Math.random() * PIANO_PLAYLISTS.length)];
-        // URL OFICIAL Y ESTÁNDAR DE SPOTIFY EMBED (HTTPS)
-        // Esto corrige el error de "Enlace roto" o "Page not found"
+        // URL OFICIAL DE SPOTIFY EMBED (HTTPS)
+        // ESTA ES LA CORRECCIÓN CLAVE: Usamos open.spotify.com
         return `https://open.spotify.com/embed/playlist/${id}?utm_source=generator&theme=0`;
     }
 
@@ -816,8 +816,7 @@
     function start(k) {
       if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
       
-      // APAGAR MÚSICA (CORTAR EL FRAME)
-      // Se vacía el src para detener la reproducción totalmente
+      // AUTO-STOP MÚSICA: VACIAR SRC
       if(els.spotify) els.spotify.src = ""; 
 
       initAudio(); 
@@ -847,7 +846,8 @@
       els.pat.innerHTML = ''; 
       els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
 
-      // RESTAURAR MÚSICA: GENERAR NUEVA LISTA MÁGICA
+      // RESTAURAR MÚSICA: CARGAR NUEVA LISTA MÁGICA
+      // Usando la URL OFICIAL DE SPOTIFY
       if(els.spotify) els.spotify.src = getRandomPlaylistUrl(); 
     }
 
