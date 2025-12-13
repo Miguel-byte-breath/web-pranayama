@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V37.3 Lofi Mode</title>
+  <title>Respiración: V37.5 Magic Piano</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -190,10 +190,10 @@
     }
     .action-btn:active { transform: scale(0.95); }
     
-    /* --- SPOTIFY PLAYER (CONTENEDOR SEGURO) --- */
+    /* --- SPOTIFY PLAYER --- */
     .music-player-container {
         width: 100%; max-width: 450px;
-        height: 80px; 
+        height: 85px; 
         margin-bottom: 25px;
         border-radius: 12px;
         overflow: hidden;
@@ -413,7 +413,7 @@
     </div>
 
     <div class="music-player-container">
-        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/0vvXsWCC9xrXsKd4FyS8kM?utm_source=generator" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        <iframe id="spotifyFrame" style="border-radius:12px" src="" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
     </div>
 
     <div class="menu-grid">
@@ -491,6 +491,20 @@
     const C_HOLD   = '#FF9800'; 
     const C_EXHALE = '#2196F3'; 
 
+    // --- COLECCIÓN DE LISTAS "PIANO MÁGICO" ---
+    const PIANO_PLAYLISTS = [
+      "37i9dQZF1DX4sWSpwq3LiO", // Peaceful Piano
+      "37i9dQZF1DX6sQe2tuITYb", // Calm Piano
+      "37i9dQZF1DXb3MrsM0jXN1", // Piano & Chill
+      "37i9dQZF1DWZXB782X91E8", // Minimalism
+      "37i9dQZF1DX7K31D69s4M1"  // Piano in the Background
+    ];
+
+    function getRandomPlaylistUrl() {
+        const id = PIANO_PLAYLISTS[Math.floor(Math.random() * PIANO_PLAYLISTS.length)];
+        return `https://open.spotify.com/embed/playlist/${id}?theme=0`;
+    }
+
     let patterns = {
       '4-4-6-2': [
           {t:"INHALA", b:4, y:'rise', c:C_INHALE},
@@ -544,8 +558,15 @@
       shareConfigOverlay: document.getElementById('shareConfigOverlay'),
       pillPatternInput: document.getElementById('pillPatternInput'),
       pillNameInput: document.getElementById('pillNameInput'),
-      pillMessageInput: document.getElementById('pillMessageInput')
+      pillMessageInput: document.getElementById('pillMessageInput'),
+      
+      spotify: document.getElementById('spotifyFrame')
     };
+
+    // --- CARGAR MÚSICA ALEATORIA AL INICIO ---
+    window.addEventListener('DOMContentLoaded', () => {
+        if(els.spotify) els.spotify.src = getRandomPlaylistUrl();
+    });
 
     // --- HELPER DE INPUT MÁGICO ---
     function formatPatternInput(input) {
@@ -792,6 +813,9 @@
     function start(k) {
       if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
       
+      // AUTO STOP MÚSICA (PRAGMÁTICO)
+      if(els.spotify) els.spotify.src = ""; 
+
       initAudio(); 
       renderPattern(k);
       els.menu.style.opacity = '0'; 
@@ -818,6 +842,9 @@
       els.menu.style.display = 'flex'; setTimeout(()=>els.menu.style.opacity='1',10);
       els.pat.innerHTML = ''; 
       els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
+
+      // MÚSICA MÁGICA: CARGAR UNA NUEVA
+      if(els.spotify) els.spotify.src = getRandomPlaylistUrl(); 
     }
 
     function toggleTempo() { 
