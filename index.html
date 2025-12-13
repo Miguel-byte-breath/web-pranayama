@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V39.1 Oficial Fix</title>
+  <title>Respiración: V40.0 Clean</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -171,14 +171,14 @@
 
     .menu-title { 
       font-family: 'Cinzel', serif; font-size: 2.2rem; 
-      color: #263238; margin-bottom: 20px; 
+      color: #263238; margin-bottom: 30px; 
       letter-spacing: 0.1em; font-weight: 500; text-align: center;
       background: -webkit-linear-gradient(45deg, #263238, #546e7a);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
     .menu-actions {
-        display: flex; gap: 15px; margin-bottom: 20px; width: 100%; justify-content: center;
+        display: flex; gap: 15px; margin-bottom: 30px; width: 100%; justify-content: center;
     }
     .action-btn {
         background: white; border: 1px solid rgba(0,0,0,0.05);
@@ -189,24 +189,10 @@
         transition: transform 0.2s, box-shadow 0.2s;
     }
     .action-btn:active { transform: scale(0.95); }
-    
-    /* --- SPOTIFY PLAYER (CONTENEDOR) --- */
-    .music-player-container {
-        width: 100%; max-width: 450px;
-        height: 80px; /* Tamaño oficial Compact */
-        margin-bottom: 25px;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        background: transparent; 
-        transition: transform 0.3s ease;
-        display: block; 
-    }
-    .music-player-container:hover { transform: scale(1.02); }
 
     .menu-grid {
       display: grid; grid-template-columns: 1fr; gap: 15px;
-      width: 100%; max-width: 450px; max-height: 40vh; overflow-y: auto; 
+      width: 100%; max-width: 450px; max-height: 55vh; overflow-y: auto; 
       padding: 5px;
     }
 
@@ -411,10 +397,6 @@
         </button>
     </div>
 
-    <div class="music-player-container">
-        <iframe id="spotifyFrame" style="border-radius:12px" src="" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-    </div>
-
     <div class="menu-grid">
       <div class="menu-card custom-card" onclick="openCustomModal()">
         <h3>✨ Crear Personalizado</h3>
@@ -490,23 +472,6 @@
     const C_HOLD   = '#FF9800'; 
     const C_EXHALE = '#2196F3'; 
 
-    // --- COLECCIÓN DE LISTAS "PIANO MÁGICO" (IDs REALES DE SPOTIFY) ---
-    const PIANO_PLAYLISTS = [
-      "37i9dQZF1DX4sWSpwq3LiO", // Peaceful Piano
-      "37i9dQZF1DX6sQe2tuITYb", // Calm Piano
-      "37i9dQZF1DXb3MrsM0jXN1", // Piano & Chill
-      "37i9dQZF1DWZeKCadgRdKQ"  // Deep Focus
-    ];
-
-    function getRandomPlaylistUrl() {
-        const id = PIANO_PLAYLISTS[Math.floor(Math.random() * PIANO_PLAYLISTS.length)];
-        
-        // --- SOLUCIÓN: URL ESTÁNDAR Y LIMPIA ---
-        // Usamos https://open.spotify.com/embed/playlist/...
-        // Esto evita el bloqueo de Google Proxy que causaba el "Page not found"
-        return `https://open.spotify.com/embed/playlist/${id}?utm_source=generator&theme=0`;
-    }
-
     let patterns = {
       '4-4-6-2': [
           {t:"INHALA", b:4, y:'rise', c:C_INHALE},
@@ -560,15 +525,8 @@
       shareConfigOverlay: document.getElementById('shareConfigOverlay'),
       pillPatternInput: document.getElementById('pillPatternInput'),
       pillNameInput: document.getElementById('pillNameInput'),
-      pillMessageInput: document.getElementById('pillMessageInput'),
-      
-      spotify: document.getElementById('spotifyFrame')
+      pillMessageInput: document.getElementById('pillMessageInput')
     };
-
-    // --- CARGAR MÚSICA ALEATORIA AL INICIO ---
-    window.addEventListener('DOMContentLoaded', () => {
-        if(els.spotify) els.spotify.src = getRandomPlaylistUrl();
-    });
 
     // --- HELPER DE INPUT MÁGICO ---
     function formatPatternInput(input) {
@@ -815,10 +773,6 @@
     function start(k) {
       if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
       
-      // AUTO STOP MÚSICA (SOLUCIÓN DEFINITIVA)
-      // Vaciamos el src. Esto es estándar y funciona en todos los navegadores.
-      if(els.spotify) els.spotify.src = ""; 
-
       initAudio(); 
       renderPattern(k);
       els.menu.style.opacity = '0'; 
@@ -845,10 +799,6 @@
       els.menu.style.display = 'flex'; setTimeout(()=>els.menu.style.opacity='1',10);
       els.pat.innerHTML = ''; 
       els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
-
-      // RESTAURAR MÚSICA: CARGAMOS UNA URL OFICIAL (HTTPS)
-      // Esto hará que el iframe recargue con la nueva lista sin errores de "Page not found"
-      if(els.spotify) els.spotify.src = getRandomPlaylistUrl(); 
     }
 
     function toggleTempo() { 
