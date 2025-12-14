@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V41.4 (Iconos Neutros)</title>
+  <title>Respiración: V41.5 (Guía Completa)</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -311,8 +311,8 @@
     
     .info-tooltip {
         position: absolute; top: 50px; left: 50%; transform: translateX(-85%);
-        width: 260px; background: #37474f; color: white; padding: 15px;
-        border-radius: 12px; font-size: 0.9rem; line-height: 1.5;
+        width: 270px; background: #37474f; color: white; padding: 15px;
+        border-radius: 12px; font-size: 0.9rem; line-height: 1.6;
         opacity: 0; visibility: hidden; transition: all 0.3s ease; 
         box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 200; text-align: left;
     }
@@ -376,12 +376,14 @@
           
           <div class="info-bubble" onclick="toggleTooltip(this)">?
               <div class="info-tooltip">
-                  <strong>Instrucciones Avanzadas:</strong><br><br>
-                  1. Escribe los tiempos.<br>
-                  2. Añade <strong>b</strong> al final del número para indicar "Boca".<br><br>
-                  Ejemplo: <strong>4-8b</strong><br>
-                  (Inhala 4 Nariz, Exhala 8 Boca)<br><br>
-                  El sistema pone los guiones automáticamente.
+                  <strong>Guía de Fases:</strong><br><br>
+                  <span style="color:var(--c-inhale)">1. Inhala (Verde)</span><br>
+                  <span style="color:var(--c-hold)">2. Mantén (Naranja)</span><br>
+                  <span style="color:var(--c-exhale)">3. Exhala (Azul)</span><br>
+                  <span style="color:var(--c-hold)">4. Sostén (Naranja)</span><br><br>
+                  <strong>Tips Pro:</strong><br>
+                  • Añade <strong>'b'</strong> para boca (ej: 4b).<br>
+                  • Usa <strong>0</strong> para saltar fase.
               </div>
           </div>
       </div>
@@ -401,10 +403,13 @@
            
            <div class="info-bubble" onclick="toggleTooltip(this)">?
               <div class="info-tooltip" style="width: 280px;">
-                  <strong>Cómo crear el ritmo:</strong><br><br>
-                  Escribe los números (ej: 4-7-8).<br><br>
-                  ¿Quieres exhalar por la boca?<br>
-                  Añade una <strong>'b'</strong> al número (ej: <strong>8b</strong>).<br><br>
+                  <strong>Guía de Fases:</strong><br><br>
+                  <span style="color:var(--c-inhale)">1. Inhala (Verde)</span><br>
+                  <span style="color:var(--c-hold)">2. Mantén (Naranja)</span><br>
+                  <span style="color:var(--c-exhale)">3. Exhala (Azul)</span><br>
+                  <span style="color:var(--c-hold)">4. Sostén (Naranja)</span><br><br>
+                  <strong>¿Exhalar por la boca?</strong><br>
+                  Añade una <strong>'b'</strong> al número (ej: <strong>8b</strong>).<br>
                   El receptor verá el icono 🌬️.
               </div>
           </div>
