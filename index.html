@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V42.4 (Amor y Belleza)</title>
+  <title>Respiración: V42.5 (Fix Android Layout)</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -94,8 +94,21 @@
       flex-direction: column; 
     }
 
-    .panel-side { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20; width: 100%; }
-    .panel-center { position: relative; z-index: 10; display: flex; align-items: center; justify-content: center; margin: 20px 0; flex-shrink: 0; }
+    /* Ajuste de márgenes para evitar solapamiento en Android */
+    .panel-side { 
+        flex: 1; display: flex; flex-direction: column; 
+        align-items: center; justify-content: center; 
+        z-index: 20; width: 100%; 
+    }
+    
+    /* ZONA DE SEGURIDAD AUMENTADA */
+    .panel-center { 
+        position: relative; z-index: 10; 
+        display: flex; align-items: center; justify-content: center; 
+        /* Aumentado de 20px a 5vh para dar aire dinámico vertical */
+        margin: 5vh 0; 
+        flex-shrink: 0; 
+    }
 
     .phase-text {
       font-family: 'Cinzel', serif;
@@ -104,6 +117,7 @@
       text-transform: uppercase; text-align: center; white-space: nowrap;
       transition: color 0.5s ease;
       text-shadow: 0 10px 30px rgba(168, 206, 212, 0.4);
+      z-index: 30; /* Asegurar que esté por encima */
     }
 
     /* INDICADOR DE MODO (BOCA/NARIZ) */
@@ -122,11 +136,14 @@
       font-size: 1.1rem; text-align: center;
       max-width: 500px; transition: opacity 0.5s;
       line-height: 1.6;
+      z-index: 30; /* Asegurar que el texto flote sobre la esfera si llegaran a tocarse */
+      margin-top: 10px; /* Margen extra de seguridad */
     }
 
     .sphere-wrapper {
       position: relative; 
-      width: min(60vw, 280px); height: min(60vw, 280px);
+      /* Ajuste ligero para móviles estrechos */
+      width: min(55vw, 260px); height: min(55vw, 260px);
       display: flex; align-items: center; justify-content: center;
     }
 
@@ -181,7 +198,7 @@
       padding: 30px; transition: opacity 0.4s ease;
     }
 
-    /* BOTÓN GUÍA GLOBAL (V42.1) */
+    /* BOTÓN GUÍA GLOBAL */
     .global-info-btn {
         position: absolute; top: 30px; right: 30px;
         width: 42px; height: 42px; border-radius: 50%;
@@ -565,12 +582,11 @@
     };
     
     // --- GENERADOR DE FRASES WU-WEI + AMOR + BELLEZA ---
-    // Diccionarios expandidos para incluir Amor y Aceptación
+    // Diccionarios expandidos
     const pSubjects = [
         "El río antiguo", "La brisa suave", "El bambú flexible", "La montaña quieta", "Tu mente clara", 
         "El momento presente", "La hoja seca", "El agua profunda", "Este aliento", "La nube blanca", 
         "El vacío fértil", "La raíz fuerte", 
-        // Nuevos:
         "El amor inmenso", "La belleza oculta", "Tu corazón sabio", "La flor del alma", "La luz interior"
     ];
     
@@ -578,18 +594,15 @@
         "fluye sin esfuerzo", "no opone resistencia", "se dobla sin romperse", "observa en silencio", 
         "refleja el cielo", "encuentra su camino", "suelta el control", "descansa en paz", 
         "existe sin más", "acepta el cambio", "danza con el viento", "crece despacio",
-        // Nuevos:
         "abraza lo que es", "florece sin prisa", "sana las heridas", "irradia calidez", "ama sin apego", "ve la verdad"
     ];
     
     const pConclusions = [
         "sé como el agua.", "todo es perfecto.", "paz infinita.", "vuelve al centro.", "nada que hacer.", 
         "mente serena.", "simple y puro.", "aquí y ahora.", "conecta contigo.", "fluye con todo.",
-        // Nuevos:
         "amor es todo.", "belleza pura.", "eres el amor.", "suelta y confía.", "eres suficiente.", "luz radiante."
     ];
 
-    // Obras maestras (Manuales + Nuevas)
     const masterQuotes = [
       "El vacío es forma, la forma es vacío.",
       "Si te doblas como el junco, el viento no te romperá.",
@@ -598,14 +611,12 @@
       "Sé el valle del universo, recíbelo todo.",
       "Poco a poco, el barro se asienta y el agua se aclara.",
       "Haz nada, y nada quedará sin hacer.",
-      // Nuevos:
       "El amor no reclama posesión, sino que da libertad.",
       "La belleza no está en el rostro, sino en la luz del corazón.",
       "Aceptar es el verdadero acto de transformación."
     ];
 
     function getWuWeiQuote() {
-        // 30% Probabilidad de frase maestra, 70% Generada
         if(Math.random() < 0.3) {
             return masterQuotes[Math.floor(Math.random() * masterQuotes.length)];
         } else {
@@ -787,7 +798,6 @@
             els.ph.textContent = p.t; 
             els.ph.style.color = p.c; 
             
-            // ACTUALIZACIÓN ICONO NEUTRO
             const isHold = (p.y === 'hold_high' || p.y === 'hold_low');
             if (isHold) {
                  els.modeIcon.textContent = "⏸️"; 
@@ -904,7 +914,6 @@
       els.menu.style.opacity = '0'; 
       setTimeout(()=>els.menu.style.display='none', 400);
       
-      // USA EL NUEVO GENERADOR DE FRASES
       els.qt.textContent = getWuWeiQuote();
       
       setTimeout(() => {
