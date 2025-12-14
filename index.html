@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V42.8 (Frases Multilínea)</title>
+  <title>Respiración: V42.10 (Fix Core Social)</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -975,7 +975,9 @@
        els.load.style.display = 'flex'; 
 
        const baseUrl = location.href.split('?')[0];
-       const longUrl = `${baseUrl}?p=${encodeURIComponent(pString)}¶=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
+       
+       // FIX V42.10: Cambiado 'para' por 'to' para evitar conflicto con &para HTML entity
+       const longUrl = `${baseUrl}?p=${encodeURIComponent(pString)}&to=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
        
        let finalUrl = longUrl;
        try { 
@@ -1002,7 +1004,12 @@
         if(dynamicP.length >= 2) {
            patterns[pCode] = dynamicP; 
            document.getElementById('pillOverlay').style.display = 'flex';
-           document.getElementById('pillRecipient').textContent = `Hola, ${q.get('para') || 'Ti'}`;
+           
+           // FIX V42.10: Leemos 'to' en lugar de 'para'
+           // Priorizamos 'to', pero mantenemos 'para' por si alguien usa un link viejo (aunque estén rotos)
+           const recipient = q.get('to') || q.get('para') || 'Ti';
+           
+           document.getElementById('pillRecipient').textContent = `Hola, ${recipient}`;
            document.getElementById('pillMessage').textContent = `"${q.get('msg')}"`;
            els.menu.style.display = 'none'; 
            window.closePill = () => { document.getElementById('pillOverlay').style.display='none'; start(pCode); };
