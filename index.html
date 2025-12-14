@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V41.2 (Input Fix)</title>
+  <title>Respiración: V41.4 (Iconos Neutros)</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -108,8 +108,8 @@
 
     /* NUEVO: INDICADOR DE MODO (BOCA/NARIZ) */
     .mode-indicator {
-      margin-top: 10px;
-      font-size: 2rem; 
+      margin-top: 15px;
+      font-size: 2.5rem; 
       opacity: 0; transform: translateY(-10px);
       transition: all 0.5s ease;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
@@ -405,7 +405,7 @@
                   Escribe los números (ej: 4-7-8).<br><br>
                   ¿Quieres exhalar por la boca?<br>
                   Añade una <strong>'b'</strong> al número (ej: <strong>8b</strong>).<br><br>
-                  El receptor verá el icono 👄.
+                  El receptor verá el icono 🌬️.
               </div>
           </div>
       </div>
@@ -759,15 +759,20 @@
             els.ph.textContent = p.t; 
             els.ph.style.color = p.c; 
             
-            // ACTUALIZAR ICONO (BOCA/NARIZ)
-            if(p.m === 'mouth') {
-                els.modeIcon.textContent = "👄"; // o 🌬️
-                els.modeIcon.classList.add('visible');
-            } else if (p.m === 'nose') {
-                els.modeIcon.textContent = "👃";
-                els.modeIcon.classList.add('visible');
+            // --- ACTUALIZACIÓN INTELIGENTE DE ICONO (V41.4 - NEUTROS) ---
+            const isHold = (p.y === 'hold_high' || p.y === 'hold_low');
+
+            if (isHold) {
+                 els.modeIcon.textContent = "⏸️"; // PAUSA (Neutro)
+                 els.modeIcon.classList.add('visible');
             } else {
-                els.modeIcon.classList.remove('visible'); // Para hold
+                 if(p.m === 'mouth') {
+                     els.modeIcon.textContent = "🌬️"; // SOPLO/AIRE (Neutro)
+                     els.modeIcon.classList.add('visible');
+                 } else {
+                     els.modeIcon.textContent = "👃"; // NARIZ (Neutro)
+                     els.modeIcon.classList.add('visible');
+                 }
             }
         }
         els.sph.style.setProperty('--c-phase', p.c);
