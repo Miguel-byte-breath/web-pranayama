@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V42.0 (Guía Global)</title>
+  <title>Respiración: V42.1 (Botón Info)</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -181,20 +181,31 @@
       padding: 30px; transition: opacity 0.4s ease;
     }
 
-    /* BOTÓN GUÍA GLOBAL */
+    /* NUEVO ESTILO DEL BOTÓN GUÍA GLOBAL (V42.1) */
     .global-info-btn {
         position: absolute; top: 30px; right: 30px;
-        width: 44px; height: 44px; border-radius: 50%;
-        background: rgba(255,255,255,0.6);
-        border: 1px solid rgba(0,0,0,0.05);
-        color: var(--accent); font-weight: 700; font-family: 'Cinzel', serif;
+        width: 42px; height: 42px; border-radius: 50%;
+        background: rgba(255,255,255,0.9);
+        border: 1px solid rgba(76, 175, 80, 0.3); /* Borde verde sutil */
+        color: var(--primary); /* Texto verde */
+        
+        /* Tipografía específica para que sea una 'i' con punto */
+        font-family: 'Manrope', sans-serif; 
+        font-weight: 800; 
+        
         display: flex; align-items: center; justify-content: center;
         font-size: 1.2rem; cursor: pointer;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        transition: transform 0.2s, background 0.2s;
+        /* Sombra con brillo verde */
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.15); 
+        transition: all 0.3s ease;
         z-index: 110;
     }
-    .global-info-btn:hover { background: white; transform: scale(1.1); }
+    .global-info-btn:hover { 
+        background: var(--primary); 
+        color: white; 
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+    }
 
     .menu-title { 
       font-family: 'Cinzel', serif; font-size: 2.2rem; 
