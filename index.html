@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V42.1 (Botón Info)</title>
+  <title>Respiración: V42.2 (Ayuda Detallada)</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -413,11 +413,14 @@
           
           <div class="info-bubble" onclick="toggleTooltip(this)">?
               <div class="info-tooltip">
-                  <strong>Formato Rápido:</strong><br><br>
-                  Escribe los segundos de cada fase.<br>
-                  Ej: <strong>4-7-8</strong><br><br>
-                  <strong>¿Boca?</strong> Añade 'b' (Ej: <strong>8b</strong>)<br>
-                  <strong>¿Saltar?</strong> Usa 0
+                  <strong>Guía de Fases:</strong><br><br>
+                  <span style="color:var(--c-inhale)">1. Inhala (Verde)</span><br>
+                  <span style="color:var(--c-hold)">2. Mantén (Naranja)</span><br>
+                  <span style="color:var(--c-exhale)">3. Exhala (Azul)</span><br>
+                  <span style="color:var(--c-hold)">4. Sostén (Naranja)</span><br><br>
+                  <strong>Tips Pro:</strong><br>
+                  • Añade <strong>'b'</strong> para boca (ej: 4b).<br>
+                  • Usa <strong>0</strong> para saltar fase.
               </div>
           </div>
       </div>
@@ -436,9 +439,13 @@
           <input type="text" id="pillPatternInput" class="big-input" placeholder="4-7-8b" maxlength="10" value="">
            <div class="info-bubble" onclick="toggleTooltip(this)">?
               <div class="info-tooltip" style="width: 280px;">
-                  <strong>Guía rápida:</strong><br><br>
-                  Escribe 4 tiempos (ej: 4-7-8).<br>
-                  Añade <strong>'b'</strong> para exhalar por la boca.<br>
+                  <strong>Guía de Fases:</strong><br><br>
+                  <span style="color:var(--c-inhale)">1. Inhala (Verde)</span><br>
+                  <span style="color:var(--c-hold)">2. Mantén (Naranja)</span><br>
+                  <span style="color:var(--c-exhale)">3. Exhala (Azul)</span><br>
+                  <span style="color:var(--c-hold)">4. Sostén (Naranja)</span><br><br>
+                  <strong>¿Exhalar por la boca?</strong><br>
+                  Añade una <strong>'b'</strong> al número (ej: <strong>8b</strong>).<br>
                   El receptor verá el icono 🌬️.
               </div>
           </div>
