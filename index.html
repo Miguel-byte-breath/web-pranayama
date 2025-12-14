@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V42.7 (Icon Safety Fix)</title>
+  <title>Respiración: V42.8 (Frases Multilínea)</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -92,7 +92,6 @@
       flex: 1; display: flex; width: 100%; position: relative;
       align-items: center; justify-content: center;
       flex-direction: column; 
-      /* Padding mínimo vertical para evitar cortes */
       padding: 10px 0;
     }
 
@@ -100,15 +99,12 @@
         flex: 1; display: flex; flex-direction: column; 
         align-items: center; justify-content: center; 
         z-index: 20; width: 100%; 
-        /* Altura mínima para asegurar que el icono y título tengan su "casa" */
         min-height: 90px;
     }
     
-    /* ZONA CENTRAL SEGURA (CRÍTICO PARA EL SOLAPE) */
     .panel-center { 
         position: relative; z-index: 10; 
         display: flex; align-items: center; justify-content: center; 
-        /* Margen aumentado a 60px: Reserva espacio para cuando la bola crece hacia arriba y abajo */
         margin: 60px 0; 
         flex-shrink: 0; 
     }
@@ -124,7 +120,6 @@
       margin-bottom: 5px;
     }
 
-    /* FIX: Z-Index alto para que flote sobre la esfera si es necesario */
     .mode-indicator {
       margin-top: 10px;
       font-size: 2.5rem; 
@@ -138,17 +133,15 @@
     .quote {
       padding: 0 25px; color: var(--text-muted);
       font-family: 'Cinzel', serif; 
-      font-size: 1.1rem; text-align: center;
+      font-size: 1.15rem; text-align: center;
       max-width: 500px; transition: opacity 0.5s;
       line-height: 1.6;
       z-index: 30;
-      /* Margen extra por seguridad */
       margin-top: 10px; 
     }
 
     .sphere-wrapper {
       position: relative; 
-      /* Tamaño contenido para móviles */
       width: min(50vw, 260px); height: min(50vw, 260px);
       display: flex; align-items: center; justify-content: center;
     }
@@ -587,7 +580,6 @@
     };
     
     // --- GENERADOR DE FRASES WU-WEI + AMOR + BELLEZA ---
-    // Diccionarios expandidos
     const pSubjects = [
         "El río antiguo", "La brisa suave", "El bambú flexible", "La montaña quieta", "Tu mente clara", 
         "El momento presente", "La hoja seca", "El agua profunda", "Este aliento", "La nube blanca", 
@@ -602,10 +594,11 @@
         "abraza lo que es", "florece sin prisa", "sana las heridas", "irradia calidez", "ama sin apego", "ve la verdad"
     ];
     
+    // Conclusiones Capitalizadas para ser nuevas frases
     const pConclusions = [
-        "sé como el agua.", "todo es perfecto.", "paz infinita.", "vuelve al centro.", "nada que hacer.", 
-        "mente serena.", "simple y puro.", "aquí y ahora.", "conecta contigo.", "fluye con todo.",
-        "amor es todo.", "belleza pura.", "eres el amor.", "suelta y confía.", "eres suficiente.", "luz radiante."
+        "Sé como el agua.", "Todo es perfecto.", "Paz infinita.", "Vuelve al centro.", "Nada que hacer.", 
+        "Mente serena.", "Simple y puro.", "Aquí y ahora.", "Conecta contigo.", "Fluye con todo.",
+        "Amor es todo.", "Belleza pura.", "Eres el amor.", "Suelta y confía.", "Eres suficiente.", "Luz radiante."
     ];
 
     const masterQuotes = [
@@ -628,7 +621,8 @@
             const s = pSubjects[Math.floor(Math.random() * pSubjects.length)];
             const a = pActions[Math.floor(Math.random() * pActions.length)];
             const c = pConclusions[Math.floor(Math.random() * pConclusions.length)];
-            return `${s} ${a}, ${c}`;
+            // Usamos PUNTO en lugar de coma para separar ideas claramente
+            return `${s} ${a}. ${c}`;
         }
     }
 
@@ -835,9 +829,8 @@
 
         const progress = timeInPhase / p.dur; 
         const ease = -(Math.cos(Math.PI * progress) - 1) / 2;
-        // FIX: ESCALA MÁXIMA REDUCIDA EN MÓVILES PARA EVITAR SOLAPES
-        let maxScale = 1.45; // Antes 1.5, sutil reducción
-        if (window.innerWidth < 400) maxScale = 1.35; // Más pequeño en móviles estrechos
+        let maxScale = 1.45; 
+        if (window.innerWidth < 400) maxScale = 1.35; 
 
         let rawScale = 1;
         if (p.y === 'rise') rawScale = 0.8 + ((maxScale - 0.8) * ease); 
@@ -925,7 +918,10 @@
       els.menu.style.opacity = '0'; 
       setTimeout(()=>els.menu.style.display='none', 400);
       
-      els.qt.textContent = getWuWeiQuote();
+      // LOGICA NUEVA: INSERTAR SALTO DE LÍNEA SI HAY PUNTO
+      const rawQuote = getWuWeiQuote();
+      // Reemplaza ". " por ". <br>" para que se vea en dos líneas
+      els.qt.innerHTML = rawQuote.replace('. ', '.<br>');
       
       setTimeout(() => {
         initCanvas(); 
