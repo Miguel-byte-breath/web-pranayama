@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V41.1 (Instrucciones Boca)</title>
+  <title>Respiración: V41.2 (Input Fix)</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -584,19 +584,28 @@
       modeIcon: document.getElementById('modeIcon') // Referencia al icono de boca/nariz
     };
 
-    // --- HELPER DE INPUT MÁGICO CON LETRAS ---
-    // Permite números y la letra 'b' o 'B'
+    // --- HELPER DE INPUT MÁGICO CON LETRAS (CORREGIDO V41.2) ---
+    // Reconstruye el string añadiendo guiones entre números
     function formatPatternInput(input) {
-        let val = input.value;
-        // Solo permitimos números, guiones y 'b'
-        val = val.replace(/[^0-9bB]/g, '');
+        let raw = input.value.replace(/[^0-9bB]/g, '').toLowerCase();
+        let formatted = '';
         
-        // Auto-formato de guiones: si escribes un número y luego otro, pon guión
-        // Pero es complejo con la 'b', así que hacemos una limpieza simple
-        // para asegurar que no hay guiones dobles
-        val = val.replace(/-+/g, '-');
-        
-        input.value = val.toLowerCase();
+        for(let i=0; i < raw.length; i++) {
+            const char = raw[i];
+            const isDigit = /[0-9]/.test(char);
+            
+            if (isDigit) {
+                // Si no es el principio, añadimos guión antes del dígito
+                if (formatted.length > 0) formatted += '-';
+                formatted += char;
+            } else {
+                // Es una 'b'. Solo añadir si hay algo antes y no es otra 'b'
+                if (formatted.length > 0 && formatted.slice(-1) !== 'b') {
+                    formatted += char;
+                }
+            }
+        }
+        input.value = formatted;
     }
 
     if(els.customInput) els.customInput.addEventListener('input', (e) => formatPatternInput(e.target));
