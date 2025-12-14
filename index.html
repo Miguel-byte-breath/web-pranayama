@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V42.8 (Frases Multilínea)</title>
+  <title>Respiración: V42.9 (Hotfix Social)</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -975,7 +975,8 @@
        els.load.style.display = 'flex'; 
 
        const baseUrl = location.href.split('?')[0];
-       const longUrl = `${baseUrl}?p=${encodeURIComponent(pString)}¶=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
+       // CORRECCIÓN HOTFIX V42.9: Usar '&para=' en lugar de un símbolo mal interpretado
+       const longUrl = `${baseUrl}?p=${encodeURIComponent(pString)}&para=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
        
        let finalUrl = longUrl;
        try { 
@@ -1002,6 +1003,7 @@
         if(dynamicP.length >= 2) {
            patterns[pCode] = dynamicP; 
            document.getElementById('pillOverlay').style.display = 'flex';
+           // AHORA SÍ: Recuperará 'para' correctamente porque la URL ya no tiene símbolos raros
            document.getElementById('pillRecipient').textContent = `Hola, ${q.get('para') || 'Ti'}`;
            document.getElementById('pillMessage').textContent = `"${q.get('msg')}"`;
            els.menu.style.display = 'none'; 
