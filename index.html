@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V42.4 (Amor y Belleza)</title>
+  <title>Respiración: V42.8 (Frases Multilínea)</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -92,10 +92,22 @@
       flex: 1; display: flex; width: 100%; position: relative;
       align-items: center; justify-content: center;
       flex-direction: column; 
+      padding: 10px 0;
     }
 
-    .panel-side { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20; width: 100%; }
-    .panel-center { position: relative; z-index: 10; display: flex; align-items: center; justify-content: center; margin: 20px 0; flex-shrink: 0; }
+    .panel-side { 
+        flex: 1; display: flex; flex-direction: column; 
+        align-items: center; justify-content: center; 
+        z-index: 20; width: 100%; 
+        min-height: 90px;
+    }
+    
+    .panel-center { 
+        position: relative; z-index: 10; 
+        display: flex; align-items: center; justify-content: center; 
+        margin: 60px 0; 
+        flex-shrink: 0; 
+    }
 
     .phase-text {
       font-family: 'Cinzel', serif;
@@ -104,29 +116,33 @@
       text-transform: uppercase; text-align: center; white-space: nowrap;
       transition: color 0.5s ease;
       text-shadow: 0 10px 30px rgba(168, 206, 212, 0.4);
+      z-index: 30;
+      margin-bottom: 5px;
     }
 
-    /* INDICADOR DE MODO (BOCA/NARIZ) */
     .mode-indicator {
-      margin-top: 15px;
+      margin-top: 10px;
       font-size: 2.5rem; 
       opacity: 0; transform: translateY(-10px);
       transition: all 0.5s ease;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+      z-index: 50; 
     }
     .mode-indicator.visible { opacity: 1; transform: translateY(0); }
 
     .quote {
-      padding: 0 20px; color: var(--text-muted);
+      padding: 0 25px; color: var(--text-muted);
       font-family: 'Cinzel', serif; 
-      font-size: 1.1rem; text-align: center;
+      font-size: 1.15rem; text-align: center;
       max-width: 500px; transition: opacity 0.5s;
       line-height: 1.6;
+      z-index: 30;
+      margin-top: 10px; 
     }
 
     .sphere-wrapper {
       position: relative; 
-      width: min(60vw, 280px); height: min(60vw, 280px);
+      width: min(50vw, 260px); height: min(50vw, 260px);
       display: flex; align-items: center; justify-content: center;
     }
 
@@ -181,7 +197,6 @@
       padding: 30px; transition: opacity 0.4s ease;
     }
 
-    /* BOTÓN GUÍA GLOBAL (V42.1) */
     .global-info-btn {
         position: absolute; top: 30px; right: 30px;
         width: 42px; height: 42px; border-radius: 50%;
@@ -565,12 +580,10 @@
     };
     
     // --- GENERADOR DE FRASES WU-WEI + AMOR + BELLEZA ---
-    // Diccionarios expandidos para incluir Amor y Aceptación
     const pSubjects = [
         "El río antiguo", "La brisa suave", "El bambú flexible", "La montaña quieta", "Tu mente clara", 
         "El momento presente", "La hoja seca", "El agua profunda", "Este aliento", "La nube blanca", 
         "El vacío fértil", "La raíz fuerte", 
-        // Nuevos:
         "El amor inmenso", "La belleza oculta", "Tu corazón sabio", "La flor del alma", "La luz interior"
     ];
     
@@ -578,18 +591,16 @@
         "fluye sin esfuerzo", "no opone resistencia", "se dobla sin romperse", "observa en silencio", 
         "refleja el cielo", "encuentra su camino", "suelta el control", "descansa en paz", 
         "existe sin más", "acepta el cambio", "danza con el viento", "crece despacio",
-        // Nuevos:
         "abraza lo que es", "florece sin prisa", "sana las heridas", "irradia calidez", "ama sin apego", "ve la verdad"
     ];
     
+    // Conclusiones Capitalizadas para ser nuevas frases
     const pConclusions = [
-        "sé como el agua.", "todo es perfecto.", "paz infinita.", "vuelve al centro.", "nada que hacer.", 
-        "mente serena.", "simple y puro.", "aquí y ahora.", "conecta contigo.", "fluye con todo.",
-        // Nuevos:
-        "amor es todo.", "belleza pura.", "eres el amor.", "suelta y confía.", "eres suficiente.", "luz radiante."
+        "Sé como el agua.", "Todo es perfecto.", "Paz infinita.", "Vuelve al centro.", "Nada que hacer.", 
+        "Mente serena.", "Simple y puro.", "Aquí y ahora.", "Conecta contigo.", "Fluye con todo.",
+        "Amor es todo.", "Belleza pura.", "Eres el amor.", "Suelta y confía.", "Eres suficiente.", "Luz radiante."
     ];
 
-    // Obras maestras (Manuales + Nuevas)
     const masterQuotes = [
       "El vacío es forma, la forma es vacío.",
       "Si te doblas como el junco, el viento no te romperá.",
@@ -598,21 +609,20 @@
       "Sé el valle del universo, recíbelo todo.",
       "Poco a poco, el barro se asienta y el agua se aclara.",
       "Haz nada, y nada quedará sin hacer.",
-      // Nuevos:
       "El amor no reclama posesión, sino que da libertad.",
       "La belleza no está en el rostro, sino en la luz del corazón.",
       "Aceptar es el verdadero acto de transformación."
     ];
 
     function getWuWeiQuote() {
-        // 30% Probabilidad de frase maestra, 70% Generada
         if(Math.random() < 0.3) {
             return masterQuotes[Math.floor(Math.random() * masterQuotes.length)];
         } else {
             const s = pSubjects[Math.floor(Math.random() * pSubjects.length)];
             const a = pActions[Math.floor(Math.random() * pActions.length)];
             const c = pConclusions[Math.floor(Math.random() * pConclusions.length)];
-            return `${s} ${a}, ${c}`;
+            // Usamos PUNTO en lugar de coma para separar ideas claramente
+            return `${s} ${a}. ${c}`;
         }
     }
 
@@ -787,7 +797,6 @@
             els.ph.textContent = p.t; 
             els.ph.style.color = p.c; 
             
-            // ACTUALIZACIÓN ICONO NEUTRO
             const isHold = (p.y === 'hold_high' || p.y === 'hold_low');
             if (isHold) {
                  els.modeIcon.textContent = "⏸️"; 
@@ -820,10 +829,15 @@
 
         const progress = timeInPhase / p.dur; 
         const ease = -(Math.cos(Math.PI * progress) - 1) / 2;
+        let maxScale = 1.45; 
+        if (window.innerWidth < 400) maxScale = 1.35; 
+
         let rawScale = 1;
-        if (p.y === 'rise') rawScale = 0.8 + (0.7 * ease); 
-        else if (p.y === 'fall') rawScale = 1.5 - (0.7 * ease);
-        else if (p.y === 'hold_high') rawScale = 1.5; else rawScale = 0.8;
+        if (p.y === 'rise') rawScale = 0.8 + ((maxScale - 0.8) * ease); 
+        else if (p.y === 'fall') rawScale = maxScale - ((maxScale - 0.8) * ease);
+        else if (p.y === 'hold_high') rawScale = maxScale; 
+        else rawScale = 0.8;
+        
         els.sph.style.transform = `scale(${rawScale})`;
       }
 
@@ -904,8 +918,10 @@
       els.menu.style.opacity = '0'; 
       setTimeout(()=>els.menu.style.display='none', 400);
       
-      // USA EL NUEVO GENERADOR DE FRASES
-      els.qt.textContent = getWuWeiQuote();
+      // LOGICA NUEVA: INSERTAR SALTO DE LÍNEA SI HAY PUNTO
+      const rawQuote = getWuWeiQuote();
+      // Reemplaza ". " por ". <br>" para que se vea en dos líneas
+      els.qt.innerHTML = rawQuote.replace('. ', '.<br>');
       
       setTimeout(() => {
         initCanvas(); 
