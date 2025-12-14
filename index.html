@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V42.2 (Ayuda Detallada)</title>
+  <title>Respiración: V42.4 (Amor y Belleza)</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -181,29 +181,22 @@
       padding: 30px; transition: opacity 0.4s ease;
     }
 
-    /* NUEVO ESTILO DEL BOTÓN GUÍA GLOBAL (V42.1) */
+    /* BOTÓN GUÍA GLOBAL (V42.1) */
     .global-info-btn {
         position: absolute; top: 30px; right: 30px;
         width: 42px; height: 42px; border-radius: 50%;
         background: rgba(255,255,255,0.9);
-        border: 1px solid rgba(76, 175, 80, 0.3); /* Borde verde sutil */
-        color: var(--primary); /* Texto verde */
-        
-        /* Tipografía específica para que sea una 'i' con punto */
-        font-family: 'Manrope', sans-serif; 
-        font-weight: 800; 
-        
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        color: var(--primary);
+        font-family: 'Manrope', sans-serif; font-weight: 800; 
         display: flex; align-items: center; justify-content: center;
         font-size: 1.2rem; cursor: pointer;
-        /* Sombra con brillo verde */
         box-shadow: 0 4px 15px rgba(76, 175, 80, 0.15); 
         transition: all 0.3s ease;
         z-index: 110;
     }
     .global-info-btn:hover { 
-        background: var(--primary); 
-        color: white; 
-        transform: scale(1.1);
+        background: var(--primary); color: white; transform: scale(1.1);
         box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
     }
 
@@ -307,9 +300,10 @@
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     
+    /* TOOLTIP DE AYUDA */
     .info-tooltip {
         position: absolute; top: 50px; left: 50%; transform: translateX(-85%);
-        width: 270px; background: #37474f; color: white; padding: 15px;
+        width: 290px; background: #37474f; color: white; padding: 20px;
         border-radius: 12px; font-size: 0.9rem; line-height: 1.6;
         opacity: 0; visibility: hidden; transition: all 0.3s ease; 
         box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 200; text-align: left;
@@ -377,28 +371,14 @@
   <div id="guideOverlay">
       <h2 class="overlay-title">Guía de Respiración</h2>
       <p class="overlay-subtitle">Interpretación de símbolos</p>
-      
       <div class="guide-card">
-          <div class="guide-row">
-              <span class="guide-icon" style="color:var(--c-inhale)">👃</span>
-              <span><strong>Inhala</strong> (Verde)</span>
-          </div>
-          <div class="guide-row">
-              <span class="guide-icon" style="color:var(--c-hold)">⏸️</span>
-              <span><strong>Pausa/Retén</strong> (Naranja)</span>
-          </div>
-          <div class="guide-row">
-              <span class="guide-icon" style="color:var(--c-exhale)">👃</span>
-              <span><strong>Exhala</strong> (Azul)</span>
-          </div>
+          <div class="guide-row"><span class="guide-icon" style="color:var(--c-inhale)">👃</span><span><strong>Inhala</strong> (Verde)</span></div>
+          <div class="guide-row"><span class="guide-icon" style="color:var(--c-hold)">⏸️</span><span><strong>Pausa/Retén</strong> (Naranja)</span></div>
+          <div class="guide-row"><span class="guide-icon" style="color:var(--c-exhale)">👃</span><span><strong>Exhala</strong> (Azul)</span></div>
           <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
           <div style="font-size:0.9rem; color:#78909c; margin-bottom:10px;">TIP AVANZADO</div>
-          <div class="guide-row">
-              <span class="guide-icon">🌬️</span>
-              <span><strong>Boca:</strong> Si ves este icono (o añades 'b' al crear), exhala soplando.</span>
-          </div>
+          <div class="guide-row"><span class="guide-icon">🌬️</span><span><strong>Boca:</strong> Si ves este icono (o añades 'b'), exhala soplando.</span></div>
       </div>
-
       <div style="margin-top:40px;">
           <button class="btn-text" style="background:transparent; color:var(--accent); border:1px solid var(--accent);" onclick="document.getElementById('guideOverlay').style.display='none'">Entendido</button>
       </div>
@@ -413,14 +393,15 @@
           
           <div class="info-bubble" onclick="toggleTooltip(this)">?
               <div class="info-tooltip">
-                  <strong>Guía de Fases:</strong><br><br>
+                  <strong>Escribe los segundos de cada fase.</strong> El sistema pone los guiones.<br><br>
                   <span style="color:var(--c-inhale)">1. Inhala (Verde)</span><br>
                   <span style="color:var(--c-hold)">2. Mantén (Naranja)</span><br>
                   <span style="color:var(--c-exhale)">3. Exhala (Azul)</span><br>
                   <span style="color:var(--c-hold)">4. Sostén (Naranja)</span><br><br>
-                  <strong>Tips Pro:</strong><br>
-                  • Añade <strong>'b'</strong> para boca (ej: 4b).<br>
-                  • Usa <strong>0</strong> para saltar fase.
+                  <hr style="border:0; border-top:1px solid rgba(255,255,255,0.2); margin:10px 0;">
+                  <strong>Opciones Extra:</strong><br>
+                  • Añade <strong>'b'</strong> para boca (ej: 8b).<br>
+                  • Usa <strong>0</strong> para saltar una fase.
               </div>
           </div>
       </div>
@@ -438,15 +419,14 @@
       <div class="custom-input-container">
           <input type="text" id="pillPatternInput" class="big-input" placeholder="4-7-8b" maxlength="10" value="">
            <div class="info-bubble" onclick="toggleTooltip(this)">?
-              <div class="info-tooltip" style="width: 280px;">
-                  <strong>Guía de Fases:</strong><br><br>
-                  <span style="color:var(--c-inhale)">1. Inhala (Verde)</span><br>
-                  <span style="color:var(--c-hold)">2. Mantén (Naranja)</span><br>
-                  <span style="color:var(--c-exhale)">3. Exhala (Azul)</span><br>
-                  <span style="color:var(--c-hold)">4. Sostén (Naranja)</span><br><br>
+              <div class="info-tooltip">
+                  <strong>Escribe los segundos.</strong><br><br>
+                  <span style="color:var(--c-inhale)">1. Inhala</span><br>
+                  <span style="color:var(--c-hold)">2. Mantén</span><br>
+                  <span style="color:var(--c-exhale)">3. Exhala</span><br>
+                  <span style="color:var(--c-hold)">4. Sostén</span><br><br>
                   <strong>¿Exhalar por la boca?</strong><br>
-                  Añade una <strong>'b'</strong> al número (ej: <strong>8b</strong>).<br>
-                  El receptor verá el icono 🌬️.
+                  Añade 'b' al número (ej: 8b).
               </div>
           </div>
       </div>
@@ -584,17 +564,57 @@
       ]
     };
     
-    // --- EDICIÓN WU-WEI (HAIKUS) ---
-    const quotes = [
-      "El río fluye, sin esfuerzo hacia la mar. Sé como el agua.",
-      "Nada que hacer, el loto se abre solo. Todo es perfecto.",
-      "Viento en los pinos, el aire entra y sale. Calma profunda.",
-      "Nubes pasando, el cielo azul se queda. Tu ser es cielo.",
-      "Hoja de otoño, cae sin miedo al suelo. Suelta el control.",
-      "Bambú flexible, se dobla y no se rompe. Fluye con todo.",
-      "Solo este instante, eterna respiración. Aquí y ahora.",
-      "Hacer sin hacer, quietud en movimiento. Paz interior."
+    // --- GENERADOR DE FRASES WU-WEI + AMOR + BELLEZA ---
+    // Diccionarios expandidos para incluir Amor y Aceptación
+    const pSubjects = [
+        "El río antiguo", "La brisa suave", "El bambú flexible", "La montaña quieta", "Tu mente clara", 
+        "El momento presente", "La hoja seca", "El agua profunda", "Este aliento", "La nube blanca", 
+        "El vacío fértil", "La raíz fuerte", 
+        // Nuevos:
+        "El amor inmenso", "La belleza oculta", "Tu corazón sabio", "La flor del alma", "La luz interior"
     ];
+    
+    const pActions = [
+        "fluye sin esfuerzo", "no opone resistencia", "se dobla sin romperse", "observa en silencio", 
+        "refleja el cielo", "encuentra su camino", "suelta el control", "descansa en paz", 
+        "existe sin más", "acepta el cambio", "danza con el viento", "crece despacio",
+        // Nuevos:
+        "abraza lo que es", "florece sin prisa", "sana las heridas", "irradia calidez", "ama sin apego", "ve la verdad"
+    ];
+    
+    const pConclusions = [
+        "sé como el agua.", "todo es perfecto.", "paz infinita.", "vuelve al centro.", "nada que hacer.", 
+        "mente serena.", "simple y puro.", "aquí y ahora.", "conecta contigo.", "fluye con todo.",
+        // Nuevos:
+        "amor es todo.", "belleza pura.", "eres el amor.", "suelta y confía.", "eres suficiente.", "luz radiante."
+    ];
+
+    // Obras maestras (Manuales + Nuevas)
+    const masterQuotes = [
+      "El vacío es forma, la forma es vacío.",
+      "Si te doblas como el junco, el viento no te romperá.",
+      "El viaje de mil millas comienza con un aliento.",
+      "Conoce lo blanco, pero conserva lo negro.",
+      "Sé el valle del universo, recíbelo todo.",
+      "Poco a poco, el barro se asienta y el agua se aclara.",
+      "Haz nada, y nada quedará sin hacer.",
+      // Nuevos:
+      "El amor no reclama posesión, sino que da libertad.",
+      "La belleza no está en el rostro, sino en la luz del corazón.",
+      "Aceptar es el verdadero acto de transformación."
+    ];
+
+    function getWuWeiQuote() {
+        // 30% Probabilidad de frase maestra, 70% Generada
+        if(Math.random() < 0.3) {
+            return masterQuotes[Math.floor(Math.random() * masterQuotes.length)];
+        } else {
+            const s = pSubjects[Math.floor(Math.random() * pSubjects.length)];
+            const a = pActions[Math.floor(Math.random() * pActions.length)];
+            const c = pConclusions[Math.floor(Math.random() * pConclusions.length)];
+            return `${s} ${a}, ${c}`;
+        }
+    }
 
     let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, startAudioTime:0, cyc:0, snd:false, met:false };
     let audioCtx = null;
@@ -883,7 +903,10 @@
       renderPattern(k);
       els.menu.style.opacity = '0'; 
       setTimeout(()=>els.menu.style.display='none', 400);
-      els.qt.textContent = quotes[Math.floor(Math.random()*quotes.length)];
+      
+      // USA EL NUEVO GENERADOR DE FRASES
+      els.qt.textContent = getWuWeiQuote();
+      
       setTimeout(() => {
         initCanvas(); 
         state.run = true; 
