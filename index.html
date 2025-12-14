@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V40.0 Clean</title>
+  <title>Respiración: V41.6 (Wu-Wei Edition 🎋)</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -106,6 +106,16 @@
       text-shadow: 0 10px 30px rgba(168, 206, 212, 0.4);
     }
 
+    /* NUEVO: INDICADOR DE MODO (BOCA/NARIZ) */
+    .mode-indicator {
+      margin-top: 15px;
+      font-size: 2.5rem; 
+      opacity: 0; transform: translateY(-10px);
+      transition: all 0.5s ease;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+    .mode-indicator.visible { opacity: 1; transform: translateY(0); }
+
     .quote {
       padding: 0 20px; color: var(--text-muted);
       font-family: 'Cinzel', serif; 
@@ -145,6 +155,9 @@
       font-size: 0.9rem; color: rgba(255,255,255,0.6); font-weight: 500;
       transition: all 0.2s ease; display: inline-block;
     }
+    /* Pequeño indicador de modo en el patrón (ej: 4b) */
+    .p-mode-sub { font-size: 0.6em; vertical-align: super; opacity: 0.8; margin-left:1px; }
+
     .p-sep { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
     .p-num.active {
       color: #fff; font-weight: 800; transform: scale(1.4);
@@ -204,13 +217,19 @@
       cursor: pointer; text-align: left;
       transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
       box-shadow: 0 4px 10px rgba(178, 235, 242, 0.1);
+      position: relative; /* Para posicionar el tooltip */
     }
     .menu-card:hover { 
       transform: translateY(-3px) scale(1.01); 
       background: rgba(255, 255, 255, 0.9);
       box-shadow: 0 10px 25px rgba(178, 235, 242, 0.3);
     }
-    .menu-card h3 { color: #37474f; font-size: 1.1rem; margin-bottom: 4px; font-weight: 700; font-family: 'Manrope', sans-serif;}
+    
+    .menu-card h3 { 
+        color: #37474f; font-size: 1.1rem; margin-bottom: 4px; 
+        font-weight: 700; font-family: 'Manrope', sans-serif;
+        display: flex; justify-content: space-between; align-items: center;
+    }
     .menu-card p { color: #78909c; font-size: 0.9rem; font-weight: 400; }
 
     .menu-card.custom-card {
@@ -218,6 +237,32 @@
         background: rgba(255, 255, 255, 0.4);
     }
     .menu-card.custom-card h3 { color: var(--accent); }
+
+    /* ESTILOS PARA LA BOLITA DE INFORMACIÓN EN LA TARJETA */
+    .card-info-btn {
+        width: 24px; height: 24px; 
+        background: rgba(0, 131, 143, 0.1); color: var(--accent);
+        border-radius: 50%; font-size: 0.8rem; font-weight: bold;
+        display: flex; align-items: center; justify-content: center;
+        margin-left: 10px; cursor: help;
+        transition: background 0.3s;
+    }
+    .card-info-btn:hover { background: var(--accent); color: white; }
+    
+    /* TOOLTIP FLOTANTE EN EL MENÚ */
+    .menu-tooltip {
+        position: absolute; top: -10px; right: 10px; transform: translateY(-100%);
+        background: #37474f; color: white; padding: 10px 15px;
+        border-radius: 8px; font-size: 0.85rem; width: 200px;
+        opacity: 0; visibility: hidden; transition: all 0.3s;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15); z-index: 10;
+        pointer-events: none;
+    }
+    .menu-tooltip.active { opacity: 1; visibility: visible; top: -15px; }
+    .menu-tooltip::after {
+        content: ''; position: absolute; bottom: -5px; right: 20px;
+        border-width: 5px; border-style: solid; border-color: #37474f transparent transparent transparent;
+    }
 
     /* --- OVERLAYS ESTILO UNIFICADO --- */
     #customOverlay, #shareConfigOverlay {
@@ -238,11 +283,12 @@
         display: flex; align-items: center; justify-content: center;
     }
     
+    /* Input más ancho para permitir letras 'b' */
     .big-input {
         font-size: 2.8rem; font-family: 'Manrope', sans-serif; font-weight: 300;
         border: none; border-bottom: 2px solid var(--accent);
         background: transparent; color: var(--text-main);
-        width: 280px; text-align: center; letter-spacing: 2px;
+        width: 320px; text-align: center; letter-spacing: 2px;
         outline: none; padding-bottom: 5px; border-radius: 0;
     }
     
@@ -265,8 +311,8 @@
     
     .info-tooltip {
         position: absolute; top: 50px; left: 50%; transform: translateX(-85%);
-        width: 260px; background: #37474f; color: white; padding: 15px;
-        border-radius: 12px; font-size: 0.9rem; line-height: 1.5;
+        width: 270px; background: #37474f; color: white; padding: 15px;
+        border-radius: 12px; font-size: 0.9rem; line-height: 1.6;
         opacity: 0; visibility: hidden; transition: all 0.3s ease; 
         box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 200; text-align: left;
     }
@@ -323,20 +369,21 @@
 
   <div id="customOverlay">
       <h2 class="overlay-title">Diseña tu Respiración</h2>
-      <p class="overlay-subtitle">Introduce 4 tiempos (0-9)</p>
+      <p class="overlay-subtitle">Introduce 4 tiempos<br>Añade 'b' para boca (ej: 4b)</p>
       
       <div class="custom-input-container">
-          <input type="tel" id="customPatternInput" class="big-input" placeholder="4-2-6-0" maxlength="7" value="">
+          <input type="text" id="customPatternInput" class="big-input" placeholder="4-2-6b-0" maxlength="10" value="">
           
           <div class="info-bubble" onclick="toggleTooltip(this)">?
               <div class="info-tooltip">
-                  <strong>Instrucciones:</strong><br><br>
-                  Escribe 4 números. El sistema pone los guiones.<br><br>
-                  1. Inhala (Verde)<br>
-                  2. Mantén (Naranja)<br>
-                  3. Exhala (Azul)<br>
-                  4. Sostén (Naranja)<br><br>
-                  Usa <strong>0</strong> para saltar fase.
+                  <strong>Guía de Fases:</strong><br><br>
+                  <span style="color:var(--c-inhale)">1. Inhala (Verde)</span><br>
+                  <span style="color:var(--c-hold)">2. Mantén (Naranja)</span><br>
+                  <span style="color:var(--c-exhale)">3. Exhala (Azul)</span><br>
+                  <span style="color:var(--c-hold)">4. Sostén (Naranja)</span><br><br>
+                  <strong>Tips Pro:</strong><br>
+                  • Añade <strong>'b'</strong> para boca (ej: 4b).<br>
+                  • Usa <strong>0</strong> para saltar fase.
               </div>
           </div>
       </div>
@@ -352,16 +399,18 @@
       <p class="overlay-subtitle">Configura el regalo</p>
 
       <div class="custom-input-container">
-          <input type="tel" id="pillPatternInput" class="big-input" placeholder="4-7-8" maxlength="7" value="">
+          <input type="text" id="pillPatternInput" class="big-input" placeholder="4-7-8b" maxlength="10" value="">
+           
            <div class="info-bubble" onclick="toggleTooltip(this)">?
-              <div class="info-tooltip">
-                  <strong>Instrucciones:</strong><br><br>
-                  Escribe 4 números. El sistema pone los guiones.<br><br>
-                  1. Inhala (Verde)<br>
-                  2. Mantén (Naranja)<br>
-                  3. Exhala (Azul)<br>
-                  4. Sostén (Naranja)<br><br>
-                  Usa <strong>0</strong> para saltar fase.
+              <div class="info-tooltip" style="width: 280px;">
+                  <strong>Guía de Fases:</strong><br><br>
+                  <span style="color:var(--c-inhale)">1. Inhala (Verde)</span><br>
+                  <span style="color:var(--c-hold)">2. Mantén (Naranja)</span><br>
+                  <span style="color:var(--c-exhale)">3. Exhala (Azul)</span><br>
+                  <span style="color:var(--c-hold)">4. Sostén (Naranja)</span><br><br>
+                  <strong>¿Exhalar por la boca?</strong><br>
+                  Añade una <strong>'b'</strong> al número (ej: <strong>8b</strong>).<br>
+                  El receptor verá el icono 🌬️.
               </div>
           </div>
       </div>
@@ -399,17 +448,24 @@
 
     <div class="menu-grid">
       <div class="menu-card custom-card" onclick="openCustomModal()">
-        <h3>✨ Crear Personalizado</h3>
-        <p>Define tus propios tiempos (0-9)</p>
+        <h3>
+            ✨ Crear Personalizado
+            <div class="card-info-btn" onclick="toggleCardInfo(event, this)">?</div>
+            <div class="menu-tooltip">
+                <strong>Tip Pro:</strong><br>
+                Añade la letra <strong>'b'</strong> tras un número para indicar respiración por la boca.<br>Ej: <strong>4-8b</strong>
+            </div>
+        </h3>
+        <p>Define tus tiempos (ej: 4-7-8b)</p>
       </div>
       
       <div class="menu-card" onclick="start('4-4-6-2')">
         <h3>4-4-6-2 • Relax Profundo</h3>
         <p>Baja pulsaciones rápidamente</p>
       </div>
-      <div class="menu-card" onclick="start('4-7-8')">
+      <div class="menu-card" onclick="start('4-7-8b')">
         <h3>4-7-8 • Para Dormir</h3>
-        <p>Técnica del Dr. Weil</p>
+        <p>Técnica del Dr. Weil (Soplar)</p>
       </div>
       <div class="menu-card" onclick="start('box')">
         <h3>Cuadrada • Enfoque</h3>
@@ -445,6 +501,7 @@
     <div class="stage-container">
       <div class="panel-side">
         <div class="phase-text" id="phaseText">LISTO</div>
+        <div class="mode-indicator" id="modeIcon">👃</div>
       </div>
       
       <div class="panel-center">
@@ -472,33 +529,45 @@
     const C_HOLD   = '#FF9800'; 
     const C_EXHALE = '#2196F3'; 
 
+    // --- ANALIZADOR DE PATRONES CON "b" (BOCA) ---
+    // Ahora 'm' (mode) puede ser 'nose' o 'mouth'
     let patterns = {
       '4-4-6-2': [
-          {t:"INHALA", b:4, y:'rise', c:C_INHALE},
-          {t:"MANTÉN", b:4, y:'hold_high', c:C_HOLD},
-          {t:"EXHALA", b:6, y:'fall', c:C_EXHALE},
-          {t:"SOSTÉN", b:2, y:'hold_low', c:C_HOLD}
+          {t:"INHALA", b:4, y:'rise', c:C_INHALE, m:'nose'},
+          {t:"MANTÉN", b:4, y:'hold_high', c:C_HOLD, m:'nose'},
+          {t:"EXHALA", b:6, y:'fall', c:C_EXHALE, m:'nose'},
+          {t:"SOSTÉN", b:2, y:'hold_low', c:C_HOLD, m:'nose'}
       ],
-      '4-7-8': [
-          {t:"INHALA", b:4, y:'rise', c:C_INHALE},
-          {t:"MANTÉN", b:7, y:'hold_high', c:C_HOLD},
-          {t:"EXHALA", b:8, y:'fall', c:C_EXHALE}
+      // 4-7-8 Original Dr. Weil es exhalar por boca
+      '4-7-8b': [
+          {t:"INHALA", b:4, y:'rise', c:C_INHALE, m:'nose'},
+          {t:"MANTÉN", b:7, y:'hold_high', c:C_HOLD, m:'nose'},
+          {t:"EXHALA", b:8, y:'fall', c:C_EXHALE, m:'mouth'} 
       ],
       'box': [
-          {t:"INHALA", b:4, y:'rise', c:C_INHALE},
-          {t:"MANTÉN", b:4, y:'hold_high', c:C_HOLD},
-          {t:"EXHALA", b:4, y:'fall', c:C_EXHALE},
-          {t:"SOSTÉN", b:4, y:'hold_low', c:C_HOLD}
+          {t:"INHALA", b:4, y:'rise', c:C_INHALE, m:'nose'},
+          {t:"MANTÉN", b:4, y:'hold_high', c:C_HOLD, m:'nose'},
+          {t:"EXHALA", b:4, y:'fall', c:C_EXHALE, m:'nose'},
+          {t:"SOSTÉN", b:4, y:'hold_low', c:C_HOLD, m:'nose'}
       ],
       '5-5': [
-          {t:"INHALA", b:5, y:'rise', c:C_INHALE},
-          {t:"EXHALA", b:5, y:'fall', c:C_EXHALE}
+          {t:"INHALA", b:5, y:'rise', c:C_INHALE, m:'nose'},
+          {t:"EXHALA", b:5, y:'fall', c:C_EXHALE, m:'nose'}
       ]
     };
     
-    const quotes = ["El amor es lo que eres.", "Vuelve al ahora.", "Observa sin juzgar.", "Paz en cada aliento.", "Suelta lo que pesa."];
+    // --- EDICIÓN WU-WEI (HAIKUS) ---
+    const quotes = [
+      "El río fluye, sin esfuerzo hacia la mar. Sé como el agua.",
+      "Nada que hacer, el loto se abre solo. Todo es perfecto.",
+      "Viento en los pinos, el aire entra y sale. Calma profunda.",
+      "Nubes pasando, el cielo azul se queda. Tu ser es cielo.",
+      "Hoja de otoño, cae sin miedo al suelo. Suelta el control.",
+      "Bambú flexible, se dobla y no se rompe. Fluye con todo.",
+      "Solo este instante, eterna respiración. Aquí y ahora.",
+      "Hacer sin hacer, quietud en movimiento. Paz interior."
+    ];
 
-    // --- ESTADO Y AUDIO ---
     let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, startAudioTime:0, cyc:0, snd:false, met:false };
     let audioCtx = null;
     let nextNoteTime = 0.0;
@@ -525,17 +594,31 @@
       shareConfigOverlay: document.getElementById('shareConfigOverlay'),
       pillPatternInput: document.getElementById('pillPatternInput'),
       pillNameInput: document.getElementById('pillNameInput'),
-      pillMessageInput: document.getElementById('pillMessageInput')
+      pillMessageInput: document.getElementById('pillMessageInput'),
+      
+      modeIcon: document.getElementById('modeIcon') // Referencia al icono de boca/nariz
     };
 
-    // --- HELPER DE INPUT MÁGICO ---
+    // --- HELPER DE INPUT MÁGICO CON LETRAS (CORREGIDO V41.2) ---
+    // Reconstruye el string añadiendo guiones entre números
     function formatPatternInput(input) {
-        let val = input.value.replace(/\D/g, '');
-        if(val.length > 5) val = val.substring(0, 5); 
+        let raw = input.value.replace(/[^0-9bB]/g, '').toLowerCase();
         let formatted = '';
-        for(let i=0; i < val.length; i++) {
-            if(i > 0) formatted += '-';
-            formatted += val[i];
+        
+        for(let i=0; i < raw.length; i++) {
+            const char = raw[i];
+            const isDigit = /[0-9]/.test(char);
+            
+            if (isDigit) {
+                // Si no es el principio, añadimos guión antes del dígito
+                if (formatted.length > 0) formatted += '-';
+                formatted += char;
+            } else {
+                // Es una 'b'. Solo añadir si hay algo antes y no es otra 'b'
+                if (formatted.length > 0 && formatted.slice(-1) !== 'b') {
+                    formatted += char;
+                }
+            }
         }
         input.value = formatted;
     }
@@ -547,42 +630,39 @@
         const tip = el.querySelector('.info-tooltip');
         if(tip) tip.classList.toggle('visible');
     }
+    
+    // Nueva función para el tooltip de la tarjeta del menú
+    window.toggleCardInfo = function(event, el) {
+        event.stopPropagation(); // Evita abrir el modal
+        const tooltip = el.parentNode.querySelector('.menu-tooltip');
+        if(tooltip) {
+            tooltip.classList.toggle('active');
+            // Auto cerrar tras 4 segundos
+            setTimeout(() => tooltip.classList.remove('active'), 4000);
+        }
+    }
 
     // --- PWA INSTALL ---
     let deferredPrompt;
     const installBtn = document.getElementById('installBtn');
-    
     window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.style.display = 'flex';
+      e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'flex';
     });
-
     async function installApp() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            await deferredPrompt.userChoice;
-            deferredPrompt = null;
-        } else {
-            const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-            alert(isIOS 
-              ? "Para instalar en iOS:\n1. Toca 'Compartir' (⍐)\n2. Selecciona 'Añadir a inicio'."
-              : "Para instalar en Android:\n1. Toca menú (⋮)\n2. Selecciona 'Instalar aplicación'.");
-        }
+        if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; } 
+        else { alert("Para instalar: Usa el menú del navegador 'Añadir a inicio'."); }
     }
 
-    // --- LÓGICA DE PATRONES ---
+    // --- LÓGICA DE PATRONES CUSTOM ---
     function openCustomModal() {
         els.customOverlay.style.display = 'flex';
         els.customInput.value = ''; els.customInput.focus();
     }
 
-    function startCustom() {
-        const val = els.customInput.value.trim();
-        const parts = val.split('-').map(n => parseInt(n)).filter(n => !isNaN(n));
-        
-        if (parts.length < 2) { alert("Introduce al menos 2 tiempos."); return; }
-
+    // PARSEADOR MEJORADO: Detecta 'b'
+    function parsePatternString(str) {
+        // Separa por guiones
+        const chunks = str.split('-');
         const defs = [
             {t:"INHALA", y:'rise', c:C_INHALE},
             {t:"MANTÉN", y:'hold_high', c:C_HOLD},
@@ -592,14 +672,31 @@
         ];
 
         let newPattern = [];
-        parts.forEach((beats, i) => {
-            let defIdx = i % defs.length;
-            if (beats > 0) { 
-                newPattern.push({ t: defs[defIdx].t, b: beats, y: defs[defIdx].y, c: defs[defIdx].c });
+        chunks.forEach((chunk, i) => {
+            let beats = parseInt(chunk.replace(/\D/g,'')); // Extrae solo número
+            if(!isNaN(beats) && beats > 0) {
+                let mode = 'nose';
+                if(chunk.toLowerCase().includes('b')) mode = 'mouth';
+                
+                let defIdx = i % defs.length;
+                newPattern.push({ 
+                    t: defs[defIdx].t, 
+                    b: beats, 
+                    y: defs[defIdx].y, 
+                    c: defs[defIdx].c,
+                    m: mode
+                });
             }
         });
+        return newPattern;
+    }
 
-        if (newPattern.length === 0) return;
+    function startCustom() {
+        const val = els.customInput.value.trim();
+        const newPattern = parsePatternString(val);
+        
+        if (newPattern.length < 2) { alert("Introduce al menos 2 fases válidas."); return; }
+        
         patterns['custom'] = newPattern;
         els.customOverlay.style.display = 'none';
         start('custom');
@@ -622,9 +719,7 @@
         if (state.snd) vol = 0.05; 
         if (state.met && type === 'square') vol = 0.05; 
         if (state.met && state.snd && type === 'square') vol = 0.08; 
-        if (!state.snd && state.met && type !== 'square') vol = 0;
-        if (state.snd && !state.met && type === 'square') vol = 0;
-
+        
         gain.gain.setValueAtTime(vol, time);
         gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
         osc.connect(gain); gain.connect(audioCtx.destination);
@@ -674,10 +769,30 @@
       const p = state.data.find(x => timeInCycle >= x.start && timeInCycle < x.end);
 
       if (p) {
-        if (els.ph.textContent !== p.t) { els.ph.textContent = p.t; els.ph.style.color = p.c; }
+        // ACTUALIZAR TEXTO
+        if (els.ph.textContent !== p.t) { 
+            els.ph.textContent = p.t; 
+            els.ph.style.color = p.c; 
+            
+            // --- ACTUALIZACIÓN INTELIGENTE DE ICONO (V41.4 - NEUTROS) ---
+            const isHold = (p.y === 'hold_high' || p.y === 'hold_low');
+
+            if (isHold) {
+                 els.modeIcon.textContent = "⏸️"; // PAUSA (Neutro)
+                 els.modeIcon.classList.add('visible');
+            } else {
+                 if(p.m === 'mouth') {
+                     els.modeIcon.textContent = "🌬️"; // SOPLO/AIRE (Neutro)
+                     els.modeIcon.classList.add('visible');
+                 } else {
+                     els.modeIcon.textContent = "👃"; // NARIZ (Neutro)
+                     els.modeIcon.classList.add('visible');
+                 }
+            }
+        }
         els.sph.style.setProperty('--c-phase', p.c);
         
-        // Highlight active phase number
+        // Highlight active phase
         const currentPhaseIdx = state.data.indexOf(p);
         state.data.forEach((_, idx) => {
             const el = document.getElementById(`p-step-${idx}`);
@@ -692,7 +807,7 @@
         currentBeat = Math.min(currentBeat, p.b);
         els.cnt.textContent = currentBeat;
 
-        // Scale animation
+        // Scale
         const progress = timeInPhase / p.dur; 
         const ease = -(Math.cos(Math.PI * progress) - 1) / 2;
         let rawScale = 1;
@@ -702,7 +817,7 @@
         els.sph.style.transform = `scale(${rawScale})`;
       }
 
-      // Canvas Logic
+      // Canvas
       const w = els.cvs.width / (window.devicePixelRatio||1);
       const h = els.cvs.height / (window.devicePixelRatio||1);
       els.ctx.clearRect(0, 0, w, h);
@@ -756,7 +871,18 @@
       els.pat.innerHTML = ''; 
       patterns[k].forEach((step, idx) => {
         const numSpan = document.createElement('span');
+        
+        // Número base
         numSpan.textContent = step.b;
+        
+        // Indicador pequeño de modo si es boca
+        if(step.m === 'mouth') {
+            const sub = document.createElement('span');
+            sub.textContent = 'b';
+            sub.className = 'p-mode-sub';
+            numSpan.appendChild(sub);
+        }
+
         numSpan.className = 'p-num';
         numSpan.id = `p-step-${idx}`; 
         els.pat.appendChild(numSpan);
@@ -769,7 +895,7 @@
       });
     }
 
-    // --- FUNCIONES CONTROL PRINCIPAL ---
+    // --- FUNCIONES CONTROL ---
     function start(k) {
       if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
       
@@ -795,6 +921,10 @@
     function stop() {
       state.run = false; clearTimeout(scheduleTimerID);
       els.sph.style.transform = 'scale(0.8)'; els.ph.textContent = "LISTO"; els.ph.style.color = 'var(--accent)';
+      
+      // Reset Icono
+      els.modeIcon.classList.remove('visible');
+      
       els.cnt.textContent = ""; els.cyc.textContent = "🔄 0"; els.sph.style.setProperty('--c-phase', '#4CAF50');
       els.menu.style.display = 'flex'; setTimeout(()=>els.menu.style.opacity='1',10);
       els.pat.innerHTML = ''; 
@@ -812,18 +942,21 @@
     // --- SHARE LOGIC ---
     function openShareConfig() {
         let lastP = state.pk;
-        if(lastP && lastP !== 'custom') els.pillPatternInput.value = lastP;
+        // Convertir formato objeto a string (ej: 4-7-8b)
+        if(lastP && lastP !== 'custom') {
+             els.pillPatternInput.value = lastP;
+        }
         els.shareConfigOverlay.style.display = 'flex';
         els.pillPatternInput.focus();
     }
 
     async function generateShareLink() {
-       let p = els.pillPatternInput.value.trim();
-       if(!p) { alert("Falta el patrón numérico."); return; }
+       let pString = els.pillPatternInput.value.trim();
+       if(!pString) { alert("Falta el patrón."); return; }
        
-       if(!patterns[p] && p.split('-').length < 2) {
-           alert("Patrón inválido. Ej: 4-7-8"); return;
-       }
+       // Verificar si es válido parseándolo
+       const testP = parsePatternString(pString);
+       if(testP.length < 2) { alert("Patrón inválido. Ej: 4-7-8b"); return; }
 
        const n = els.pillNameInput.value.trim() || 'Amigo';
        const m = els.pillMessageInput.value.trim() || 'Respira conmigo...';
@@ -832,7 +965,7 @@
        els.load.style.display = 'flex'; 
 
        const baseUrl = location.href.split('?')[0];
-       const longUrl = `${baseUrl}?p=${p}¶=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
+       const longUrl = `${baseUrl}?p=${encodeURIComponent(pString)}¶=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
        
        let finalUrl = longUrl;
        try { 
@@ -841,7 +974,7 @@
        } catch(e) {}
 
        els.load.style.display = 'none';
-       els.shareText.value = `🌿 *Píldora de Respiración para ti*\n\nHola ${n}, ${m}.\n\nToca aquí:\n${finalUrl}`;
+       els.shareText.value = `🌿 *Píldora de Respiración*\n${m}\n\nPrueba este ritmo: ${pString}\n${finalUrl}`;
        els.shareModal.style.display = 'flex';
     }
 
@@ -855,21 +988,14 @@
     // --- URL PARSER ON LOAD ---
     const q = new URLSearchParams(location.search);
     if(q.get('p')) {
-        let pCode = q.get('p');
-        if(!patterns[pCode]) {
-             const parts = pCode.split(/[- ,]+/).map(n=>parseInt(n)).filter(n=>!isNaN(n));
-             if(parts.length >= 2) {
-                 const defs = [{t:"INHALA",y:'rise',c:C_INHALE},{t:"MANTÉN",y:'hold_high',c:C_HOLD},{t:"EXHALA",y:'fall',c:C_EXHALE},{t:"SOSTÉN",y:'hold_low',c:C_HOLD},{t:"PAUSA", y:'hold_low', c:C_HOLD}];
-                 let newP = [];
-                 parts.forEach((b,i)=> { 
-                     let d = defs[i % defs.length];
-                     if(b>0) newP.push({t:d.t, b:b, y:d.y, c:d.c}); 
-                 });
-                 if(newP.length > 0) patterns[pCode] = newP;
-             }
-        }
+        let pCode = q.get('p'); // Ej: "4-7-8b"
         
-        if(patterns[pCode]) {
+        // Intentar parsear dinámicamente
+        const dynamicP = parsePatternString(pCode);
+        
+        if(dynamicP.length >= 2) {
+           patterns[pCode] = dynamicP; // Registrarlo temporalmente
+           
            document.getElementById('pillOverlay').style.display = 'flex';
            document.getElementById('pillRecipient').textContent = `Hola, ${q.get('para') || 'Ti'}`;
            document.getElementById('pillMessage').textContent = `"${q.get('msg')}"`;
@@ -877,7 +1003,8 @@
            window.closePill = () => { document.getElementById('pillOverlay').style.display='none'; start(pCode); };
         }
     } else {
-       prepareData('4-7-8'); els.pat.textContent = "4-7-8"; 
+       // Por defecto
+       prepareData('4-7-8b'); els.pat.textContent = "4-7-8b"; 
     }
     
     window.addEventListener('resize', () => { if(state.run) initCanvas(); });
