@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V42.10 (Fix Core Social)</title>
+  <title>Respiración: V42.11 (Navidad Completa)</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -196,6 +196,26 @@
       z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 30px; transition: opacity 0.4s ease;
     }
+
+    /* --- ESTILOS NAVIDAD --- */
+    .navidad-lights {
+        position: absolute; top: 0; left: 0; width: 100%;
+        display: flex; justify-content: space-around; padding: 8px 0;
+        pointer-events: none; z-index: 120;
+    }
+    .light {
+        width: 10px; height: 10px; border-radius: 50%;
+        animation: breath-light 4s infinite ease-in-out;
+    }
+    .light.red   { background: #ff4d4d; box-shadow: 0 0 12px #ff4d4d; animation-delay: 0s; }
+    .light.green { background: #2ecc71; box-shadow: 0 0 12px #2ecc71; animation-delay: 1.3s; }
+    .light.blue  { background: #4facfe; box-shadow: 0 0 12px #4facfe; animation-delay: 2.6s; }
+
+    @keyframes breath-light {
+        0%, 100% { opacity: 0.2; transform: scale(0.8); }
+        50% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 20px currentColor; }
+    }
+    /* ----------------------- */
 
     .global-info-btn {
         position: absolute; top: 30px; right: 30px;
@@ -466,6 +486,18 @@
   </div>
 
   <div id="selectionMenu">
+    
+    <div class="navidad-lights">
+        <div class="light red"></div>
+        <div class="light green"></div>
+        <div class="light blue"></div>
+        <div class="light red"></div>
+        <div class="light green"></div>
+        <div class="light blue"></div>
+        <div class="light red"></div>
+        <div class="light green"></div>
+        <div class="light blue"></div>
+    </div>
     <button class="global-info-btn" onclick="document.getElementById('guideOverlay').style.display='flex'">i</button>
 
     <div class="menu-title">ELIGE TU RITMO</div>
