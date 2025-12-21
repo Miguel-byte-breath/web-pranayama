@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V42.18 (Botón Menú Perfecto)</title>
+  <title>Respiración: V42.19 (Edición Editorial)</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -292,9 +292,8 @@
         background: linear-gradient(135deg, #FFFFFF 0%, #F0FFF4 50%, #E0F2F1 100%);
         border: 1px solid rgba(255, 103, 25, 0.15); 
         border-radius: 16px; 
-        /* FIX: Aumentado el padding vertical (25px) para que no rocen los bordes */
         padding: 25px 22px; 
-        min-height: 100px; /* Asegura cuerpo suficiente */
+        min-height: 100px;
         cursor: pointer; position: relative; overflow: hidden;
         box-shadow: 0 8px 25px rgba(200, 230, 201, 0.4);
         transition: all 0.4s ease;
@@ -313,25 +312,32 @@
         box-shadow: 0 12px 30px rgba(200, 230, 201, 0.6), 0 0 10px rgba(255, 103, 25, 0.1);
     }
     .substack-icon {
-        width: 38px; height: 38px; flex-shrink: 0; 
+        width: 42px; height: 42px; flex-shrink: 0; 
         background: white; border-radius: 8px; 
         display: flex; align-items: center; justify-content: center;
         box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 2;
     }
     .substack-content { 
-        z-index: 2; flex: 1; 
-        min-width: 0; 
+        z-index: 2; flex: 1; min-width: 0; 
+        display: flex; flex-direction: column; justify-content: center;
+    }
+    
+    /* NUEVOS ESTILOS TEXTO EDITORIAL */
+    .substack-label {
+        font-family: 'Manrope', sans-serif; font-size: 0.7rem; 
+        text-transform: uppercase; letter-spacing: 1.5px; 
+        color: #78909c; font-weight: 700; margin-bottom: 4px;
     }
     .substack-title {
-        font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.15rem; color: #2e3d36;
+        font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.25rem; color: #263238;
         margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        line-height: 1.2;
     }
-    .substack-sub {
-        font-family: 'Manrope', sans-serif; font-size: 0.85rem; color: var(--substack-orange); 
-        font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    .substack-author {
+        font-family: 'Manrope', sans-serif; font-size: 0.9rem; color: var(--substack-orange); 
+        font-weight: 600; 
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-
 
     /* --- OVERLAYS ESTILO UNIFICADO --- */
     #customOverlay, #shareConfigOverlay, #guideOverlay {
@@ -407,7 +413,7 @@
         border-radius: 16px;
         max-width: 380px;
         width: 90%;
-        padding: 30px 30px 45px 30px; /* Padding generoso */
+        padding: 30px 30px 45px 30px;
         box-shadow: 0 20px 60px rgba(0,0,0,0.08);
         text-align: center;
         margin-bottom: 20px;
@@ -514,7 +520,9 @@
       
       <div class="refugio-card">
           <div class="refugio-title">Quedarse</div>
+          
           <div class="refugio-author">by Claudia Cuevas</div>
+          
           <div class="refugio-excerpt">"y tener a alguien a quien poder pedir un poco de sal..."</div>
           
           <a href="https://claudiacuevas.substack.com/p/el-barrio-y-sus-cosas" target="_blank" class="refugio-btn">
@@ -626,8 +634,9 @@
               </svg>
           </div>
           <div class="substack-content">
+              <div class="substack-label">Rincón de Lectura</div>
               <div class="substack-title">Quedarse</div>
-              <div class="substack-sub">Claudia Cuevas</div>
+              <div class="substack-author">by Claudia Cuevas</div>
           </div>
       </div>
 
