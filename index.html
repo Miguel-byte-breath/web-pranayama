@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V42.13 (Refugio Poético Completo)</title>
+  <title>Respiración: V42.14 (Refugio Nativo)</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
@@ -23,6 +23,7 @@
       --text-muted: #78909c;
       --primary: #4CAF50; 
       --accent: #00838f;
+      --substack-orange: #FF6719;
       
       --c-inhale: #4CAF50; 
       --c-hold: #FF9800;   
@@ -358,6 +359,51 @@
     .guide-row { display: flex; align-items: center; margin-bottom: 15px; gap: 15px; font-size: 1rem; color: #546e7a; }
     .guide-icon { width: 30px; text-align: center; font-size: 1.4rem; }
 
+    /* ESTILOS ESPECÍFICOS PARA LA TARJETA NATIVA DE SUBSTACK */
+    .refugio-card {
+        background: white;
+        border: 1px solid #EEE;
+        border-radius: 16px;
+        max-width: 380px;
+        width: 90%;
+        padding: 30px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+        text-align: center;
+        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    /* Línea decorativa naranja */
+    .refugio-card::before {
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+        background: var(--substack-orange);
+    }
+    .refugio-title {
+        font-family: 'Cinzel', serif; font-size: 1.6rem; color: #2c2c2c;
+        margin-bottom: 10px; font-weight: 700;
+    }
+    .refugio-author {
+        font-family: 'Manrope', sans-serif; font-size: 0.95rem; 
+        color: var(--substack-orange); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+        margin-bottom: 25px;
+    }
+    .refugio-excerpt {
+        font-family: 'Manrope', sans-serif; font-size: 1.1rem; color: #555;
+        line-height: 1.6; font-style: italic; margin-bottom: 35px;
+    }
+    .refugio-btn {
+        display: inline-block; text-decoration: none;
+        background: var(--substack-orange); color: white;
+        padding: 14px 28px; border-radius: 50px;
+        font-weight: 700; font-family: 'Manrope', sans-serif;
+        box-shadow: 0 5px 15px rgba(255, 103, 25, 0.3);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .refugio-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 103, 25, 0.4);
+    }
+
     /* --- OVERLAYS SHARE FINAL --- */
     #pillOverlay, #shareModal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -425,9 +471,17 @@
 
       <h2 style="font-family:'Cinzel'; color:#37474f; margin-bottom:20px;">Refugio Poético</h2>
       
-      <iframe src="https://claudiacuevas.substack.com/p/el-barrio-y-sus-cosas/embed" width="100%" height="250" style="border:1px solid #EEE; background:#FFF; border-radius:12px; max-width:400px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);" frameborder="0" scrolling="no"></iframe>
+      <div class="refugio-card">
+          <div class="refugio-title">Quedarse</div>
+          <div class="refugio-author">by Claudia Cuevas</div>
+          <div class="refugio-excerpt">"y tener a alguien a quien poder pedir un poco de sal..."</div>
+          
+          <a href="https://claudiacuevas.substack.com/p/el-barrio-y-sus-cosas" target="_blank" class="refugio-btn">
+              Leer en Substack
+          </a>
+      </div>
       
-      <button class="btn-text" style="margin-top:30px; background:transparent; border:1px solid #cfd8dc; color:#78909c;" onclick="const el = document.getElementById('substackOverlay'); el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none';">❮ Volver al Menú</button>
+      <button class="btn-text" style="margin-top:10px; background:transparent; border:1px solid #cfd8dc; color:#78909c;" onclick="const el = document.getElementById('substackOverlay'); el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none';">❮ Volver al Menú</button>
   
   </div>
 
