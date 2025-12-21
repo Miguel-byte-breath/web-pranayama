@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Respiración: V42.19 (Edición Editorial)</title>
+  <title>Respira | Tu Espacio de Calma</title>
   
   <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
   <meta name="theme-color" content="#eefcfd">
+  <meta name="description" content="Una aplicación minimalista para respirar, relajarse y leer.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -45,7 +46,7 @@
       display: flex; flex-direction: column;
     }
 
-    /* --- 2. LAYOUT --- */
+    /* --- 2. LAYOUT GENERAL --- */
     .app-layout {
       flex: 1; display: flex; flex-direction: column; 
       width: 100%; height: 100%;
@@ -88,7 +89,7 @@
       font-family: 'Manrope', sans-serif;
     }
 
-    /* --- 3. ESCENARIO --- */
+    /* --- 3. ESCENARIO CENTRAL (Respiración) --- */
     .stage-container {
       flex: 1; display: flex; width: 100%; position: relative;
       align-items: center; justify-content: center;
@@ -180,7 +181,7 @@
       text-shadow: 0 0 12px rgba(255,255,255,1);
     }
 
-    /* --- 4. VISUALIZADOR --- */
+    /* --- 4. VISUALIZADOR INFERIOR --- */
     .bottom-viz {
       flex-shrink: 0; width: 100%; height: 90px; 
       margin: 0 auto 4vh auto; 
@@ -190,7 +191,7 @@
     }
     #breathGraph { width: 100%; height: 100%; display: block; }
 
-    /* --- 5. MENÚ --- */
+    /* --- 5. MENÚ DE SELECCIÓN (HOME) --- */
     #selectionMenu {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(238, 252, 253, 0.95);
@@ -198,7 +199,7 @@
       padding: 30px; transition: opacity 0.4s ease;
     }
 
-    /* --- ESTILOS NAVIDAD --- */
+    /* --- 6. LUCES DE NAVIDAD (Estacional) --- */
     .navidad-lights {
         position: absolute; top: 0; left: 0; width: 100%;
         display: flex; justify-content: space-around; padding: 8px 0;
@@ -216,8 +217,8 @@
         0%, 100% { opacity: 0.2; transform: scale(0.8); }
         50% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 20px currentColor; }
     }
-    /* ----------------------- */
 
+    /* --- BOTONES Y TEXTOS DEL MENÚ --- */
     .global-info-btn {
         position: absolute; top: 30px; right: 30px;
         width: 42px; height: 42px; border-radius: 50%;
@@ -263,7 +264,7 @@
       padding: 5px;
     }
 
-    /* --- TARJETAS NORMALES (Respiración) --- */
+    /* --- TARJETAS DE RESPIRACIÓN (Estándar) --- */
     .menu-card {
       background: rgba(255, 255, 255, 0.6); 
       backdrop-filter: blur(12px);
@@ -287,7 +288,7 @@
     .menu-card.custom-card { border: 2px dashed rgba(0, 131, 143, 0.3); background: rgba(255, 255, 255, 0.4); }
     .menu-card.custom-card h3 { color: var(--accent); }
 
-    /* --- TARJETA JOYA: SUBSTACK (Fix Botón Menú) --- */
+    /* --- TARJETA JOYA: SUBSTACK (Edición PRO) --- */
     .substack-card {
         background: linear-gradient(135deg, #FFFFFF 0%, #F0FFF4 50%, #E0F2F1 100%);
         border: 1px solid rgba(255, 103, 25, 0.15); 
@@ -322,14 +323,14 @@
         display: flex; flex-direction: column; justify-content: center;
     }
     
-    /* NUEVOS ESTILOS TEXTO EDITORIAL */
+    /* TIPOGRAFÍA EDITORIAL (Substack) */
     .substack-label {
-        font-family: 'Manrope', sans-serif; font-size: 0.7rem; 
-        text-transform: uppercase; letter-spacing: 1.5px; 
+        font-family: 'Manrope', sans-serif; font-size: 0.65rem; 
+        text-transform: uppercase; letter-spacing: 2px; /* Toque Magazine */
         color: #78909c; font-weight: 700; margin-bottom: 4px;
     }
     .substack-title {
-        font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.25rem; color: #263238;
+        font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.2rem; color: #263238;
         margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         line-height: 1.2;
     }
@@ -339,7 +340,8 @@
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
-    /* --- OVERLAYS ESTILO UNIFICADO --- */
+
+    /* --- MODALES Y OVERLAYS --- */
     #customOverlay, #shareConfigOverlay, #guideOverlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(255, 255, 255, 0.98); z-index: 150;
@@ -397,7 +399,7 @@
         border-width: 6px; border-style: solid; border-color: transparent transparent #37474f transparent;
     }
 
-    /* GUIA GLOBAL CARD */
+    /* GUIA DE ICONOS */
     .guide-card {
         background: white; border:1px solid #eee; 
         border-radius: 16px; padding: 30px; max-width: 90%; width: 350px;
@@ -406,7 +408,7 @@
     .guide-row { display: flex; align-items: center; margin-bottom: 15px; gap: 15px; font-size: 1rem; color: #546e7a; }
     .guide-icon { width: 30px; text-align: center; font-size: 1.4rem; }
 
-    /* ESTILOS ESPECÍFICOS PARA LA TARJETA NATIVA DE SUBSTACK (OVERLAY) */
+    /* ESTILOS DE LA TARJETA DE LECTURA (OVERLAY COMPLETO) */
     .refugio-card {
         background: white;
         border: 1px solid #EEE;
@@ -420,7 +422,6 @@
         position: relative;
         overflow: hidden;
     }
-    /* Línea decorativa naranja */
     .refugio-card::before {
         content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
         background: var(--substack-orange);
@@ -451,7 +452,7 @@
         box-shadow: 0 8px 20px rgba(255, 103, 25, 0.4);
     }
 
-    /* --- OVERLAYS SHARE FINAL --- */
+    /* --- OVERLAYS SHARE --- */
     #pillOverlay, #shareModal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(255,255,255,0.95); z-index: 200;
@@ -525,22 +526,19 @@
           
           <div class="refugio-excerpt">"y tener a alguien a quien poder pedir un poco de sal..."</div>
           
-          <a href="https://claudiacuevas.substack.com/p/el-barrio-y-sus-cosas" target="_blank" class="refugio-btn">
+          <a href="https://claudiacuevas.substack.com/p/el-barrio-y-sus-cosas" target="_blank" rel="noopener noreferrer" class="refugio-btn">
               Leer en Substack
           </a>
       </div>
       
       <button class="btn-text" style="margin-top:35px; background:transparent; border:1px solid #cfd8dc; color:#78909c;" onclick="const el = document.getElementById('substackOverlay'); el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none';">❮ Volver al Menú</button>
-  
   </div>
-
   <div id="customOverlay">
       <h2 class="overlay-title">Diseña tu Respiración</h2>
       <p class="overlay-subtitle">Introduce 4 tiempos<br>Añade 'b' para boca (ej: 4b)</p>
       
       <div class="custom-input-container">
           <input type="text" id="customPatternInput" class="big-input" placeholder="4-2-6b-0" maxlength="10" value="">
-          
           <div class="info-bubble" onclick="toggleTooltip(this)">?
               <div class="info-tooltip">
                   <strong>Escribe los segundos de cada fase.</strong> El sistema pone los guiones.<br><br>
@@ -555,7 +553,6 @@
               </div>
           </div>
       </div>
-
       <div style="display:flex; flex-direction:column; gap:15px; margin-bottom: 50px;">
           <button class="btn-text" style="background:var(--primary); color:white; padding:15px 40px; font-size:1.1rem; border:none;" onclick="startCustom()">Comenzar</button>
           <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="document.getElementById('customOverlay').style.display='none'">Cancelar</button>
@@ -635,11 +632,12 @@
           </div>
           <div class="substack-content">
               <div class="substack-label">Rincón de Lectura</div>
+              
               <div class="substack-title">Quedarse</div>
+              
               <div class="substack-author">by Claudia Cuevas</div>
           </div>
       </div>
-
       <div class="menu-card custom-card" onclick="openCustomModal()">
         <h3>✨ Crear Personalizado</h3>
         <p>Define tus tiempos (ej: 4-7-8b)</p>
@@ -739,7 +737,7 @@
       ]
     };
     
-    // --- GENERADOR DE FRASES WU-WEI + AMOR + BELLEZA ---
+    // --- GENERADOR DE FRASES ZEN ---
     const pSubjects = [
         "El río antiguo", "La brisa suave", "El bambú flexible", "La montaña quieta", "Tu mente clara", 
         "El momento presente", "La hoja seca", "El agua profunda", "Este aliento", "La nube blanca", 
@@ -754,7 +752,6 @@
         "abraza lo que es", "florece sin prisa", "sana las heridas", "irradia calidez", "ama sin apego", "ve la verdad"
     ];
     
-    // Conclusiones Capitalizadas para ser nuevas frases
     const pConclusions = [
         "Sé como el agua.", "Todo es perfecto.", "Paz infinita.", "Vuelve al centro.", "Nada que hacer.", 
         "Mente serena.", "Simple y puro.", "Aquí y ahora.", "Conecta contigo.", "Fluye con todo.",
@@ -781,7 +778,6 @@
             const s = pSubjects[Math.floor(Math.random() * pSubjects.length)];
             const a = pActions[Math.floor(Math.random() * pActions.length)];
             const c = pConclusions[Math.floor(Math.random() * pConclusions.length)];
-            // Usamos PUNTO en lugar de coma para separar ideas claramente
             return `${s} ${a}. ${c}`;
         }
     }
@@ -1078,9 +1074,8 @@
       els.menu.style.opacity = '0'; 
       setTimeout(()=>els.menu.style.display='none', 400);
       
-      // LOGICA NUEVA: INSERTAR SALTO DE LÍNEA SI HAY PUNTO
       const rawQuote = getWuWeiQuote();
-      // Reemplaza ". " por ". <br>" para que se vea en dos líneas
+      // Inserta un salto de línea si hay un punto para mejor legibilidad
       els.qt.innerHTML = rawQuote.replace('. ', '.<br>');
       
       setTimeout(() => {
@@ -1135,8 +1130,6 @@
        els.load.style.display = 'flex'; 
 
        const baseUrl = location.href.split('?')[0];
-       
-       // FIX V42.10: Cambiado 'para' por 'to' para evitar conflicto con &para HTML entity
        const longUrl = `${baseUrl}?p=${encodeURIComponent(pString)}&to=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
        
        let finalUrl = longUrl;
@@ -1164,11 +1157,7 @@
         if(dynamicP.length >= 2) {
            patterns[pCode] = dynamicP; 
            document.getElementById('pillOverlay').style.display = 'flex';
-           
-           // FIX V42.10: Leemos 'to' en lugar de 'para'
-           // Priorizamos 'to', pero mantenemos 'para' por si alguien usa un link viejo (aunque estén rotos)
            const recipient = q.get('to') || q.get('para') || 'Ti';
-           
            document.getElementById('pillRecipient').textContent = `Hola, ${recipient}`;
            document.getElementById('pillMessage').textContent = `"${q.get('msg')}"`;
            els.menu.style.display = 'none'; 
