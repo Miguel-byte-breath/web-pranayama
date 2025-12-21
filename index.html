@@ -89,7 +89,7 @@
       font-family: 'Manrope', sans-serif;
     }
 
-    /* --- 3. ESCENARIO CENTRAL (Respiración) --- */
+    /* --- 3. ESCENARIO CENTRAL --- */
     .stage-container {
       flex: 1; display: flex; width: 100%; position: relative;
       align-items: center; justify-content: center;
@@ -181,7 +181,7 @@
       text-shadow: 0 0 12px rgba(255,255,255,1);
     }
 
-    /* --- 4. VISUALIZADOR INFERIOR --- */
+    /* --- 4. VISUALIZADOR --- */
     .bottom-viz {
       flex-shrink: 0; width: 100%; height: 90px; 
       margin: 0 auto 4vh auto; 
@@ -191,7 +191,7 @@
     }
     #breathGraph { width: 100%; height: 100%; display: block; }
 
-    /* --- 5. MENÚ DE SELECCIÓN (HOME) --- */
+    /* --- 5. MENÚ SELECCIÓN --- */
     #selectionMenu {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(238, 252, 253, 0.95);
@@ -199,7 +199,7 @@
       padding: 30px; transition: opacity 0.4s ease;
     }
 
-    /* --- 6. LUCES DE NAVIDAD (Estacional) --- */
+    /* --- LUCES (Estacional) --- */
     .navidad-lights {
         position: absolute; top: 0; left: 0; width: 100%;
         display: flex; justify-content: space-around; padding: 8px 0;
@@ -212,13 +212,12 @@
     .light.red   { background: #ff4d4d; box-shadow: 0 0 12px #ff4d4d; animation-delay: 0s; }
     .light.green { background: #2ecc71; box-shadow: 0 0 12px #2ecc71; animation-delay: 1.3s; }
     .light.blue  { background: #4facfe; box-shadow: 0 0 12px #4facfe; animation-delay: 2.6s; }
-
     @keyframes breath-light {
         0%, 100% { opacity: 0.2; transform: scale(0.8); }
         50% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 20px currentColor; }
     }
 
-    /* --- BOTONES Y TEXTOS DEL MENÚ --- */
+    /* --- BOTONES Y TEXTOS --- */
     .global-info-btn {
         position: absolute; top: 30px; right: 30px;
         width: 42px; height: 42px; border-radius: 50%;
@@ -264,7 +263,7 @@
       padding: 5px;
     }
 
-    /* --- TARJETAS DE RESPIRACIÓN (Estándar) --- */
+    /* --- TARJETAS --- */
     .menu-card {
       background: rgba(255, 255, 255, 0.6); 
       backdrop-filter: blur(12px);
@@ -288,7 +287,7 @@
     .menu-card.custom-card { border: 2px dashed rgba(0, 131, 143, 0.3); background: rgba(255, 255, 255, 0.4); }
     .menu-card.custom-card h3 { color: var(--accent); }
 
-    /* --- TARJETA JOYA: SUBSTACK (Edición PRO) --- */
+    /* --- SUBSTACK CARD (PRO) --- */
     .substack-card {
         background: linear-gradient(135deg, #FFFFFF 0%, #F0FFF4 50%, #E0F2F1 100%);
         border: 1px solid rgba(255, 103, 25, 0.15); 
@@ -322,11 +321,9 @@
         z-index: 2; flex: 1; min-width: 0; 
         display: flex; flex-direction: column; justify-content: center;
     }
-    
-    /* TIPOGRAFÍA EDITORIAL (Substack) */
     .substack-label {
         font-family: 'Manrope', sans-serif; font-size: 0.65rem; 
-        text-transform: uppercase; letter-spacing: 2px; /* Toque Magazine */
+        text-transform: uppercase; letter-spacing: 2px; 
         color: #78909c; font-weight: 700; margin-bottom: 4px;
     }
     .substack-title {
@@ -340,8 +337,7 @@
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
-
-    /* --- MODALES Y OVERLAYS --- */
+    /* --- OVERLAYS --- */
     #customOverlay, #shareConfigOverlay, #guideOverlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         background: rgba(255, 255, 255, 0.98); z-index: 150;
@@ -385,7 +381,7 @@
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     
-    /* TOOLTIP DE AYUDA */
+    /* TOOLTIP DE AYUDA (Estilo Burbuja) */
     .info-tooltip {
         position: absolute; top: 50px; left: 50%; transform: translateX(-85%);
         width: 290px; background: #37474f; color: white; padding: 20px;
@@ -398,8 +394,15 @@
         content:''; position: absolute; top: -6px; right: 20px;
         border-width: 6px; border-style: solid; border-color: transparent transparent #37474f transparent;
     }
+    /* HOTFIX: Close button for tooltip */
+    .close-tooltip {
+        float: right; font-size: 1.2rem; cursor: pointer; color: #cfd8dc; 
+        margin: -10px -5px 0 0; font-weight: 300;
+    }
+    .close-tooltip:hover { color: white; }
 
-    /* GUIA DE ICONOS */
+
+    /* GUIA ICONOS CARD */
     .guide-card {
         background: white; border:1px solid #eee; 
         border-radius: 16px; padding: 30px; max-width: 90%; width: 350px;
@@ -408,7 +411,7 @@
     .guide-row { display: flex; align-items: center; margin-bottom: 15px; gap: 15px; font-size: 1rem; color: #546e7a; }
     .guide-icon { width: 30px; text-align: center; font-size: 1.4rem; }
 
-    /* ESTILOS DE LA TARJETA DE LECTURA (OVERLAY COMPLETO) */
+    /* REFUGIO/SUBSTACK OVERLAY */
     .refugio-card {
         background: white;
         border: 1px solid #EEE;
@@ -452,7 +455,7 @@
         box-shadow: 0 8px 20px rgba(255, 103, 25, 0.4);
     }
 
-    /* --- OVERLAYS SHARE --- */
+    /* --- PILL SHARE --- */
     #pillOverlay, #shareModal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(255,255,255,0.95); z-index: 200;
@@ -498,6 +501,8 @@
   </div>
 
   <div id="guideOverlay">
+      <button onclick="document.getElementById('guideOverlay').style.display='none'" style="position:absolute; top:25px; right:25px; background:none; border:none; font-size:2rem; color:#78909c; cursor:pointer; padding:10px; line-height:1; z-index:10;">&times;</button>
+
       <h2 class="overlay-title">Guía de Respiración</h2>
       <p class="overlay-subtitle">Interpretación de símbolos</p>
       <div class="guide-card">
@@ -539,8 +544,10 @@
       
       <div class="custom-input-container">
           <input type="text" id="customPatternInput" class="big-input" placeholder="4-2-6b-0" maxlength="10" value="">
+          
           <div class="info-bubble" onclick="toggleTooltip(this)">?
               <div class="info-tooltip">
+                  <span class="close-tooltip" onclick="event.stopPropagation(); this.parentElement.classList.remove('visible');">&times;</span>
                   <strong>Escribe los segundos de cada fase.</strong> El sistema pone los guiones.<br><br>
                   <span style="color:var(--c-inhale)">1. Inhala (Verde)</span><br>
                   <span style="color:var(--c-hold)">2. Mantén (Naranja)</span><br>
@@ -565,15 +572,19 @@
 
       <div class="custom-input-container">
           <input type="text" id="pillPatternInput" class="big-input" placeholder="4-7-8b" maxlength="10" value="">
+           
            <div class="info-bubble" onclick="toggleTooltip(this)">?
               <div class="info-tooltip">
-                  <strong>Escribe los segundos.</strong><br><br>
-                  <span style="color:var(--c-inhale)">1. Inhala</span><br>
-                  <span style="color:var(--c-hold)">2. Mantén</span><br>
-                  <span style="color:var(--c-exhale)">3. Exhala</span><br>
-                  <span style="color:var(--c-hold)">4. Sostén</span><br><br>
-                  <strong>¿Exhalar por la boca?</strong><br>
-                  Añade 'b' al número (ej: 8b).
+                  <span class="close-tooltip" onclick="event.stopPropagation(); this.parentElement.classList.remove('visible');">&times;</span>
+                  <strong>Escribe los segundos de cada fase.</strong> El sistema pone los guiones.<br><br>
+                  <span style="color:var(--c-inhale)">1. Inhala (Verde)</span><br>
+                  <span style="color:var(--c-hold)">2. Mantén (Naranja)</span><br>
+                  <span style="color:var(--c-exhale)">3. Exhala (Azul)</span><br>
+                  <span style="color:var(--c-hold)">4. Sostén (Naranja)</span><br><br>
+                  <hr style="border:0; border-top:1px solid rgba(255,255,255,0.2); margin:10px 0;">
+                  <strong>Opciones Extra:</strong><br>
+                  • Añade <strong>'b'</strong> para boca (ej: 8b).<br>
+                  • Usa <strong>0</strong> para saltar una fase.
               </div>
           </div>
       </div>
