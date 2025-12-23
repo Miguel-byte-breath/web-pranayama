@@ -394,7 +394,7 @@
         content:''; position: absolute; top: -6px; right: 20px;
         border-width: 6px; border-style: solid; border-color: transparent transparent #37474f transparent;
     }
-    /* HOTFIX: Close button for tooltip */
+    /* FIX UX: Close button for tooltip */
     .close-tooltip {
         float: right; font-size: 1.2rem; cursor: pointer; color: #cfd8dc; 
         margin: -10px -5px 0 0; font-weight: 300;
@@ -411,13 +411,14 @@
     .guide-row { display: flex; align-items: center; margin-bottom: 15px; gap: 15px; font-size: 1rem; color: #546e7a; }
     .guide-icon { width: 30px; text-align: center; font-size: 1.4rem; }
 
-    /* REFUGIO/SUBSTACK OVERLAY */
+    /* REFUGIO/SUBSTACK OVERLAY (REVERTIDO A ORIGINAL) */
     .refugio-card {
         background: white;
         border: 1px solid #EEE;
         border-radius: 16px;
         max-width: 380px;
         width: 90%;
+        /* REVERTIDO A ORIGINAL (V1.0.2) */
         padding: 30px 30px 45px 30px;
         box-shadow: 0 20px 60px rgba(0,0,0,0.08);
         text-align: center;
@@ -436,11 +437,14 @@
     .refugio-author {
         font-family: 'Manrope', sans-serif; font-size: 0.95rem; 
         color: var(--substack-orange); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+        /* REVERTIDO A ORIGINAL (V1.0.2) */
         margin-bottom: 25px;
     }
     .refugio-excerpt {
         font-family: 'Manrope', sans-serif; font-size: 1.1rem; color: #555;
-        line-height: 1.6; font-style: italic; margin-bottom: 35px;
+        line-height: 1.6; font-style: italic; 
+        /* REVERTIDO A ORIGINAL (V1.0.2) */
+        margin-bottom: 35px;
     }
     .refugio-btn {
         display: inline-block; text-decoration: none;
@@ -525,11 +529,11 @@
       <h2 style="font-family:'Cinzel'; color:#37474f; margin-bottom:20px; margin-top:40px;">Refugio Poético</h2>
       
       <div class="refugio-card">
-          <div class="refugio-title">Despertares 96.-</div>
+          <div class="refugio-title">Quedarse</div>
           
-          <div class="refugio-author">by Cuca Casado</div>
+          <div class="refugio-author">by Claudia Cuevas</div>
           
-          <div class="refugio-excerpt">"«Todos los problemas de la humanidad provienen de la incapacidad de las personas para sentarse tranquilamente sin nada que hacer» — Blaise Pascal."</div>
+          <div class="refugio-excerpt">"y tener a alguien a quien poder pedir un poco de sal..."</div>
           
           <a href="https://claudiacuevas.substack.com/p/el-barrio-y-sus-cosas" target="_blank" rel="noopener noreferrer" class="refugio-btn">
               Leer en Substack
@@ -644,9 +648,9 @@
           <div class="substack-content">
               <div class="substack-label">Rincón de Lectura</div>
               
-              <div class="substack-title">Despertares 96.-</div>
+              <div class="substack-title">Quedarse</div>
               
-              <div class="substack-author">by Cuca Casado</div>
+              <div class="substack-author">by Claudia Cuevas</div>
           </div>
       </div>
       <div class="menu-card custom-card" onclick="openCustomModal()">
