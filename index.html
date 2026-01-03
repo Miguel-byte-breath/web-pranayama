@@ -78,7 +78,6 @@
     }
     .btn-icon:hover { background: rgba(255,255,255,0.9); transform: translateY(-2px); }
     .btn-icon:active { transform: scale(0.95); }
-    /* Estilo activo para botones toggle */
     .btn-icon.active { background: var(--accent); color: white; border-color: var(--accent); }
 
     .btn-text {
@@ -142,14 +141,14 @@
       line-height: 1.6;
       z-index: 30;
       margin-top: 10px; 
-      min-height: 2em; /* Reserva espacio para evitar saltos */
+      min-height: 2em;
     }
 
     .sphere-wrapper {
       position: relative; 
       width: min(50vw, 260px); height: min(50vw, 260px);
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; /* Indicar que se puede tocar */
+      cursor: pointer; 
     }
 
     .sphere {
@@ -488,7 +487,7 @@
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     
-    /* --- MEDIA QUERIES --- */
+    /* --- MEDIA QUERIES (PC FIX INCLUIDO) --- */
     @media (min-width: 768px), (orientation: landscape) {
       /* Centramos el overlay para que no quede arriba del todo */
       #substackOverlay { justify-content: center; padding-top: 20px; }
@@ -498,6 +497,14 @@
       
       /* Reducimos ligeramente el margen inferior para asegurar visibilidad */
       .refugio-excerpt { margin-bottom: 25px; }
+
+      .app-layout { grid-template-rows: 60px 1fr 80px; }
+      .stage-container { flex-direction: row; justify-content: space-around; padding: 0 4vw; }
+      .sphere-wrapper { width: 50vh; height: 50vh; }
+      .sphere { width: 65%; height: 65%; }
+      .bottom-viz { height: 70px; width: 80%; }
+      .menu-grid { grid-template-columns: 1fr 1fr; max-width: 800px; gap:25px; }
+      #customOverlay, #shareConfigOverlay, #guideOverlay { padding-top: 5vh; justify-content: center; }
     }
   </style>
 </head>
@@ -695,8 +702,6 @@
         <div class="badge" id="cycleBadge">🔄 0</div>
       </div>
       <div class="top-right">
-        <button class="btn-icon" id="quoteToggleBtn" onclick="toggleQuotes()">❝</button>
-        
         <button class="btn-text" id="tempoBtn" onclick="toggleTempo()">⚡ 1x</button>
         <button class="btn-icon" id="soundBtn" onclick="toggleSound()">🔇</button>
         <button class="btn-icon" id="metronomeBtn" onclick="toggleMetronome()">⏱️</button>
@@ -719,7 +724,7 @@
       </div>
 
       <div class="panel-side">
-        <div class="quote" id="phraseContent">Sigue el ritmo, respira, nada más.</div>
+        <div class="quote" id="phraseContent">Respira...</div>
       </div>
     </div>
 
@@ -741,6 +746,7 @@
           {t:"EXHALA", b:6, y:'fall', c:C_EXHALE, m:'nose'},
           {t:"SOSTÉN", b:2, y:'hold_low', c:C_HOLD, m:'nose'}
       ],
+      // V1.1.1: Mantenemos la corrección lógica 4-7-8
       '4-7-8b': [
           {t:"INHALA", b:4, y:'rise', c:C_INHALE, m:'nose'},
           {t:"MANTÉN", b:7, y:'hold_high', c:C_HOLD, m:'nose'},
@@ -803,8 +809,8 @@
         }
     }
 
-    // STATE: pauses and phrases logic
-    let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: false };
+    // STATE: Quotes enabled by default (V1.1.1)
+    let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true };
     let audioCtx = null;
     let nextNoteTime = 0.0;
     let currentBeatIndex = 0;
@@ -832,8 +838,8 @@
       pillNameInput: document.getElementById('pillNameInput'),
       pillMessageInput: document.getElementById('pillMessageInput'),
       
-      modeIcon: document.getElementById('modeIcon'),
-      quoteBtn: document.getElementById('quoteToggleBtn')
+      modeIcon: document.getElementById('modeIcon')
+      // Removed quoteBtn reference
     };
 
     function formatPatternInput(input) {
@@ -931,7 +937,7 @@
     }
 
     function scheduleNote(beatNumber, time) {
-      // LOGIC: If paused, do not schedule new notes
+      // V1.1.1: If paused, do not schedule new notes
       if(state.paused) return;
 
       let accumulatedBeats = 0; let phase = null; let beatInPhase = 0;
@@ -951,39 +957,36 @@
     }
 
     function nextBeat() {
-      if(state.paused) return; // LOGIC: Pause logic
+      if(state.paused) return; 
       const secondsPerBeat = state.tempo; nextNoteTime += secondsPerBeat; currentBeatIndex++; 
       const totalBeats = state.data.reduce((acc, p) => acc + p.b, 0);
       if (currentBeatIndex >= totalBeats) { 
           currentBeatIndex = 0; 
           state.cyc++; 
-          // LOGIC: Only change quote if enabled
           if(state.quotesEnabled) updateQuote();
       }
     }
     
-    // LOGIC: Separate Quote Update
     function updateQuote() {
         const rawQuote = getWuWeiQuote();
         els.qt.innerHTML = rawQuote.replace('. ', '.<br>');
     }
 
     function scheduler() {
-      // LOGIC: If paused, keep loop alive but don't schedule
+      // V1.1.1: Paused Logic kept
       if (state.run) {
           if (!state.paused) {
               while (nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
                 scheduleNote(currentBeatIndex, nextNoteTime); nextBeat();
               }
           } else {
-              // When paused, we keep nextNoteTime updated to "now" so it resumes instantly
               nextNoteTime = audioCtx.currentTime; 
           }
           scheduleTimerID = setTimeout(scheduler, lookahead);
       }
     }
 
-    // LOGIC: Toggle Pause Functionality
+    // V1.1.1: Pause Logic (Invisible Feature)
     function togglePause() {
         if(!state.run) return;
         state.paused = !state.paused;
@@ -992,29 +995,12 @@
             els.ph.style.color = "#78909c";
             els.modeIcon.style.opacity = '0.5';
         } else {
-            // Resume visual cues immediately
             nextNoteTime = audioCtx.currentTime;
-        }
-    }
-    
-    // LOGIC: Toggle Quotes Functionality
-    function toggleQuotes() {
-        state.quotesEnabled = !state.quotesEnabled;
-        const btn = document.getElementById('quoteToggleBtn');
-        if(state.quotesEnabled) {
-            btn.classList.add('active');
-            updateQuote();
-            els.qt.style.opacity = '1';
-        } else {
-            btn.classList.remove('active');
-            els.qt.style.opacity = '0';
         }
     }
 
     function draw() {
       if (!state.run) return;
-      
-      // LOGIC: If paused, just loop without updating visuals
       if(state.paused) { requestAnimationFrame(draw); return; }
 
       const currentTime = audioCtx.currentTime;
@@ -1152,11 +1138,10 @@
       els.menu.style.opacity = '0'; 
       setTimeout(()=>els.menu.style.display='none', 400);
       
-      // LOGIC: Reset Quote state for new session
-      state.quotesEnabled = false;
-      document.getElementById('quoteToggleBtn').classList.remove('active');
-      els.qt.style.opacity = '0'; // Start hidden
-      els.qt.textContent = "Sigue el ritmo, respira, nada más."; // Default intro phrase
+      // V1.1.1: Always show intro phrase
+      state.quotesEnabled = true;
+      els.qt.style.opacity = '1'; 
+      els.qt.textContent = "Sigue el ritmo, respira, nada más."; 
       
       setTimeout(() => {
         initCanvas(); 
