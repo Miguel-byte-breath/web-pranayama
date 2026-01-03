@@ -78,7 +78,14 @@
     }
     .btn-icon:hover { background: rgba(255,255,255,0.9); transform: translateY(-2px); }
     .btn-icon:active { transform: scale(0.95); }
-    .btn-icon.active { background: var(--accent); color: white; border-color: var(--accent); }
+    
+    /* V1.2.0: Estado ACTIVO para botones toggle (Metrónomo y Frases) */
+    .btn-icon.active { 
+        background: var(--accent); 
+        color: white; 
+        border-color: var(--accent); 
+        box-shadow: 0 0 15px rgba(0, 131, 143, 0.4);
+    }
 
     .btn-text {
       background: rgba(255,255,255,0.5); 
@@ -137,11 +144,13 @@
       padding: 0 25px; color: var(--text-muted);
       font-family: 'Cinzel', serif; 
       font-size: 1.15rem; text-align: center;
-      max-width: 500px; transition: opacity 0.5s;
+      max-width: 500px; 
       line-height: 1.6;
       z-index: 30;
       margin-top: 10px; 
-      min-height: 2em;
+      /* V1.2.0: Altura mínima para evitar saltos y transición suave */
+      min-height: 2em; 
+      transition: opacity 0.6s ease;
     }
 
     .sphere-wrapper {
@@ -487,15 +496,10 @@
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     
-    /* --- MEDIA QUERIES (PC FIX INCLUIDO) --- */
+    /* --- MEDIA QUERIES (PC FIX) --- */
     @media (min-width: 768px), (orientation: landscape) {
-      /* Centramos el overlay para que no quede arriba del todo */
       #substackOverlay { justify-content: center; padding-top: 20px; }
-      
-      /* Hacemos la tarjeta MÁS ANCHA en PC */
       .refugio-card { max-width: 500px; padding: 25px 40px; }
-      
-      /* Reducimos ligeramente el margen inferior para asegurar visibilidad */
       .refugio-excerpt { margin-bottom: 25px; }
 
       .app-layout { grid-template-rows: 60px 1fr 80px; }
@@ -517,7 +521,6 @@
 
   <div id="guideOverlay">
       <button onclick="document.getElementById('guideOverlay').style.display='none'" style="position:absolute; top:25px; right:25px; background:none; border:none; font-size:2rem; color:#78909c; cursor:pointer; padding:10px; line-height:1; z-index:10;">&times;</button>
-
       <h2 class="overlay-title">Guía de Respiración</h2>
       <p class="overlay-subtitle">Interpretación de símbolos</p>
       <div class="guide-card">
@@ -534,19 +537,15 @@
   </div>
   
   <div id="substackOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:300; display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(15px); padding:20px 20px 50px 20px; text-align:center; visibility:hidden; opacity:0; pointer-events:none; transition:all 0.4s ease; overflow-y:auto;">
-      
       <button onclick="const el=document.getElementById('substackOverlay'); el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none';" style="position:absolute; top:25px; right:25px; background:none; border:none; font-size:2rem; color:#78909c; cursor:pointer; padding:10px; line-height:1; z-index:10;">&times;</button>
 
       <h2 style="font-family:'Cinzel'; color:#37474f; margin-bottom:20px; margin-top:40px;">Refugio Poético</h2>
       
       <div class="refugio-card">
-          <div class="refugio-title">La Navidad importa</div>
-          
+          <div class="refugio-title">Quedarse</div>
           <div class="refugio-author">by Claudia Cuevas</div>
-          
-          <div class="refugio-excerpt">"Hay pocas cosas tan frágiles y tan tercas como este ritual tan nuestro ..."</div>
-          
-          <a href="https://open.substack.com/pub/claudiacuevas/p/la-navidad-importa?r=2vlvha&utm_campaign=post&utm_medium=web" target="_blank" rel="noopener noreferrer" class="refugio-btn">
+          <div class="refugio-excerpt">"y tener a alguien a quien poder pedir un poco de sal..."</div>
+          <a href="https://claudiacuevas.substack.com/p/el-barrio-y-sus-cosas" target="_blank" rel="noopener noreferrer" class="refugio-btn">
               Leer en Substack
           </a>
       </div>
@@ -556,10 +555,8 @@
   <div id="customOverlay">
       <h2 class="overlay-title">Diseña tu Respiración</h2>
       <p class="overlay-subtitle">Introduce 4 tiempos<br>Añade 'b' para boca (ej: 4b)</p>
-      
       <div class="custom-input-container">
           <input type="text" id="customPatternInput" class="big-input" placeholder="4-2-6b-0" maxlength="10" value="">
-          
           <div class="info-bubble" onclick="toggleTooltip(this)">?
               <div class="info-tooltip">
                   <span class="close-tooltip" onclick="event.stopPropagation(); this.parentElement.classList.remove('visible');">&times;</span>
@@ -587,7 +584,6 @@
 
       <div class="custom-input-container">
           <input type="text" id="pillPatternInput" class="big-input" placeholder="4-7-8b" maxlength="10" value="">
-           
            <div class="info-bubble" onclick="toggleTooltip(this)">?
               <div class="info-tooltip">
                   <span class="close-tooltip" onclick="event.stopPropagation(); this.parentElement.classList.remove('visible');">&times;</span>
@@ -636,6 +632,7 @@
         <div class="light green"></div>
         <div class="light blue"></div>
     </div>
+
     <button class="global-info-btn" onclick="document.getElementById('guideOverlay').style.display='flex'">i</button>
 
     <div class="menu-title">ELIGE TU RITMO</div>
@@ -658,12 +655,11 @@
           </div>
           <div class="substack-content">
               <div class="substack-label">Rincón de Lectura</div>
-              
-              <div class="substack-title">La Navidad importa</div>
-              
+              <div class="substack-title">Quedarse</div>
               <div class="substack-author">by Claudia Cuevas</div>
           </div>
       </div>
+
       <div class="menu-card custom-card" onclick="openCustomModal()">
         <h3>✨ Crear Personalizado</h3>
         <p>Define tus tiempos (ej: 4-7-8b)</p>
@@ -702,6 +698,8 @@
         <div class="badge" id="cycleBadge">🔄 0</div>
       </div>
       <div class="top-right">
+        <button class="btn-icon active" id="quoteToggleBtn" onclick="toggleQuotes()">❝</button>
+        
         <button class="btn-text" id="tempoBtn" onclick="toggleTempo()">⚡ 1x</button>
         <button class="btn-icon" id="soundBtn" onclick="toggleSound()">🔇</button>
         <button class="btn-icon" id="metronomeBtn" onclick="toggleMetronome()">⏱️</button>
@@ -746,7 +744,6 @@
           {t:"EXHALA", b:6, y:'fall', c:C_EXHALE, m:'nose'},
           {t:"SOSTÉN", b:2, y:'hold_low', c:C_HOLD, m:'nose'}
       ],
-      // V1.1.1: Mantenemos la corrección lógica 4-7-8
       '4-7-8b': [
           {t:"INHALA", b:4, y:'rise', c:C_INHALE, m:'nose'},
           {t:"MANTÉN", b:7, y:'hold_high', c:C_HOLD, m:'nose'},
@@ -764,7 +761,7 @@
       ]
     };
     
-    // --- GENERADOR DE FRASES ZEN ---
+    // --- FRASES ZEN ---
     const pSubjects = [
         "El río antiguo", "La brisa suave", "El bambú flexible", "La montaña quieta", "Tu mente clara", 
         "El momento presente", "La hoja seca", "El agua profunda", "Este aliento", "La nube blanca", 
@@ -809,7 +806,7 @@
         }
     }
 
-    // STATE: Quotes enabled by default (V1.1.1)
+    // STATE: V1.2.0 Quotes ENABLED by default
     let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true };
     let audioCtx = null;
     let nextNoteTime = 0.0;
@@ -839,7 +836,6 @@
       pillMessageInput: document.getElementById('pillMessageInput'),
       
       modeIcon: document.getElementById('modeIcon')
-      // Removed quoteBtn reference
     };
 
     function formatPatternInput(input) {
@@ -937,7 +933,6 @@
     }
 
     function scheduleNote(beatNumber, time) {
-      // V1.1.1: If paused, do not schedule new notes
       if(state.paused) return;
 
       let accumulatedBeats = 0; let phase = null; let beatInPhase = 0;
@@ -973,7 +968,6 @@
     }
 
     function scheduler() {
-      // V1.1.1: Paused Logic kept
       if (state.run) {
           if (!state.paused) {
               while (nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
@@ -986,7 +980,6 @@
       }
     }
 
-    // V1.1.1: Pause Logic (Invisible Feature)
     function togglePause() {
         if(!state.run) return;
         state.paused = !state.paused;
@@ -996,6 +989,23 @@
             els.modeIcon.style.opacity = '0.5';
         } else {
             nextNoteTime = audioCtx.currentTime;
+        }
+    }
+
+    // --- V1.2.0: LOGICA TOGGLE FRASES ---
+    function toggleQuotes() {
+        state.quotesEnabled = !state.quotesEnabled;
+        const btn = document.getElementById('quoteToggleBtn');
+        
+        if(state.quotesEnabled) {
+            // ENCENDIDO: Botón brilla, frase aparece y se actualiza
+            btn.classList.add('active');
+            updateQuote(); // Cargar nueva frase al encender
+            els.qt.style.opacity = '1';
+        } else {
+            // APAGADO: Botón normal, frase se desvanece (pero el hueco queda)
+            btn.classList.remove('active');
+            els.qt.style.opacity = '0';
         }
     }
 
@@ -1138,10 +1148,13 @@
       els.menu.style.opacity = '0'; 
       setTimeout(()=>els.menu.style.display='none', 400);
       
-      // V1.1.1: Always show intro phrase
+      // V1.2.0: Reset states
+      // Queremos que empiece ENCENDIDO por defecto
       state.quotesEnabled = true;
-      els.qt.style.opacity = '1'; 
-      els.qt.textContent = "Sigue el ritmo, respira, nada más."; 
+      const btn = document.getElementById('quoteToggleBtn');
+      btn.classList.add('active'); // Botón iluminado
+      els.qt.style.opacity = '1';  // Frase visible
+      els.qt.textContent = "Sigue el ritmo, respira, nada más."; // Frase inicial
       
       setTimeout(() => {
         initCanvas(); 
