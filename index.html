@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Respira | Tu Espacio de Calma</title>
   
-  <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVzcGlyYSIs" />
+  <link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icon-192.png">
   <meta name="theme-color" content="#eefcfd">
   <meta name="description" content="Una aplicación minimalista para respirar, relajarse y leer.">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1248,6 +1249,16 @@
     
     window.addEventListener('resize', () => { if(state.run) initCanvas(); });
     initCanvas();
+
+    // --- REGISTRO DEL SERVICE WORKER (PWA) ---
+    // Esto es lo que permite que funcione Offline
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then((reg) => console.log('Service Worker registrado:', reg.scope))
+          .catch((err) => console.log('Error al registrar SW:', err));
+      });
+    }
   </script>
 </body>
 </html>

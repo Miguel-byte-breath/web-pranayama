@@ -1,0 +1,21 @@
+{
+  "name": "Respira",
+  "short_name": "Respira",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#eefcfd",
+  "theme_color": "#eefcfd",
+  "description": "Tu espacio de calma y respiración consciente.",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
