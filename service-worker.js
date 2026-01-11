@@ -1,4 +1,4 @@
-const CACHE_NAME = 'respira-v1-offline';
+const CACHE_NAME = 'respira-v2-offline';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
