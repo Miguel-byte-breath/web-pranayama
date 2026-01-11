@@ -3,9 +3,9 @@ const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
-  // Si tienes los iconos, añádelos aquí:
-  // './icon-192.png',
-  // './icon-512.png'
+  './icon-192.png',
+  './icon-512.png',
+  './ambient.mp3'
 ];
 
 // 1. INSTALACIÓN: Guarda los archivos básicos
