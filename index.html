@@ -699,12 +699,30 @@
         <div class="badge" id="cycleBadge">🔄 0</div>
       </div>
       <div class="top-right">
-        <button class="btn-icon active" id="quoteToggleBtn" onclick="toggleQuotes()">❝</button>
-        
-        <button class="btn-text" id="tempoBtn" onclick="toggleTempo()">⚡ 1x</button>
-        <button class="btn-icon" id="soundBtn" onclick="toggleSound()">🔇</button>
-        <button class="btn-icon" id="metronomeBtn" onclick="toggleMetronome()">⏱️</button>
-      </div>
+      <button id="btnMetro" class="icon-btn" onclick="toggleMetro()" aria-label="Metrónomo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 18v-6"></path>
+          <path d="M10 2h4"></path> 
+          <path d="M5 22h14"></path>
+          <path d="M12 2v3"></path>
+        </svg>
+      </button>
+
+      <button id="btnSound" class="icon-btn active" onclick="toggleSound()" aria-label="Sonido">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+      </button>
+
+      <button id="btnMusic" class="icon-btn active" onclick="toggleMusic()" aria-label="Música Ambiental">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18V5l12-2v13"></path>
+          <circle cx="6" cy="18" r="3"></circle>
+          <circle cx="18" cy="16" r="3"></circle>
+        </svg>
+      </button>
+    </div>
     </div>
 
     <div class="stage-container">
@@ -1141,8 +1159,36 @@
         }
       });
     }
+// --- CONFIGURACIÓN DE MÚSICA ---
+const ambientAudio = new Audio('ambient.mp3');
+ambientAudio.loop = true;
+ambientAudio.volume = 0.5;
 
-    function start(k) {
+// Aseguramos que el estado de la música exista
+if (typeof state !== 'undefined' && state.music === undefined) {
+  state.music = true;
+}
+
+function toggleMusic() {
+  if (typeof state.music === 'undefined') state.music = true;
+  state.music = !state.music;
+  const btn = document.getElementById('btnMusic');
+  
+  if(state.music) {
+    btn.classList.add('active');
+    btn.style.opacity = "1";
+    if(state.run) ambientAudio.play(); 
+  } else {
+    btn.classList.remove('active');
+    btn.style.opacity = "0.4";
+    ambientAudio.pause();
+  }
+}
+// --------------------------------
+        function start(k) {if(state.music || state.music === undefined) { 
+     ambientAudio.currentTime = 0;
+     ambientAudio.play().catch(e => console.log(e));
+  }
       if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
       initAudio(); 
       renderPattern(k);
@@ -1170,7 +1216,8 @@
       }, 100);
     }
 
-    function stop() {
+    function stop() {ambientAudio.pause();
+  ambientAudio.currentTime = 0;
       state.run = false; clearTimeout(scheduleTimerID);
       els.sph.style.transform = 'scale(0.8)'; els.ph.textContent = "LISTO"; els.ph.style.color = 'var(--accent)';
       els.modeIcon.classList.remove('visible');
