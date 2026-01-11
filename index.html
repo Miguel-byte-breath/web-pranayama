@@ -1185,11 +1185,16 @@ function toggleMusic() {
   }
 }
 // --------------------------------
-        function start(k) {if(state.music || state.music === undefined) { 
-     ambientAudio.currentTime = 0;
-     ambientAudio.play().catch(e => console.log(e));
-  }
+function start(k) {
+      // 1. Primero comprobamos si el patrón es válido
       if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
+
+      // 2. Si el patrón es bueno, ENTONCES arrancamos la música
+      if(state.music || state.music === undefined) { 
+         ambientAudio.currentTime = 0;
+         ambientAudio.play().catch(e => console.log("Audio play error:", e));
+      }
+
       initAudio(); 
       renderPattern(k);
       els.menu.style.opacity = '0'; 
@@ -1199,9 +1204,11 @@ function toggleMusic() {
       // Queremos que empiece ENCENDIDO por defecto
       state.quotesEnabled = true;
       const btn = document.getElementById('quoteToggleBtn');
-      btn.classList.add('active'); // Botón iluminado
-      els.qt.style.opacity = '1';  // Frase visible
-      els.qt.textContent = "Sigue el ritmo, respira, nada más."; // Frase inicial
+      if(btn) btn.classList.add('active'); // Comprobación extra por si acaso
+      if(els.qt) {
+          els.qt.style.opacity = '1';  
+          els.qt.textContent = "Sigue el ritmo, respira, nada más."; 
+      }
       
       setTimeout(() => {
         initCanvas(); 
