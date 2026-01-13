@@ -22,434 +22,630 @@
       --dune-light: #eefcfd;
       --dune-mid: #e0f7fa;
       --text-main: #37474f;
-      --text-sub: #78909c;
-      --accent: #4CAF50; 
-      --bg-gradient: linear-gradient(135deg, #eefcfd 0%, #e0f7fa 100%);
-      --shadow-soft: 0 10px 30px rgba(0,0,0,0.05);
-      --font-display: 'Cinzel', serif;
-      --font-body: 'Manrope', sans-serif;
+      --text-muted: #78909c;
+      --primary: #4CAF50; 
+      --accent: #00838f;
+      --substack-orange: #FF6719;
+      
+      --c-inhale: #4CAF50; 
+      --c-hold: #FF9800;   
+      --c-exhale: #2196F3; 
     }
-
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    
     body {
-      margin: 0; padding: 0;
-      width: 100%; height: 100vh;
-      overflow: hidden; 
-      background: var(--bg-gradient);
-      font-family: var(--font-body);
-      color: var(--text-main);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      transition: background 0.5s ease;
+      background-color: var(--dune-light);
+      background-image: 
+        radial-gradient(at 0% 0%, hsla(190,40%,96%,1) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, hsla(195,50%,90%,1) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, hsla(185,60%,88%,1) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main); 
+      font-family: 'Manrope', sans-serif;
+      height: 100dvh; width: 100vw; overflow: hidden; 
+      display: flex; flex-direction: column;
     }
 
-    /* --- 2. LAYOUT & TOP CONTROLS --- */
-    /* AQUÍ ESTÁ LA CLAVE: Mantener position absolute pero ajustar el gap para 5 botones */
-    .top-right {
-      position: absolute;
-      top: 2rem;
-      right: 2rem;
-      display: flex;
-      align-items: center;
-      gap: 0.8rem; /* Reducido ligeramente para que quepan 5 */
-      z-index: 10;
-    }
-
-    /* Icon buttons */
-    .icon-btn {
-      background: none; border: none; cursor: pointer; padding: 0;
-      color: var(--text-main); opacity: 0.4; transition: all 0.3s ease;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .icon-btn:hover { opacity: 0.7; transform: translateY(-1px); }
-    .icon-btn.active { opacity: 1; color: var(--accent); transform: scale(1.1); }
-    .icon-btn svg { width: 24px; height: 24px; display: block; }
-
-    /* --- 3. MAIN SPHERE --- */
-    .sphere-container {
-      position: relative;
-      width: 280px; height: 280px;
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 2rem;
-    }
-    .sphere {
+    /* --- 2. LAYOUT GENERAL --- */
+    .app-layout {
+      flex: 1; display: flex; flex-direction: column; 
       width: 100%; height: 100%;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.1));
-      box-shadow: 
-        inset 0 0 20px rgba(255,255,255,0.5),
-        0 10px 40px rgba(76, 175, 80, 0.2); 
-      transform: scale(0.8);
-      transition: transform 0.1s linear, box-shadow 0.5s ease;
-      position: relative;
-      z-index: 2;
-      /* Propiedad dinámica para el color de la sombra/fase */
-      --c-phase: var(--accent);
-    }
-    /* El anillo exterior que respira (sombra) */
-    .sphere::after {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      border-radius: 50%; z-index: -1;
-      box-shadow: 0 0 0 0 var(--c-phase);
-      opacity: 0.6;
-      animation: pulseShadow 4s infinite; 
-      transition: box-shadow 0.5s ease;
     }
 
-    /* --- 4. TEXT & UI ELEMENTS --- */
-    .phase-text {
-      position: absolute; 
-      font-family: var(--font-display);
-      font-size: 1.5rem; font-weight: 700;
-      color: var(--accent);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      pointer-events: none; z-index: 5;
-      text-shadow: 0 2px 10px rgba(255,255,255,0.8);
+    .top-bar {
+      flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
+      padding: 15px 25px; z-index: 50; height: 70px;
     }
-    
-    .counter-text {
-      position: absolute; top: 65%;
-      font-family: var(--font-body);
-      font-size: 3rem; font-weight: 300;
-      color: var(--text-main); opacity: 0.8;
-      pointer-events: none; z-index: 5;
-    }
+    .top-left, .top-right { pointer-events: auto; display: flex; gap: 12px; align-items: center; }
 
-    /* Nueva UI de Info de Ciclos y Modo */
-    .info-bar {
-      position: absolute; bottom: -60px;
-      display: flex; gap: 1.5rem;
-      font-size: 0.9rem; color: var(--text-sub);
-      font-weight: 600; opacity: 0.8;
-    }
-    .info-item { display: flex; align-items: center; gap: 0.4rem; }
-    .mode-icon { opacity: 0; transition: opacity 0.3s ease; font-size: 1.1rem; }
-    .mode-icon.visible { opacity: 1; }
-
-    /* Frases Zen */
-    .zen-quote {
-      position: absolute; bottom: 10%; width: 80%; text-align: center;
-      font-family: var(--font-display); font-size: 1rem; color: var(--text-main);
-      opacity: 0; transition: opacity 1s ease; line-height: 1.6;
-    }
-    
-    /* --- 5. VISUALIZER (CANVAS) --- */
-    .breath-track {
-      position: absolute; bottom: 0; left: 0; width: 100%; height: 120px;
-      z-index: 1; pointer-events: none; opacity: 0.4;
-    }
-
-    /* --- 6. MENUS & OVERLAYS --- */
-    .selection-menu {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(238, 252, 253, 0.95);
+    .badge {
+      background: rgba(255,255,255,0.6); 
       backdrop-filter: blur(10px);
-      z-index: 20;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      transition: opacity 0.4s ease;
+      color: var(--accent); 
+      border: 1px solid rgba(255,255,255,0.4);
+      padding: 6px 14px; border-radius: 20px;
+      font-weight: 700; font-size: 0.85rem; 
     }
-    .menu-title {
-      font-family: var(--font-display); font-size: 2rem; margin-bottom: 2rem;
-      color: var(--text-main); text-align: center;
-    }
-    .pattern-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
-      width: 90%; max-width: 400px;
-    }
-    .pattern-btn {
-      background: #fff; border: 1px solid rgba(0,0,0,0.05);
-      padding: 1.2rem; border-radius: 16px;
-      font-family: var(--font-body); font-weight: 600; font-size: 1rem;
-      color: var(--text-main);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-      cursor: pointer; transition: all 0.2s ease;
-      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
-      position: relative;
-    }
-    .pattern-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); border-color: var(--accent); }
-    .pattern-desc { font-size: 0.75rem; color: var(--text-sub); font-weight: 400; text-align: center; }
     
-    /* Tooltip info */
-    .info-icon {
-        position: absolute; top: 8px; right: 8px; font-size: 0.8rem; color: #b0bec5;
-        cursor: help;
+    .btn-icon {
+      background: rgba(255,255,255,0.5); 
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.3);
+      width: 44px; height: 44px; border-radius: 50%;
+      color: var(--text-main); font-size: 1.1rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s ease;
     }
-    .info-tooltip {
-        position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
-        background: #37474f; color: #fff; padding: 0.5rem; border-radius: 8px;
-        font-size: 0.75rem; width: 180px; text-align: center; pointer-events: none;
-        opacity: 0; transition: opacity 0.2s; z-index: 30; margin-bottom: 8px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    .btn-icon:hover { background: rgba(255,255,255,0.9); transform: translateY(-2px); }
+    .btn-icon:active { transform: scale(0.95); }
+    
+    /* V1.2.0: Estado ACTIVO para botones toggle (Metrónomo y Frases) */
+    .btn-icon.active { 
+        background: var(--accent); 
+        color: white; 
+        border-color: var(--accent); 
+        box-shadow: 0 0 15px rgba(0, 131, 143, 0.4);
     }
-    .info-tooltip.visible { opacity: 1; }
 
-    /* Custom Input Overlay */
-    .overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.4); z-index: 50;
-        display: none; align-items: center; justify-content: center;
+    .btn-text {
+      background: rgba(255,255,255,0.5); 
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 8px 20px; border-radius: 30px;
+      color: var(--text-main); font-weight: 600; cursor: pointer; 
+      transition: all 0.3s ease;
+      font-family: 'Manrope', sans-serif;
     }
-    .modal {
-        background: #fff; padding: 2rem; border-radius: 20px; width: 90%; max-width: 350px;
-        text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+
+    /* --- 3. ESCENARIO CENTRAL --- */
+    .stage-container {
+      flex: 1; display: flex; width: 100%; position: relative;
+      align-items: center; justify-content: center;
+      flex-direction: column; 
+      padding: 10px 0;
     }
-    .modal h3 { margin-top: 0; font-family: var(--font-display); color: var(--text-main); }
-    .custom-input {
-        width: 100%; padding: 0.8rem; margin: 1rem 0;
-        border: 2px solid #e0f7fa; border-radius: 12px;
-        font-family: var(--font-body); font-size: 1.2rem; text-align: center; outline: none;
-        color: var(--text-main);
+
+    .panel-side { 
+        flex: 1; display: flex; flex-direction: column; 
+        align-items: center; justify-content: center; 
+        z-index: 20; width: 100%; 
+        min-height: 90px;
     }
-    .custom-input:focus { border-color: var(--accent); }
+    
+    .panel-center { 
+        position: relative; z-index: 10; 
+        display: flex; align-items: center; justify-content: center; 
+        margin: 60px 0; 
+        flex-shrink: 0; 
+    }
+
+    .phase-text {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2.5rem, 6vw, 4rem); 
+      font-weight: 400; letter-spacing: 2px; color: var(--accent);
+      text-transform: uppercase; text-align: center; white-space: nowrap;
+      transition: color 0.5s ease;
+      text-shadow: 0 10px 30px rgba(168, 206, 212, 0.4);
+      z-index: 30;
+      margin-bottom: 5px;
+    }
+
+    .mode-indicator {
+      margin-top: 10px;
+      font-size: 2.5rem; 
+      opacity: 0; transform: translateY(-10px);
+      transition: all 0.5s ease;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+      z-index: 50; 
+    }
+    .mode-indicator.visible { opacity: 1; transform: translateY(0); }
+
+    .quote {
+      padding: 0 25px; color: var(--text-muted);
+      font-family: 'Cinzel', serif; 
+      font-size: 1.15rem; text-align: center;
+      max-width: 500px; 
+      line-height: 1.6;
+      z-index: 30;
+      margin-top: 10px; 
+      /* V1.2.0: Altura mínima para evitar saltos y transición suave */
+      min-height: 2em; 
+      transition: opacity 0.6s ease;
+    }
+
+    .sphere-wrapper {
+      position: relative; 
+      width: min(50vw, 260px); height: min(50vw, 260px);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; 
+    }
+
+    .sphere {
+      width: 100%; height: 100%; border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), var(--c-phase));
+      box-shadow: 0 20px 70px var(--c-phase), inset 0 0 20px rgba(255,255,255,0.5);
+      display: flex; align-items: center; justify-content: center; flex-direction: column;
+      will-change: transform, background; 
+      transform: scale(0.8);
+      transition: background 0.5s ease, box-shadow 0.5s ease;
+    }
+
+    .counter-big { 
+      font-family: 'Manrope', sans-serif;
+      font-size: 4rem; font-weight: 800; color: white; 
+      text-shadow: 0 2px 15px rgba(0,0,0,0.15); line-height: 1;
+    }
+    
+    .sphere-label {
+        margin-top: 10px; 
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        z-index: 25;
+    }
+    .p-num {
+      font-size: 0.9rem; color: rgba(255,255,255,0.6); font-weight: 500;
+      transition: all 0.2s ease; display: inline-block;
+    }
+    .p-mode-sub { font-size: 0.6em; vertical-align: super; opacity: 0.8; margin-left:1px; }
+
+    .p-sep { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
+    .p-num.active {
+      color: #fff; font-weight: 800; transform: scale(1.4);
+      text-shadow: 0 0 12px rgba(255,255,255,1);
+    }
+
+    /* --- 4. VISUALIZADOR --- */
+    .bottom-viz {
+      flex-shrink: 0; width: 100%; height: 90px; 
+      margin: 0 auto 4vh auto; 
+      position: relative; z-index: 15;
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
+      mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
+    }
+    #breathGraph { width: 100%; height: 100%; display: block; }
+
+    /* --- 5. MENÚ SELECCIÓN --- */
+    #selectionMenu {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(238, 252, 253, 0.95);
+      z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 30px; transition: opacity 0.4s ease;
+    }
+
+    /* --- LUCES (Estacional) --- */
+    .navidad-lights {
+        position: absolute; top: 0; left: 0; width: 100%;
+        display: flex; justify-content: space-around; padding: 8px 0;
+        pointer-events: none; z-index: 120;
+    }
+    .light {
+        width: 10px; height: 10px; border-radius: 50%;
+        animation: breath-light 4s infinite ease-in-out;
+    }
+    .light.red   { background: #ff4d4d; box-shadow: 0 0 12px #ff4d4d; animation-delay: 0s; }
+    .light.green { background: #2ecc71; box-shadow: 0 0 12px #2ecc71; animation-delay: 1.3s; }
+    .light.blue  { background: #4facfe; box-shadow: 0 0 12px #4facfe; animation-delay: 2.6s; }
+    @keyframes breath-light {
+        0%, 100% { opacity: 0.2; transform: scale(0.8); }
+        50% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 20px currentColor; }
+    }
+
+    /* --- BOTONES Y TEXTOS --- */
+    .global-info-btn {
+        position: absolute; top: 30px; right: 30px;
+        width: 42px; height: 42px; border-radius: 50%;
+        background: rgba(255,255,255,0.9);
+        border: 1px solid rgba(76, 175, 80, 0.3);
+        color: var(--primary);
+        font-family: 'Manrope', sans-serif; font-weight: 800; 
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem; cursor: pointer;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.15); 
+        transition: all 0.3s ease;
+        z-index: 110;
+    }
+    .global-info-btn:hover { 
+        background: var(--primary); color: white; transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+    }
+
+    .menu-title { 
+      font-family: 'Cinzel', serif; font-size: 2.2rem; 
+      color: #263238; margin-bottom: 30px; 
+      letter-spacing: 0.1em; font-weight: 500; text-align: center;
+      background: -webkit-linear-gradient(45deg, #263238, #546e7a);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    .menu-actions {
+        display: flex; gap: 15px; margin-bottom: 30px; width: 100%; justify-content: center;
+    }
     .action-btn {
-        background: var(--accent); color: #fff; border: none; padding: 0.8rem 2rem;
-        border-radius: 50px; font-weight: 700; cursor: pointer; font-size: 1rem;
-        transition: transform 0.2s; margin-top: 0.5rem;
+        background: white; border: 1px solid rgba(0,0,0,0.05);
+        padding: 12px 20px; border-radius: 30px;
+        color: var(--accent); font-weight: 600; font-size: 0.9rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer;
+        display: flex; align-items: center; gap: 8px;
+        transition: transform 0.2s, box-shadow 0.2s;
     }
     .action-btn:active { transform: scale(0.95); }
-    .close-btn {
-        background: transparent; color: var(--text-sub); border: none; margin-top: 1rem;
-        cursor: pointer; font-size: 0.9rem; text-decoration: underline;
+
+    .menu-grid {
+      display: grid; grid-template-columns: 1fr; gap: 15px;
+      width: 100%; max-width: 450px; max-height: 55vh; overflow-y: auto; 
+      padding: 5px;
     }
 
-    /* Install Button */
-    .install-btn {
-        position: absolute; bottom: 2rem;
-        background: #37474f; color: #fff; padding: 0.6rem 1.2rem;
-        border-radius: 30px; border: none; font-weight: 600; cursor: pointer;
-        display: none; align-items: center; gap: 0.5rem; font-size: 0.9rem;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 25;
+    /* --- TARJETAS --- */
+    .menu-card {
+      background: rgba(255, 255, 255, 0.6); 
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      padding: 20px; border-radius: 16px;
+      cursor: pointer; text-align: left;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 4px 10px rgba(178, 235, 242, 0.1);
+      position: relative;
+    }
+    .menu-card:hover { 
+      transform: translateY(-3px) scale(1.01); 
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 10px 25px rgba(178, 235, 242, 0.3);
+    }
+    .menu-card h3 { 
+        color: #37474f; font-size: 1.1rem; margin-bottom: 4px; 
+        font-weight: 700; font-family: 'Manrope', sans-serif;
+    }
+    .menu-card p { color: #78909c; font-size: 0.9rem; font-weight: 400; }
+    .menu-card.custom-card { border: 2px dashed rgba(0, 131, 143, 0.3); background: rgba(255, 255, 255, 0.4); }
+    .menu-card.custom-card h3 { color: var(--accent); }
+
+    /* --- SUBSTACK CARD (PRO) --- */
+    .substack-card {
+        background: linear-gradient(135deg, #FFFFFF 0%, #F0FFF4 50%, #E0F2F1 100%);
+        border: 1px solid rgba(255, 103, 25, 0.15); 
+        border-radius: 16px; 
+        padding: 25px 22px; 
+        min-height: 100px;
+        cursor: pointer; position: relative; overflow: hidden;
+        box-shadow: 0 8px 25px rgba(200, 230, 201, 0.4);
+        transition: all 0.4s ease;
+        display: flex; flex-direction: row; 
+        align-items: center; justify-content: flex-start; 
+        gap: 15px; 
+        flex-wrap: nowrap; 
+    }
+    .substack-card::before {
+        content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%);
+        opacity: 0.6; pointer-events: none; transform: rotate(30deg);
+    }
+    .substack-card:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 12px 30px rgba(200, 230, 201, 0.6), 0 0 10px rgba(255, 103, 25, 0.1);
+    }
+    .substack-icon {
+        width: 42px; height: 42px; flex-shrink: 0; 
+        background: white; border-radius: 8px; 
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 2;
+    }
+    .substack-content { 
+        z-index: 2; flex: 1; min-width: 0; 
+        display: flex; flex-direction: column; justify-content: center;
+    }
+    .substack-label {
+        font-family: 'Manrope', sans-serif; font-size: 0.65rem; 
+        text-transform: uppercase; letter-spacing: 2px; 
+        color: #78909c; font-weight: 700; margin-bottom: 4px;
+    }
+    .substack-title {
+        font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.2rem; color: #263238;
+        margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        line-height: 1.2;
+    }
+    .substack-author {
+        font-family: 'Manrope', sans-serif; font-size: 0.9rem; color: var(--substack-orange); 
+        font-weight: 600; 
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
-    /* Pattern Display (Top Left) */
-    .pattern-display {
-      position: absolute; top: 2rem; left: 2rem;
-      font-family: var(--font-body); font-weight: 800; font-size: 1.2rem;
-      color: var(--text-main); opacity: 0.3; letter-spacing: 2px;
-      display: flex; gap: 4px; z-index: 10;
-    }
-    .p-num { transition: color 0.3s; position: relative; }
-    .p-num.active { color: var(--accent); opacity: 1; transform: scale(1.1); }
-    .p-mode-sub { font-size: 0.6em; vertical-align: sub; margin-left: 1px; opacity: 0.7; }
-    .p-sep { opacity: 0.3; }
-
-    /* Share Config Styles */
-    .pill-form { display: flex; flex-direction: column; gap: 0.8rem; text-align: left; }
-    .pill-label { font-size: 0.8rem; font-weight: 600; color: var(--text-sub); margin-left: 4px; margin-bottom: -4px; }
-    .pill-input {
-        width: 100%; padding: 0.6rem; border: 1px solid #e0e0e0; border-radius: 8px;
-        font-family: var(--font-body); outline: none; font-size: 0.95rem;
-    }
-    .pill-input:focus { border-color: var(--accent); }
-    .pill-buttons { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-    .btn-secondary { background: #eceff1; color: var(--text-main); flex: 1; }
-    .btn-primary { background: var(--accent); color: white; flex: 2; }
-
-    /* Loading Overlay */
-    .loading-overlay {
-        position: absolute; top:0; left:0; width:100%; height:100%;
-        background: rgba(255,255,255,0.8); z-index: 60;
-        display: none; align-items: center; justify-content: center;
-        flex-direction: column; gap: 1rem; color: var(--accent); font-weight: 600;
-    }
-
-    /* MEDIA QUERIES */
-    @media (max-width: 768px) {
-      .sphere-container { width: 240px; height: 240px; }
-      .counter-text { font-size: 2.5rem; }
-      .top-right { top: 1.5rem; right: 1.5rem; gap: 0.5rem; } /* Gap ajustado para móvil */
-      .pattern-display { top: 1.5rem; left: 1.5rem; font-size: 1rem; }
-      .menu-title { font-size: 1.5rem; }
-      .pattern-grid { grid-template-columns: 1fr; }
-      .zen-quote { width: 90%; font-size: 0.9rem; bottom: 8%; }
+    /* --- OVERLAYS --- */
+    #customOverlay, #shareConfigOverlay, #guideOverlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(255, 255, 255, 0.98); z-index: 150;
+        display: none; 
+        flex-direction: column; align-items: center; justify-content: flex-start; 
+        padding-top: 15vh;
+        overflow-y: auto; 
+        backdrop-filter: blur(15px); text-align: center;
     }
     
-    @keyframes pulseShadow {
-      0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); }
-      70% { box-shadow: 0 0 0 20px rgba(76, 175, 80, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+    .overlay-title { font-family:'Cinzel'; color:var(--text-main); margin-bottom:10px; font-size: 1.5rem; }
+    .overlay-subtitle { color:var(--text-muted); margin-bottom:30px; font-size: 0.95rem; }
+
+    .custom-input-container {
+        position: relative; margin: 15px 0;
+        display: flex; align-items: center; justify-content: center;
+    }
+    
+    .big-input {
+        font-size: 2.8rem; font-family: 'Manrope', sans-serif; font-weight: 300;
+        border: none; border-bottom: 2px solid var(--accent);
+        background: transparent; color: var(--text-main);
+        width: 320px; text-align: center; letter-spacing: 2px;
+        outline: none; padding-bottom: 5px; border-radius: 0;
+    }
+    
+    .normal-input {
+        width: 80%; max-width: 300px; padding: 12px; margin: 10px 0;
+        border: 1px solid #cfd8dc; border-radius: 10px;
+        font-family: 'Manrope', sans-serif; font-size: 1rem; color: var(--text-main);
+        background: #fcfcfc; outline: none; text-align: center;
+    }
+    .normal-input:focus { border-color: var(--accent); background: white; }
+
+    .info-bubble {
+        width: 32px; height: 32px; 
+        background: var(--text-muted); color: white; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; 
+        font-size: 1.1rem; font-weight: bold; cursor: pointer; 
+        margin-left: 15px; position: relative;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    /* TOOLTIP DE AYUDA (Estilo Burbuja) */
+    .info-tooltip {
+        position: absolute; top: 50px; left: 50%; transform: translateX(-85%);
+        width: 290px; background: #37474f; color: white; padding: 20px;
+        border-radius: 12px; font-size: 0.9rem; line-height: 1.6;
+        opacity: 0; visibility: hidden; transition: all 0.3s ease; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 200; text-align: left;
+    }
+    .info-tooltip.visible { opacity: 1; visibility: visible; }
+    .info-tooltip::before {
+        content:''; position: absolute; top: -6px; right: 20px;
+        border-width: 6px; border-style: solid; 
+        border-color: transparent transparent #37474f transparent;
+    }
+
+    .guide-row { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; text-align: left; }
+    .guide-icon { font-size: 1.5rem; width: 40px; text-align: center; }
+    
+    .overlay-btn-group { display: flex; gap: 15px; margin-top: 30px; }
+    
+    .refugio-btn {
+        background: linear-gradient(135deg, #FF6719 0%, #FF8A50 100%);
+        color: white; border: none; padding: 15px 40px; font-size: 1.1rem;
+        border-radius: 50px; font-weight: 700; font-family: 'Manrope', sans-serif;
+        box-shadow: 0 5px 15px rgba(255, 103, 25, 0.3);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .refugio-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 103, 25, 0.4); }
+
+    /* --- PILL SHARE --- */
+    #pillOverlay, #shareModal {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(255,255,255,0.95); z-index: 250;
+        display: none; flex-direction: column; align-items: center; justify-content: center;
+        padding: 30px; text-align: center;
+    }
+    #shareText {
+        width: 100%; max-width: 350px; height: 100px;
+        margin: 20px 0; padding: 15px; border-radius: 12px;
+        border: 1px solid #ddd; font-family: 'Manrope', sans-serif;
+        background: #f9f9f9; font-size: 0.9rem;
+    }
+    .share-actions { display: flex; gap: 10px; width: 100%; max-width: 350px; }
+    .btn-wa { flex: 1; background: #25D366; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+    .btn-copy { flex: 1; background: #607d8b; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+
+    /* --- LOADING --- */
+    .loading-overlay {
+        position: absolute; top:0; left:0; width:100%; height:100%;
+        background: rgba(255,255,255,0.9); z-index: 300;
+        display: none; align-items: center; justify-content: center;
+        flex-direction: column; gap: 15px; color: var(--accent); font-weight: 600;
+    }
+    .spinner {
+        width: 40px; height: 40px; border: 4px solid #e0f7fa; 
+        border-top: 4px solid var(--accent); border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    @media (max-width: 768px) {
+      .sphere-wrapper { width: 260px; height: 260px; }
+      .phase-text { font-size: 2.5rem; }
+      .counter-big { font-size: 3.5rem; }
+      .top-bar { padding: 10px 15px; height: 60px; }
+      .badge { font-size: 0.75rem; padding: 4px 10px; }
+      .btn-icon { width: 40px; height: 40px; font-size: 1rem; }
+      .substack-card { padding: 15px; gap: 12px; }
+      .substack-icon { width: 36px; height: 36px; }
+      .substack-title { font-size: 1rem; }
+      .big-input { width: 260px; font-size: 2.2rem; }
+      .global-info-btn { top: 15px; right: 15px; width: 36px; height: 36px; font-size: 1rem; }
+      .info-tooltip { width: 260px; top: 45px; right: -10px; transform: translateX(0); left: auto; }
+      .info-tooltip::before { right: 14px; left: auto; }
     }
   </style>
 </head>
 <body>
 
-  <button id="installBtn" class="install-btn" onclick="installApp()">
-     ⬇ Instalar App
-  </button>
-
-  <div id="patternDisplay" class="pattern-display">4-7-8</div>
-
- <div class="top-right">
-      <button id="quoteToggleBtn" class="icon-btn active" onclick="toggleQuotes()" aria-label="Frases">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-        </svg>
-      </button>
-
-      <button id="tempoBtn" class="icon-btn" onclick="toggleTempo()" aria-label="Tempo" style="font-size: 13px; font-weight: 700; width: auto; padding: 0 4px;">
-        ⚡ 1x
-      </button>
-
-      <button id="metronomeBtn" class="icon-btn" onclick="toggleMetronome()" aria-label="Metrónomo">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 18v-6"></path>
-          <path d="M10 2h4"></path> 
-          <path d="M5 22h14"></path>
-          <path d="M12 2v3"></path>
-        </svg>
-      </button>
-
-      <button id="soundBtn" class="icon-btn active" onclick="toggleSound()" aria-label="Sonido">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-        </svg>
-      </button>
-
-      <button id="btnMusic" class="icon-btn active" onclick="toggleMusic()" aria-label="Música">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-           <path d="M9 18V5l12-2v13"></path>
-           <circle cx="6" cy="18" r="3"></circle>
-           <circle cx="18" cy="16" r="3"></circle>
-        </svg>
-      </button>
-  </div>
-
-  <div class="sphere-container">
-    <div id="sphere" class="sphere"></div>
-    <div id="phaseText" class="phase-text">LISTO</div>
-    <div id="counterText" class="counter-text"></div>
-    
-    <div class="info-bar">
-        <div class="info-item">
-            <span id="cycleBadge">🔄 0</span>
-        </div>
-        <div class="info-item">
-            <span id="modeIcon" class="mode-icon">👃</span>
-        </div>
-    </div>
-  </div>
-
-  <div id="phraseContent" class="zen-quote">
-     Sigue el ritmo, respira, nada más.
-  </div>
-
-  <canvas id="breathGraph" class="breath-track" width="600" height="120"></canvas>
-
-  <div id="selectionMenu" class="selection-menu">
-    <div class="menu-title">Elige tu Ritmo</div>
-    <div class="pattern-grid">
-      <div class="pattern-btn" onclick="start('4-7-8b')">
-         <span>🌙 Relajación</span>
-         <span class="pattern-desc">4-7-8 (Boca) · Dormir</span>
-         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">
-             ℹ
-             <div class="info-tooltip">
-                 Inhala 4s (Nariz)<br>Mantén 7s<br>Exhala 8s (Boca)<br>Ideal para ansiedad y sueño.
-             </div>
-         </div>
-      </div>
-      <div class="pattern-btn" onclick="start('4-4-6-2')">
-         <span>🧘‍♂️ Calma Profunda</span>
-         <span class="pattern-desc">4-4-6-2 · Estrés</span>
-         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">
-             ℹ
-             <div class="info-tooltip">
-                 Inhala 4s, Mantén 4s,<br>Exhala 6s, Vacío 2s.<br>Equilibra el sistema nervioso.
-             </div>
-         </div>
-      </div>
-      <div class="pattern-btn" onclick="start('box')">
-         <span>📦 Box Breathing</span>
-         <span class="pattern-desc">4-4-4-4 · Enfoque</span>
-         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">
-             ℹ
-             <div class="info-tooltip">
-                 4s en cada fase.<br>Usada por Navy SEALs<br>para concentración máxima.
-             </div>
-         </div>
-      </div>
-      <div class="pattern-btn" onclick="start('5-5')">
-         <span>⚖️ Coherencia</span>
-         <span class="pattern-desc">5-5 · Equilibrio</span>
-         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">
-             ℹ
-             <div class="info-tooltip">
-                 Respiración resonante.<br>Sincroniza corazón y cerebro.<br>Perfecto para empezar.
-             </div>
-         </div>
-      </div>
-    </div>
-    
-    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-        <button onclick="openCustomModal()" style="background:none; border:none; color:var(--text-sub); font-weight:600; cursor:pointer; font-size:0.9rem;">
-           ✨ Crear Propio
-        </button>
-        <button onclick="openShareConfig()" style="background:none; border:none; color:var(--text-sub); font-weight:600; cursor:pointer; font-size:0.9rem;">
-           🎁 Enviar Píldora
-        </button>
-    </div>
-  </div>
-
-  <div id="customOverlay" class="overlay">
-      <div class="modal">
-          <h3>Tu Ritmo</h3>
-          <p style="font-size:0.9rem; color:#666;">Formato: Inhala-Mantén-Exhala...<br>Usa 'b' para boca (ej: 4-7-8b)</p>
-          <input type="text" id="customPatternInput" class="custom-input" placeholder="Ej: 4-4-4-4">
-          <button class="action-btn" onclick="startCustom()">Empezar</button>
-          <button class="close-btn" onclick="document.getElementById('customOverlay').style.display='none'">Cancelar</button>
-      </div>
-  </div>
-
-  <div id="shareConfigOverlay" class="overlay">
-      <div class="modal">
-          <h3>Crear Píldora 💊</h3>
-          <div class="pill-form">
-              <div>
-                  <label class="pill-label">Patrón</label>
-                  <input type="text" id="pillPatternInput" class="pill-input" placeholder="Ej: 4-7-8b">
-              </div>
-              <div>
-                  <label class="pill-label">Para</label>
-                  <input type="text" id="pillNameInput" class="pill-input" placeholder="Ej: Mamá">
-              </div>
-              <div>
-                  <label class="pill-label">Mensaje</label>
-                  <textarea id="pillMessageInput" class="pill-input" rows="2" placeholder="Ej: Tómate 1 minuto..."></textarea>
-              </div>
-          </div>
-          <button class="action-btn" onclick="generateShareLink()" style="margin-top:1rem; width:100%;">Generar Enlace</button>
-          <button class="close-btn" onclick="document.getElementById('shareConfigOverlay').style.display='none'">Cancelar</button>
-      </div>
-  </div>
-
-  <div id="shareModal" class="overlay">
-      <div class="modal">
-          <h3>¡Píldora Lista! 💊</h3>
-          <p style="font-size:0.9rem; margin-bottom:1rem;">Comparte este enlace:</p>
-          <textarea id="shareText" style="width:100%; height:80px; padding:0.5rem; border:1px solid #ddd; border-radius:8px; font-size:0.8rem;"></textarea>
-          <div class="pill-buttons">
-              <button class="action-btn btn-primary" onclick="sendWhatsapp()">WhatsApp</button>
-              <button class="action-btn btn-secondary" onclick="copyToClipboard()">Copiar</button>
-          </div>
-          <button class="close-btn" onclick="document.getElementById('shareModal').style.display='none'">Cerrar</button>
-      </div>
-  </div>
-
-  <div id="pillOverlay" class="overlay" style="background: var(--bg-gradient); z-index: 100;">
-      <div class="modal" style="background: rgba(255,255,255,0.95); max-width: 400px;">
-          <div style="font-size: 3rem; margin-bottom: 1rem;">💊</div>
-          <h3 id="pillRecipient" style="font-size: 1.5rem;">Hola...</h3>
-          <p id="pillMessage" style="font-style: italic; color: #555; margin: 1.5rem 0; font-size: 1.1rem;">"..."</p>
-          <button class="action-btn" onclick="window.closePill()">Recibir Píldora</button>
-      </div>
-  </div>
-
   <div id="loadingOverlay" class="loading-overlay">
-      <div class="sphere" style="width: 50px; height: 50px; animation: none; transform: scale(1);"></div>
-      <span>Creando enlace...</span>
+      <div class="spinner"></div>
+      <span>Preparando tu calma...</span>
   </div>
+
+  <button class="global-info-btn" onclick="document.getElementById('guideOverlay').style.display='flex'">?</button>
+
+  <div class="app-layout">
+    <div class="top-bar">
+      <div class="top-left">
+        <div id="patternBadge" class="badge">4-7-8</div>
+      </div>
+      <div class="top-right">
+        <div id="quoteToggleBtn" class="btn-icon active" onclick="toggleQuotes()">❝</div>
+        <div id="tempoBtn" class="btn-icon" onclick="toggleTempo()">⚡</div>
+        <div id="metronomeBtn" class="btn-icon" onclick="toggleMetronome()">⏱️</div>
+        <div id="soundBtn" class="btn-icon" onclick="toggleSound()">🔊</div>
+        <div id="musicBtn" class="btn-icon active" onclick="toggleMusic()">🎶</div>
+      </div>
+    </div>
+
+    <div class="stage-container">
+      
+      <div class="panel-side" style="justify-content: flex-end;">
+         <div id="phaseText" class="phase-text">LISTO</div>
+         <div id="modeIcon" class="mode-indicator">👃</div>
+      </div>
+
+      <div class="panel-center">
+        <div class="sphere-wrapper" onclick="togglePause()">
+          <div id="sphere" class="sphere">
+             <div id="counterText" class="counter-big"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-side" style="justify-content: flex-start;">
+         <div id="patternSteps" class="sphere-label"></div>
+         <div id="phraseContent" class="quote">
+            "Sigue el ritmo, respira, nada más."
+         </div>
+      </div>
+      
+    </div>
+
+    <div class="bottom-viz">
+      <canvas id="breathGraph" width="600" height="90"></canvas>
+    </div>
+  </div>
+
+  <div id="selectionMenu">
+    
+    <div class="navidad-lights">
+        <div class="light red"></div>
+        <div class="light green"></div>
+        <div class="light blue"></div>
+        <div class="light red"></div>
+        <div class="light green"></div>
+    </div>
+
+    <h2 class="menu-title">Elige tu Ritmo</h2>
+    
+    <div class="menu-actions">
+        <div class="action-btn" onclick="openCustomModal()"><span>✨</span> Crear</div>
+        <div class="action-btn" onclick="openShareConfig()"><span>🎁</span> Compartir</div>
+    </div>
+
+    <div class="menu-grid">
+      <div class="substack-card" onclick="window.open('https://elrefugiomental.substack.com', '_blank')">
+          <div class="substack-icon">🧡</div>
+          <div class="substack-content">
+              <div class="substack-label">SUSCRÍBETE A</div>
+              <div class="substack-title">El Refugio Mental</div>
+              <div class="substack-author">de Jesús García</div>
+          </div>
+      </div>
+
+      <div class="menu-card" onclick="start('4-7-8b')">
+        <h3>🌙 Relajación (4-7-8)</h3>
+        <p>Inhala 4, Mantén 7, Exhala 8. Ideal para dormir.</p>
+      </div>
+      <div class="menu-card" onclick="start('4-4-6-2')">
+        <h3>🧘‍♂️ Calma Profunda</h3>
+        <p>4-4-6-2. Equilibra el sistema nervioso.</p>
+      </div>
+      <div class="menu-card" onclick="start('box')">
+        <h3>📦 Box Breathing</h3>
+        <p>4-4-4-4. Enfoque mental y control.</p>
+      </div>
+      <div class="menu-card" onclick="start('5-5')">
+        <h3>⚖️ Coherencia</h3>
+        <p>5-5. Sincroniza corazón y cerebro.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="customOverlay">
+      <div class="overlay-title">Crea tu Ritmo</div>
+      <div class="overlay-subtitle">Escribe los tiempos separados por guiones</div>
+      
+      <div class="custom-input-container">
+          <input type="text" id="customPatternInput" class="big-input" placeholder="4-7-8b" autocomplete="off">
+          <div class="info-bubble" onclick="toggleTooltip()">?
+               <div id="inputTooltip" class="info-tooltip">
+                   <strong>Formato:</strong> Inhala-Mantén-Exhala...<br><br>
+                   • Usa números para segundos.<br>
+                   • Añade 'b' para exhalar por boca.<br>
+                   • Ej: <strong>4-7-8b</strong> (4 in, 7 hold, 8 out boca).
+               </div>
+          </div>
+      </div>
+
+      <div class="overlay-btn-group">
+          <button class="action-btn" onclick="startCustom()">Empezar</button>
+          <button class="action-btn" style="background:transparent; border:1px solid #ccc; color:#666;" onclick="document.getElementById('customOverlay').style.display='none'">Cancelar</button>
+      </div>
+  </div>
+
+  <div id="shareConfigOverlay">
+      <div class="overlay-title">Regala Calma 💊</div>
+      <div class="overlay-subtitle">Crea una píldora de respiración para alguien</div>
+      
+      <input type="text" id="pillNameInput" class="normal-input" placeholder="¿Para quién es?" autocomplete="off">
+      <input type="text" id="pillMessageInput" class="normal-input" placeholder="Mensaje (ej: Tómate 1 min)" autocomplete="off">
+      
+      <div class="overlay-btn-group">
+          <button class="action-btn" onclick="generateShareLink()">Crear Píldora</button>
+          <button class="action-btn" style="background:transparent; border:1px solid #ccc; color:#666;" onclick="document.getElementById('shareConfigOverlay').style.display='none'">Cancelar</button>
+      </div>
+  </div>
+
+  <div id="guideOverlay">
+      <div class="overlay-title">Guía Visual</div>
+      <div style="text-align:left; max-width:320px; background:white; padding:20px; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.05);">
+          <div class="guide-row"><span class="guide-icon">👃</span><span><strong>Nariz:</strong> Inhala suave y profundo por la nariz.</span></div>
+          <div class="guide-row"><span class="guide-icon">⏸️</span><span><strong>Pausa:</strong> Retén el aire sin tensar el cuerpo.</span></div>
+          <div class="guide-row"><span class="guide-icon">🌬️</span><span><strong>Boca:</strong> Exhala soltando todo el aire por la boca.</span></div>
+          
+          <div style="margin-top:20px; font-size:0.8rem; color:#888; border-top:1px solid #eee; padding-top:10px; margin-bottom:10px;">TIP AVANZADO</div>
+          <div class="guide-row"><span class="guide-icon">🌬️</span><span><strong>Boca:</strong> Si ves este icono (o añades 'b'), exhala soplando.</span></div>
+      </div>
+      
+      <div style="margin-top:40px;">
+          <button class="btn-text" style="background:transparent; color:var(--accent); border:1px solid var(--accent);" onclick="document.getElementById('guideOverlay').style.display='none'">Entendido</button>
+      </div>
+  </div>
+  
+  <div id="substackOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:300; display:flex; flex-direction:column; align-items:center; justify-content:center; display:none; text-align:center; padding:20px;">
+      <h2 class="menu-title">🧡 El Refugio Mental</h2>
+      <p style="max-width:400px; color:#555; line-height:1.6; margin-bottom:30px;">
+          Únete a más de 200 personas que reciben mis reflexiones semanales sobre calma, productividad y vida consciente.
+      </p>
+      <button class="refugio-btn" onclick="window.open('https://elrefugiomental.substack.com', '_blank'); document.getElementById('substackOverlay').style.display='none';">Suscribirme Gratis</button>
+      <button style="background:none; border:none; margin-top:20px; color:#999; text-decoration:underline; cursor:pointer;" onclick="document.getElementById('substackOverlay').style.display='none'">Quizás luego</button>
+  </div>
+
+  <div id="shareModal">
+      <h2 class="overlay-title">¡Píldora Lista!</h2>
+      <textarea id="shareText" readonly></textarea>
+      <div class="share-actions">
+          <button class="btn-wa" onclick="sendWhatsapp()">WhatsApp</button>
+          <button class="btn-copy" onclick="copyToClipboard()">Copiar</button>
+      </div>
+      <button class="btn-text" style="margin-top:30px; background:transparent; border:none;" onclick="document.getElementById('shareModal').style.display='none'">Cerrar</button>
+  </div>
+  
+  <div id="pillOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--dune-light); z-index:400; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
+      <div style="font-size:4rem; margin-bottom:20px;">💊</div>
+      <h3 id="pillRecipient" style="font-family:'Cinzel'; font-size:2rem; color:var(--text-main); margin-bottom:10px;">Hola...</h3>
+      <p id="pillMessage" style="font-style:italic; color:#666; font-size:1.2rem; max-width:400px; line-height:1.5;">"..."</p>
+      <button class="action-btn" style="margin-top:40px; transform:scale(1.2);" onclick="window.closePill()">Recibir Píldora</button>
+  </div>
+
 
   <script>
     // --- VARIABLES Y CONFIGURACIÓN ---
@@ -482,51 +678,18 @@
     };
     
     // --- FRASES ZEN ---
-    const pSubjects = [
-        "El río antiguo", "La brisa suave", "El bambú flexible", "La montaña quieta", "Tu mente clara", 
-        "El momento presente", "La hoja seca", "El agua profunda", "Este aliento", "La nube blanca", 
-        "El vacío fértil", "La raíz fuerte", 
-        "El amor inmenso", "La belleza oculta", "Tu corazón sabio", "La flor del alma", "La luz interior"
-    ];
-    
-    const pActions = [
-        "fluye sin esfuerzo", "no opone resistencia", "se dobla sin romperse", "observa en silencio", 
-        "refleja el cielo", "encuentra su camino", "suelta el control", "descansa en paz", 
-        "existe sin más", "acepta el cambio", "danza con el viento", "crece despacio",
-        "abraza lo que es", "florece sin prisa", "sana las heridas", "irradia calidez", "ama sin apego", "ve la verdad"
-    ];
-    
-    const pConclusions = [
-        "Sé como el agua.", "Todo es perfecto.", "Paz infinita.", "Vuelve al centro.", "Nada que hacer.", 
-        "Mente serena.", "Simple y puro.", "Aquí y ahora.", "Conecta contigo.", "Fluye con todo.",
-        "Amor es todo.", "Belleza pura.", "Eres el amor.", "Suelta y confía.", "Eres suficiente.", "Luz radiante."
-    ];
-
-    const masterQuotes = [
-      "El vacío es forma, la forma es vacío.",
-      "Si te doblas como el junco, el viento no te romperá.",
-      "El viaje de mil millas comienza con un aliento.",
-      "Conoce lo blanco, pero conserva lo negro.",
-      "Sé el valle del universo, recíbelo todo.",
-      "Poco a poco, el barro se asienta y el agua se aclara.",
-      "Haz nada, y nada quedará sin hacer.",
-      "El amor no reclama posesión, sino que da libertad.",
-      "La belleza no está en el rostro, sino en la luz del corazón.",
-      "Aceptar es el verdadero acto de transformación."
-    ];
+    const pSubjects = [ "El río", "La brisa", "El bambú", "La montaña", "Tu mente", "El ahora", "La hoja", "El agua", "Este aire", "La nube", "El vacío", "La raíz" ];
+    const pActions = [ "fluye", "cede", "se dobla", "observa", "refleja", "existe", "suelta", "descansa", "sana", "pasa", "acoge", "crece" ];
+    const pConclusions = [ "Sé agua.", "Paz.", "Calma.", "Centro.", "Nada más.", "Serena.", "Simple.", "Aquí.", "Conecta.", "Fluye.", "Amor.", "Luz." ];
 
     function getWuWeiQuote() {
-        if(Math.random() < 0.3) {
-            return masterQuotes[Math.floor(Math.random() * masterQuotes.length)];
-        } else {
-            const s = pSubjects[Math.floor(Math.random() * pSubjects.length)];
-            const a = pActions[Math.floor(Math.random() * pActions.length)];
-            const c = pConclusions[Math.floor(Math.random() * pConclusions.length)];
-            return `${s} ${a}. ${c}`;
-        }
+        const s = pSubjects[Math.floor(Math.random() * pSubjects.length)];
+        const a = pActions[Math.floor(Math.random() * pActions.length)];
+        const c = pConclusions[Math.floor(Math.random() * pConclusions.length)];
+        return `${s} ${a}. ${c}`;
     }
 
-    // STATE: Añadida la propiedad music: true
+    // STATE: Añadido music: true por defecto
     let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true, music: true };
     
     let audioCtx = null;
@@ -536,7 +699,7 @@
     const lookahead = 25.0; 
     const scheduleAheadTime = 0.1;
 
-    // CONFIGURACIÓN DE AUDIO AMBIENTAL (NUEVO)
+    // AUDIO AMBIENTAL
     const ambientAudio = new Audio('ambient.mp3');
     ambientAudio.loop = true;
     ambientAudio.volume = 0.5;
@@ -547,95 +710,30 @@
       sph: document.getElementById('sphere'), ph: document.getElementById('phaseText'),
       cnt: document.getElementById('counterText'), qt: document.getElementById('phraseContent'),
       cvs: document.getElementById('breathGraph'), ctx: document.getElementById('breathGraph').getContext('2d'),
-      cyc: document.getElementById('cycleBadge'), 
-      pat: document.getElementById('patternDisplay'),
-      load: document.getElementById('loadingOverlay'),
-      shareModal: document.getElementById('shareModal'),
-      shareText: document.getElementById('shareText'),
-      
-      customOverlay: document.getElementById('customOverlay'),
-      customInput: document.getElementById('customPatternInput'),
-      
-      shareConfigOverlay: document.getElementById('shareConfigOverlay'),
-      pillPatternInput: document.getElementById('pillPatternInput'),
-      pillNameInput: document.getElementById('pillNameInput'),
-      pillMessageInput: document.getElementById('pillMessageInput'),
-      
-      modeIcon: document.getElementById('modeIcon')
+      pat: document.getElementById('patternSteps'), badge: document.getElementById('patternBadge'),
+      modeIcon: document.getElementById('modeIcon'),
+      loading: document.getElementById('loadingOverlay')
     };
 
+    // --- UTILS ---
     function formatPatternInput(input) {
         let raw = input.value.replace(/[^0-9bB]/g, '').toLowerCase();
         let formatted = '';
         for(let i=0; i < raw.length; i++) {
             const char = raw[i];
-            const isDigit = /[0-9]/.test(char);
-            if (isDigit) {
-                if (formatted.length > 0) formatted += '-';
-                formatted += char;
-            } else {
-                if (formatted.length > 0 && formatted.slice(-1) !== 'b') {
-                    formatted += char;
-                }
-            }
+            if(/[0-9]/.test(char)) { if(formatted.length>0) formatted+='-'; formatted+=char; }
+            else { if(formatted.length>0 && formatted.slice(-1)!=='b') formatted+=char; }
         }
         input.value = formatted;
     }
+    const inputs = document.querySelectorAll('.big-input, .normal-input');
+    inputs.forEach(el => el.addEventListener('input', (e) => formatPatternInput(e.target)));
 
-    if(els.customInput) els.customInput.addEventListener('input', (e) => formatPatternInput(e.target));
-    if(els.pillPatternInput) els.pillPatternInput.addEventListener('input', (e) => formatPatternInput(e.target));
-
-    window.toggleTooltip = function(el) {
-        const tip = el.querySelector('.info-tooltip');
-        if(tip) tip.classList.toggle('visible');
-    }
-    
-    let deferredPrompt;
-    const installBtn = document.getElementById('installBtn');
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'flex';
-    });
-    async function installApp() {
-        if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; } 
-        else { alert("Para instalar: Usa el menú del navegador 'Añadir a inicio'."); }
+    function toggleTooltip() {
+        document.getElementById('inputTooltip').classList.toggle('visible');
     }
 
-    function openCustomModal() {
-        els.customOverlay.style.display = 'flex';
-        els.customInput.value = ''; els.customInput.focus();
-    }
-
-    function parsePatternString(str) {
-        const chunks = str.split('-');
-        const defs = [
-            {t:"INHALA", y:'rise', c:C_INHALE},
-            {t:"MANTÉN", y:'hold_high', c:C_HOLD},
-            {t:"EXHALA", y:'fall', c:C_EXHALE},
-            {t:"SOSTÉN", y:'hold_low', c:C_HOLD},
-            {t:"PAUSA", y:'hold_low', c:C_HOLD}
-        ];
-        let newPattern = [];
-        chunks.forEach((chunk, i) => {
-            let beats = parseInt(chunk.replace(/\D/g,''));
-            if(!isNaN(beats) && beats > 0) {
-                let mode = 'nose';
-                if(chunk.toLowerCase().includes('b')) mode = 'mouth';
-                let defIdx = i % defs.length;
-                newPattern.push({ t: defs[defIdx].t, b: beats, y: defs[defIdx].y, c: defs[defIdx].c, m: mode });
-            }
-        });
-        return newPattern;
-    }
-
-    function startCustom() {
-        const val = els.customInput.value.trim();
-        const newPattern = parsePatternString(val);
-        if (newPattern.length < 2) { alert("Introduce al menos 2 fases válidas."); return; }
-        patterns['custom'] = newPattern;
-        els.customOverlay.style.display = 'none';
-        start('custom');
-    }
-
+    // --- AUDIO SYSTEM ---
     function initAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
@@ -660,7 +758,6 @@
 
     function scheduleNote(beatNumber, time) {
       if(state.paused) return;
-
       let accumulatedBeats = 0; let phase = null; let beatInPhase = 0;
       for (let p of state.data) {
         if (beatNumber < accumulatedBeats + p.b) { phase = p; beatInPhase = beatNumber - accumulatedBeats + 1; break; }
@@ -682,16 +779,12 @@
       const secondsPerBeat = state.tempo; nextNoteTime += secondsPerBeat; currentBeatIndex++; 
       const totalBeats = state.data.reduce((acc, p) => acc + p.b, 0);
       if (currentBeatIndex >= totalBeats) { 
-          currentBeatIndex = 0; 
-          state.cyc++; 
+          currentBeatIndex = 0; state.cyc++; 
           if(state.quotesEnabled) updateQuote();
       }
     }
     
-    function updateQuote() {
-        const rawQuote = getWuWeiQuote();
-        els.qt.innerHTML = rawQuote.replace('. ', '.<br>');
-    }
+    function updateQuote() { els.qt.innerHTML = getWuWeiQuote(); }
 
     function scheduler() {
       if (state.run) {
@@ -699,23 +792,19 @@
               while (nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
                 scheduleNote(currentBeatIndex, nextNoteTime); nextBeat();
               }
-          } else {
-              nextNoteTime = audioCtx.currentTime; 
-          }
+          } else { nextNoteTime = audioCtx.currentTime; }
           scheduleTimerID = setTimeout(scheduler, lookahead);
       }
     }
 
+    // --- GRAPHICS & LOGIC ---
     function togglePause() {
         if(!state.run) return;
         state.paused = !state.paused;
         if(state.paused) {
-            els.ph.textContent = "PAUSA";
-            els.ph.style.color = "#78909c";
+            els.ph.textContent = "PAUSA"; els.ph.style.color = "#78909c";
             els.modeIcon.style.opacity = '0.5';
-        } else {
-            nextNoteTime = audioCtx.currentTime;
-        }
+        } else { nextNoteTime = audioCtx.currentTime; }
     }
 
     function draw() {
@@ -727,38 +816,24 @@
       const totalCycleDur = state.dur;
       const cycleCountVisual = Math.floor(elapsed / totalCycleDur);
       
-      els.cyc.textContent = `🔄 ${cycleCountVisual}`;
       const timeInCycle = elapsed % totalCycleDur;
       const p = state.data.find(x => timeInCycle >= x.start && timeInCycle < x.end);
 
       if (p) {
         if (els.ph.textContent !== p.t) { 
-            els.ph.textContent = p.t; 
-            els.ph.style.color = p.c; 
-            
-            const isHold = (p.y === 'hold_high' || p.y === 'hold_low');
-            if (isHold) {
-                 els.modeIcon.textContent = "⏸️"; 
-                 els.modeIcon.classList.add('visible');
-            } else {
-                 if(p.m === 'mouth') {
-                     els.modeIcon.textContent = "🌬️"; 
-                     els.modeIcon.classList.add('visible');
-                 } else {
-                     els.modeIcon.textContent = "👃"; 
-                     els.modeIcon.classList.add('visible');
-                 }
-            }
+            els.ph.textContent = p.t; els.ph.style.color = p.c; 
+            const isHold = (p.y.includes('hold'));
+            els.modeIcon.textContent = isHold ? "⏸️" : (p.m==='mouth'?"🌬️":"👃");
+            els.modeIcon.classList.add('visible');
         }
         els.sph.style.setProperty('--c-phase', p.c);
         
+        // Highlight active step number
         const currentPhaseIdx = state.data.indexOf(p);
-        state.data.forEach((_, idx) => {
-            const el = document.getElementById(`p-step-${idx}`);
-            if(el) { 
-                if(idx === currentPhaseIdx) el.classList.add('active'); 
-                else el.classList.remove('active'); 
-            }
+        const steps = document.querySelectorAll('.p-num');
+        steps.forEach((el, idx) => {
+            if(idx === currentPhaseIdx) el.classList.add('active');
+            else el.classList.remove('active');
         });
 
         const timeInPhase = timeInCycle - p.start;
@@ -769,8 +844,7 @@
         const progress = timeInPhase / p.dur; 
         const ease = -(Math.cos(Math.PI * progress) - 1) / 2;
         let maxScale = 1.45; 
-        if (window.innerWidth < 400) maxScale = 1.35; 
-
+        
         let rawScale = 1;
         if (p.y === 'rise') rawScale = 0.8 + ((maxScale - 0.8) * ease); 
         else if (p.y === 'fall') rawScale = maxScale - ((maxScale - 0.8) * ease);
@@ -780,12 +854,13 @@
         els.sph.style.transform = `scale(${rawScale})`;
       }
 
-      const w = els.cvs.width / (window.devicePixelRatio||1);
-      const h = els.cvs.height / (window.devicePixelRatio||1);
+      // Canvas
+      const w = els.cvs.width; const h = els.cvs.height;
       els.ctx.clearRect(0, 0, w, h);
       const centerX = w / 2; const trackY = h / 2; const trackH = 14; 
       const pxPerSec = w / (7 * state.tempo);
 
+      // Draw future/past cycles
       for (let c = cycleCountVisual - 1; c <= cycleCountVisual + 1; c++) {
           const cycleStartTime = c * totalCycleDur;
           state.data.forEach(phase => {
@@ -794,19 +869,22 @@
               const xStart = centerX + (pStartAbs - elapsed) * pxPerSec;
               const xEnd = centerX + (pEndAbs - elapsed) * pxPerSec;
               if(xEnd < 0 || xStart > w) return;
+              
               els.ctx.fillStyle = phase.c;
               els.ctx.fillRect(xStart, trackY - trackH/2, xEnd - xStart, trackH);
-              els.ctx.strokeStyle = 'rgba(255,255,255,0.9)'; els.ctx.lineWidth = 2;
-              for(let b = 0; b <= phase.b; b++) {
+              
+              // Beat markers
+              els.ctx.strokeStyle = 'rgba(255,255,255,0.5)'; els.ctx.lineWidth = 1;
+              for(let b = 1; b < phase.b; b++) {
                    const beatTimeAbs = pStartAbs + (b * state.tempo);
                    const markX = centerX + (beatTimeAbs - elapsed) * pxPerSec;
-                   els.ctx.beginPath(); els.ctx.moveTo(markX, trackY - trackH - 2); els.ctx.lineTo(markX, trackY + trackH + 2); els.ctx.stroke();
+                   els.ctx.beginPath(); els.ctx.moveTo(markX, trackY - trackH/2); els.ctx.lineTo(markX, trackY + trackH/2); els.ctx.stroke();
               }
           });
       }
-      els.ctx.beginPath(); els.ctx.fillStyle = '#FFFFFF'; els.ctx.arc(centerX, trackY, 9, 0, Math.PI * 2); els.ctx.fill();
-      els.ctx.strokeStyle = 'rgba(0,0,0,0.1)'; els.ctx.lineWidth = 1; els.ctx.stroke();
-      els.ctx.beginPath(); els.ctx.fillStyle = '#37474f'; els.ctx.moveTo(centerX - 6, trackY - 25); els.ctx.lineTo(centerX + 6, trackY - 25); els.ctx.lineTo(centerX, trackY - 15); els.ctx.fill();
+      // Center cursor
+      els.ctx.beginPath(); els.ctx.fillStyle = '#fff'; els.ctx.arc(centerX, trackY, 5, 0, Math.PI*2); els.ctx.fill();
+      
       requestAnimationFrame(draw);
     }
 
@@ -822,192 +900,192 @@
     }
 
     function initCanvas() {
-      if(!els.cvs) return; const dpr = window.devicePixelRatio || 1;
-      const rect = els.cvs.getBoundingClientRect(); els.cvs.width = rect.width * dpr; els.cvs.height = rect.height * dpr; els.ctx.scale(dpr, dpr);
+      if(!els.cvs) return; 
+      const rect = els.cvs.getBoundingClientRect(); 
+      els.cvs.width = rect.width; els.cvs.height = rect.height; 
     }
 
-    function renderPattern(k) {
-      if(!patterns[k]) return;
-      els.pat.innerHTML = ''; 
+    function renderPatternBadge(k) {
+      els.badge.textContent = k.toUpperCase();
+      // Render steps below sphere
+      els.pat.innerHTML = '';
       patterns[k].forEach((step, idx) => {
-        const numSpan = document.createElement('span');
-        numSpan.textContent = step.b;
-        if(step.m === 'mouth') {
-            const sub = document.createElement('span');
-            sub.textContent = 'b';
-            sub.className = 'p-mode-sub';
-            numSpan.appendChild(sub);
-        }
-        numSpan.className = 'p-num';
-        numSpan.id = `p-step-${idx}`; 
-        els.pat.appendChild(numSpan);
-        if (idx < patterns[k].length - 1) {
-          const sep = document.createElement('span');
-          sep.textContent = '-';
-          sep.className = 'p-sep';
-          els.pat.appendChild(sep);
+        const s = document.createElement('span'); s.className = 'p-num'; 
+        s.textContent = step.b;
+        if(step.m==='mouth') s.innerHTML += '<span class="p-mode-sub">b</span>';
+        els.pat.appendChild(s);
+        if(idx < patterns[k].length-1) {
+            const sep = document.createElement('span'); sep.className = 'p-sep'; sep.textContent = '-';
+            els.pat.appendChild(sep);
         }
       });
     }
 
     function start(k) {
-      if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
+      if (!prepareData(k)) return;
       
-      // MÚSICA: Iniciar si está activa
-      if(state.music || state.music === undefined) { 
-         ambientAudio.currentTime = 0;
-         ambientAudio.play().catch(e => console.log(e));
-      }
+      // MÚSICA: Iniciar
+      if(state.music) { ambientAudio.currentTime = 0; ambientAudio.play().catch(()=>{}); }
 
-      initAudio(); 
-      renderPattern(k);
-      els.menu.style.opacity = '0'; 
-      setTimeout(()=>els.menu.style.display='none', 400);
+      initAudio(); renderPatternBadge(k);
+      els.menu.style.opacity = '0'; setTimeout(()=>els.menu.style.display='none', 400);
       
-      // RESETEO DE ESTADOS
-      state.quotesEnabled = true;
-      const btn = document.getElementById('quoteToggleBtn');
-      if(btn) btn.classList.add('active');
-      if(els.qt) {
-          els.qt.style.opacity = '1';  
-          els.qt.textContent = "Sigue el ritmo, respira, nada más."; 
-      }
+      // Reset UI
+      if(state.quotesEnabled) { els.qt.style.opacity = '1'; els.qt.textContent = "Inhala..."; }
       
       setTimeout(() => {
-        initCanvas(); 
-        state.run = true; 
-        state.paused = false;
+        initCanvas(); state.run = true; state.paused = false;
         state.startAudioTime = audioCtx ? audioCtx.currentTime : 0;
         nextNoteTime = state.startAudioTime;
-        currentBeatIndex = 0; 
-        state.cyc = 0; 
-        if(audioCtx) scheduler(); 
-        requestAnimationFrame(draw);
+        currentBeatIndex = 0; state.cyc = 0; 
+        if(audioCtx) scheduler(); requestAnimationFrame(draw);
       }, 100);
     }
 
     function stop() {
-      // MÚSICA: Parar
+      // MÚSICA: Pausar
       ambientAudio.pause();
-      ambientAudio.currentTime = 0;
 
       state.run = false; clearTimeout(scheduleTimerID);
       els.sph.style.transform = 'scale(0.8)'; els.ph.textContent = "LISTO"; els.ph.style.color = 'var(--accent)';
-      els.modeIcon.classList.remove('visible');
-      els.cnt.textContent = ""; els.cyc.textContent = "🔄 0"; els.sph.style.setProperty('--c-phase', '#4CAF50');
+      els.modeIcon.classList.remove('visible'); els.cnt.textContent = ""; 
       els.menu.style.display = 'flex'; setTimeout(()=>els.menu.style.opacity='1',10);
-      els.pat.innerHTML = ''; 
       els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
+    }
+
+    // --- TOGGLES ---
+    function toggleBtnState(id, isActive) {
+        const btn = document.getElementById(id);
+        if(isActive) btn.classList.add('active'); else btn.classList.remove('active');
     }
 
     function toggleTempo() { 
       const t = [1.0, 1.5, 2.0]; const idx = t.indexOf(state.tempo); const next = t[(idx+1)%t.length];
       state.tempo = next; 
-      const label = next===1.0?'1x':(next===1.5?'Lento':'Zen');
-      document.getElementById('tempoBtn').innerText = `⚡ ${label}`;
+      const label = next===1.0?'⚡':(next===1.5?'🐢':'🐌');
+      document.getElementById('tempoBtn').innerText = label;
       if(state.run) start(state.pk); 
     }
 
     function toggleSound() { 
-      state.snd=!state.snd; 
-      const btn = document.getElementById('soundBtn');
-      if(state.snd) { btn.classList.add('active'); if(state.run) initAudio(); }
-      else { btn.classList.remove('active'); }
+      state.snd=!state.snd; toggleBtnState('soundBtn', state.snd);
+      if(state.snd && state.run) initAudio();
     }
 
     function toggleMetronome() { 
-      state.met=!state.met; 
-      const btn = document.getElementById('metronomeBtn');
-      if(state.met) btn.classList.add('active');
-      else btn.classList.remove('active');
+      state.met=!state.met; toggleBtnState('metronomeBtn', state.met);
     }
 
     function toggleQuotes() {
-        state.quotesEnabled = !state.quotesEnabled;
-        const btn = document.getElementById('quoteToggleBtn');
-        if(state.quotesEnabled) {
-            btn.classList.add('active'); els.qt.style.opacity = '1'; updateQuote();
-        } else {
-            btn.classList.remove('active'); els.qt.style.opacity = '0';
-        }
+        state.quotesEnabled = !state.quotesEnabled; 
+        toggleBtnState('quoteToggleBtn', state.quotesEnabled);
+        els.qt.style.opacity = state.quotesEnabled ? '1' : '0';
     }
 
     function toggleMusic() {
-        if (typeof state.music === 'undefined') state.music = true;
         state.music = !state.music;
-        const btn = document.getElementById('btnMusic');
-        if(state.music) {
-            btn.classList.add('active');
-            if(state.run) ambientAudio.play(); 
-        } else {
-            btn.classList.remove('active');
-            ambientAudio.pause();
-        }
+        toggleBtnState('musicBtn', state.music);
+        if(state.music) { if(state.run) ambientAudio.play(); }
+        else { ambientAudio.pause(); }
     }
 
-    function openShareConfig() {
-        let lastP = state.pk;
-        if(lastP && lastP !== 'custom') { els.pillPatternInput.value = lastP; }
-        els.shareConfigOverlay.style.display = 'flex';
-        els.pillPatternInput.focus();
+    // --- SHARE SYSTEM ---
+    function openCustomModal() { document.getElementById('customOverlay').style.display='flex'; }
+    function openShareConfig() { document.getElementById('shareConfigOverlay').style.display='flex'; }
+    
+    function parsePatternStrFull(str) {
+        const chunks = str.split('-');
+        const defs = [ {t:"INHALA", y:'rise', c:C_INHALE}, {t:"MANTÉN", y:'hold_high', c:C_HOLD}, {t:"EXHALA", y:'fall', c:C_EXHALE}, {t:"SOSTÉN", y:'hold_low', c:C_HOLD} ];
+        return chunks.map((chunk, i) => {
+            let beats = parseInt(chunk.replace(/\D/g,'')) || 4;
+            let mode = chunk.toLowerCase().includes('b') ? 'mouth' : 'nose';
+            let def = defs[i % defs.length];
+            return { ...def, b: beats, m: mode };
+        });
     }
 
+    function startCustom() {
+        const val = document.getElementById('customPatternInput').value.trim();
+        if(!val) return;
+        patterns['custom'] = parsePatternStrFull(val);
+        document.getElementById('customOverlay').style.display='none';
+        start('custom');
+    }
+    
+    // --- SHARE LINK GENERATOR ---
     async function generateShareLink() {
-       let pString = els.pillPatternInput.value.trim();
-       if(!pString) { alert("Falta el patrón."); return; }
-       const testP = parsePatternString(pString);
-       if(testP.length < 2) { alert("Patrón inválido. Ej: 4-7-8b"); return; }
-       const n = els.pillNameInput.value.trim() || 'Amigo';
-       const m = els.pillMessageInput.value.trim() || 'Respira conmigo...';
-       els.shareConfigOverlay.style.display = 'none'; 
-       els.load.style.display = 'flex'; 
+       let pString = document.getElementById('customPatternInput').value.trim();
+       if(!pString) pString = "4-7-8b"; // Default si está vacío y viene de ConfigOverlay
+       // Si venimos del shareConfig, usamos ese input si está relleno
+       const pillInput = document.getElementById('pillNameInput').value;
+       
+       const n = document.getElementById('pillNameInput').value.trim() || 'Amigo';
+       const m = document.getElementById('pillMessageInput').value.trim() || 'Respira conmigo...';
+       
+       // Si el input principal de custom tiene algo, usamos ese patrón. Si no, usamos 4-7-8b por defecto
+       const finalPattern = patterns['custom'] ? document.getElementById('customPatternInput').value : '4-7-8b';
+
+       document.getElementById('shareConfigOverlay').style.display = 'none'; 
+       els.loading.style.display = 'flex'; 
+       
        const baseUrl = location.href.split('?')[0];
-       const longUrl = `${baseUrl}?p=${encodeURIComponent(pString)}&to=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
+       const longUrl = `${baseUrl}?p=${encodeURIComponent(finalPattern)}&to=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
        let finalUrl = longUrl;
+       
        try { 
            const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
            if(response.ok) finalUrl = await response.text(); 
        } catch(e) {}
-       els.load.style.display = 'none';
-       els.shareText.value = `🌿 *Píldora de Respiración*\n${m}\n\nPrueba este ritmo: ${pString}\n${finalUrl}`;
-       els.shareModal.style.display = 'flex';
+       
+       els.loading.style.display = 'none';
+       document.getElementById('shareText').value = `🌿 *Píldora de Respiración*\n${m}\n\nPrueba este ritmo: ${finalPattern}\n${finalUrl}`;
+       document.getElementById('shareModal').style.display = 'flex';
     }
 
-    function sendWhatsapp() { window.open(`https://wa.me/?text=${encodeURIComponent(els.shareText.value)}`, '_blank'); }
+    function sendWhatsapp() { window.open(`https://wa.me/?text=${encodeURIComponent(document.getElementById('shareText').value)}`, '_blank'); }
     function copyToClipboard() {
-      els.shareText.select(); els.shareText.setSelectionRange(0, 99999);
-      try { navigator.clipboard.writeText(els.shareText.value).then(() => alert("¡Copiado!")); } catch(e) { document.execCommand('copy'); alert("¡Copiado!"); }
+      const copyText = document.getElementById("shareText");
+      copyText.select(); copyText.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(copyText.value).then(() => alert("¡Copiado!"));
     }
-    function closePill() { document.getElementById('pillOverlay').style.display='none'; }
 
+    window.closePill = function() { 
+        document.getElementById('pillOverlay').style.display='none'; 
+        // Si hay patrón en URL, arrancar
+        const q = new URLSearchParams(location.search);
+        if(q.get('p')) start(q.get('p'));
+    }
+
+    // --- INIT ---
+    window.addEventListener('resize', initCanvas);
+    initCanvas();
+    els.loading.style.display = 'none';
+
+    // CHECK URL PARAMS
     const q = new URLSearchParams(location.search);
     if(q.get('p')) {
         let pCode = q.get('p'); 
-        const dynamicP = parsePatternString(pCode);
+        const dynamicP = parsePatternStrFull(pCode);
         if(dynamicP.length >= 2) {
            patterns[pCode] = dynamicP; 
            document.getElementById('pillOverlay').style.display = 'flex';
-           const recipient = q.get('to') || q.get('para') || 'Ti';
+           const recipient = q.get('to') || 'Ti';
            document.getElementById('pillRecipient').textContent = `Hola, ${recipient}`;
-           document.getElementById('pillMessage').textContent = `"${q.get('msg')}"`;
+           document.getElementById('pillMessage').textContent = `"${q.get('msg') || '...'}"`;
            els.menu.style.display = 'none'; 
-           window.closePill = () => { document.getElementById('pillOverlay').style.display='none'; start(pCode); };
         }
-    } else {
-       prepareData('4-7-8b'); els.pat.textContent = "4-7-8b"; 
     }
-    
-    window.addEventListener('resize', () => { if(state.run) initCanvas(); });
-    initCanvas();
 
-    // --- REGISTRO DEL SERVICE WORKER (COMENTADO PARA SOLUCIONAR CACHÉ) ---
-    // if ('serviceWorker' in navigator) {
-    //   window.addEventListener('load', () => {
-    //     navigator.serviceWorker.register('./service-worker.js')
-    //       .then((reg) => console.log('Service Worker registrado:', reg.scope))
-    //       .catch((err) => console.log('Error al registrar SW:', err));
-    //   });
-    // }
+    // --- "SCRIPT ASESINO" DE SERVICE WORKER ---
+    // Esto desinstalará cualquier versión anterior para solucionar el caché
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                console.log("Desinstalando SW antiguo:", registration);
+                registration.unregister();
+            }
+        });
+    }
   </script>
 </body>
 </html>
