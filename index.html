@@ -279,11 +279,11 @@
 
   <div id="patternDisplay" class="pattern-display">4-7-8</div>
 
-  <div class="top-right">
+ <div class="top-right">
       <button id="quoteToggleBtn" class="icon-btn active" onclick="toggleQuotes()" aria-label="Frases">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
         </svg>
       </button>
 
@@ -291,22 +291,24 @@
         ⚡ 1x
       </button>
 
-      <button id="btnMetro" class="icon-btn" onclick="toggleMetro()" aria-label="Metrónomo">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2v20"></path>
-          <path d="M2 12h20"></path>
+      <button id="metronomeBtn" class="icon-btn" onclick="toggleMetronome()" aria-label="Metrónomo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 18v-6"></path>
+          <path d="M10 2h4"></path> 
+          <path d="M5 22h14"></path>
+          <path d="M12 2v3"></path>
         </svg>
       </button>
 
-      <button id="btnSound" class="icon-btn active" onclick="toggleSound()" aria-label="Sonido">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+      <button id="soundBtn" class="icon-btn active" onclick="toggleSound()" aria-label="Sonido">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
         </svg>
       </button>
 
       <button id="btnMusic" class="icon-btn active" onclick="toggleMusic()" aria-label="Música">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
            <path d="M9 18V5l12-2v13"></path>
            <circle cx="6" cy="18" r="3"></circle>
            <circle cx="18" cy="16" r="3"></circle>
@@ -435,7 +437,7 @@
       </div>
   </div>
 
-  <div id="pillOverlay" class="overlay" style="background: var(--bg-gradient); z-index: 100;">
+<div id="pillOverlay" class="overlay" style="background: var(--bg-gradient); z-index: 100;">
       <div class="modal" style="background: rgba(255,255,255,0.95); max-width: 400px;">
           <div style="font-size: 3rem; margin-bottom: 1rem;">💊</div>
           <h3 id="pillRecipient" style="font-size: 1.5rem;">Hola...</h3>
@@ -524,28 +526,20 @@
         }
     }
 
-    // STATE: Definición correcta de variables
-    let state = { 
-        pk: null, 
-        data: [], 
-        dur: 0, 
-        tempo: 1.0, 
-        run: false, 
-        paused: false, 
-        startAudioTime: 0, 
-        cyc: 0, 
-        snd: true,           // Sonido de fase (Campana) - Activado por defecto
-        met: false,          // Metrónomo - Desactivado
-        quotesEnabled: true, // Frases - Activado
-        music: true          // Música - Activada
-    };
-
+    // STATE: Añadida la propiedad music
+    let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true, music: true };
+    
     let audioCtx = null;
     let nextNoteTime = 0.0;
     let currentBeatIndex = 0;
     let scheduleTimerID = null;
     const lookahead = 25.0; 
     const scheduleAheadTime = 0.1;
+
+    // CONFIGURACIÓN DE AUDIO AMBIENTAL (NUEVO)
+    const ambientAudio = new Audio('ambient.mp3');
+    ambientAudio.loop = true;
+    ambientAudio.volume = 0.5;
 
     // --- DOM REFERENCES ---
     const els = {
@@ -856,19 +850,13 @@
       });
     }
 
-    // --- CONFIGURACIÓN DE MÚSICA ---
-    const ambientAudio = new Audio('ambient.mp3');
-    ambientAudio.loop = true;
-    ambientAudio.volume = 0.5;
-
     function start(k) {
-      // 1. Primero comprobamos si el patrón es válido
       if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
-
-      // 2. Si el patrón es bueno, ENTONCES arrancamos la música
+      
+      // MÚSICA: Iniciar si está activa
       if(state.music || state.music === undefined) { 
          ambientAudio.currentTime = 0;
-         ambientAudio.play().catch(e => console.log("Audio play error:", e));
+         ambientAudio.play().catch(e => console.log(e));
       }
 
       initAudio(); 
@@ -876,11 +864,10 @@
       els.menu.style.opacity = '0'; 
       setTimeout(()=>els.menu.style.display='none', 400);
       
-      // V1.2.0: Reset states
-      // Queremos que empiece ENCENDIDO por defecto
+      // RESETEO DE ESTADOS
       state.quotesEnabled = true;
       const btn = document.getElementById('quoteToggleBtn');
-      if(btn) btn.classList.add('active'); // Comprobación extra por si acaso
+      if(btn) btn.classList.add('active');
       if(els.qt) {
           els.qt.style.opacity = '1';  
           els.qt.textContent = "Sigue el ritmo, respira, nada más."; 
@@ -900,8 +887,10 @@
     }
 
     function stop() {
+      // MÚSICA: Parar
       ambientAudio.pause();
       ambientAudio.currentTime = 0;
+
       state.run = false; clearTimeout(scheduleTimerID);
       els.sph.style.transform = 'scale(0.8)'; els.ph.textContent = "LISTO"; els.ph.style.color = 'var(--accent)';
       els.modeIcon.classList.remove('visible');
@@ -911,96 +900,54 @@
       els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
     }
 
-    // ==========================================
-    // --- CONTROLES DE LOS BOTONES (TOGGLES) ---
-    // ==========================================
+    function toggleTempo() { 
+      const t = [1.0, 1.5, 2.0]; const idx = t.indexOf(state.tempo); const next = t[(idx+1)%t.length];
+      state.tempo = next; 
+      const label = next===1.0?'1x':(next===1.5?'Lento':'Zen');
+      document.getElementById('tempoBtn').innerText = `⚡ ${label}`;
+      if(state.run) start(state.pk); 
+    }
 
-    // 1. MÚSICA 🎵
+    function toggleSound() { 
+      state.snd=!state.snd; 
+      const btn = document.getElementById('soundBtn');
+      if(state.snd) { btn.classList.add('active'); if(state.run) initAudio(); }
+      else { btn.classList.remove('active'); }
+    }
+
+    function toggleMetronome() { 
+      state.met=!state.met; 
+      const btn = document.getElementById('metronomeBtn');
+      if(state.met) btn.classList.add('active');
+      else btn.classList.remove('active');
+    }
+
+    function toggleQuotes() {
+        state.quotesEnabled = !state.quotesEnabled;
+        const btn = document.getElementById('quoteToggleBtn');
+        if(state.quotesEnabled) {
+            btn.classList.add('active'); els.qt.style.opacity = '1'; updateQuote();
+        } else {
+            btn.classList.remove('active'); els.qt.style.opacity = '0';
+        }
+    }
+
     function toggleMusic() {
         if (typeof state.music === 'undefined') state.music = true;
         state.music = !state.music;
         const btn = document.getElementById('btnMusic');
-        
         if(state.music) {
             btn.classList.add('active');
-            btn.style.opacity = "1";
             if(state.run) ambientAudio.play(); 
         } else {
             btn.classList.remove('active');
-            btn.style.opacity = "0.4";
             ambientAudio.pause();
-        }
-    }
-
-    // 2. FRASES ZEN 📖
-    function toggleQuotes() {
-        if (typeof state.quotesEnabled === 'undefined') state.quotesEnabled = true;
-        state.quotesEnabled = !state.quotesEnabled;
-        const btn = document.getElementById('quoteToggleBtn');
-        
-        if(state.quotesEnabled) {
-            btn.classList.add('active');
-            btn.style.opacity = "1";
-            updateQuote(); 
-            if(els.qt) els.qt.style.opacity = '1';
-        } else {
-            btn.classList.remove('active');
-            btn.style.opacity = "0.4";
-            if(els.qt) els.qt.style.opacity = '0';
-        }
-    }
-
-    // 3. TEMPO ⚡
-    function toggleTempo() { 
-      const t = [1.0, 1.5, 2.0]; 
-      const idx = t.indexOf(state.tempo); 
-      const next = t[(idx+1) % t.length];
-      
-      state.tempo = next; 
-      
-      // Actualizamos el texto del botón
-      const label = next === 1.0 ? '1x' : (next === 1.5 ? 'Lento' : 'Zen');
-      document.getElementById('tempoBtn').innerText = `⚡ ${label}`;
-      
-      // Si está corriendo, reiniciamos para aplicar el cambio
-      if(state.run) start(state.pk); 
-    }
-
-    // 4. METRÓNOMO ⚡
-    function toggleMetro() {
-        state.met = !state.met; 
-        const btn = document.getElementById('btnMetro');
-        
-        if(state.met) {
-            btn.classList.add('active');
-            btn.style.opacity = "1";
-        } else {
-            btn.classList.remove('active');
-            btn.style.opacity = "0.4";
-        }
-    }
-
-    // 5. SONIDO FASE (Campana) 🔔
-    function toggleSound() {
-        state.snd = !state.snd;
-        const btn = document.getElementById('btnSound');
-        
-        if(state.snd) {
-            btn.classList.add('active');
-            btn.style.opacity = "1";
-            // Reiniciamos audioContext para aplicar cambio al vuelo si está corriendo
-            if(state.run) initAudio();
-        } else {
-            btn.classList.remove('active');
-            btn.style.opacity = "0.4";
         }
     }
 
     function openShareConfig() {
         let lastP = state.pk;
-        if(lastP && lastP !== 'custom') {
-             els.pillPatternInput.value = lastP;
-        }
+        if(lastP && lastP !== 'custom') { els.pillPatternInput.value = lastP; }
         els.shareConfigOverlay.style.display = 'flex';
         els.pillPatternInput.focus();
     }
@@ -1010,22 +957,17 @@
        if(!pString) { alert("Falta el patrón."); return; }
        const testP = parsePatternString(pString);
        if(testP.length < 2) { alert("Patrón inválido. Ej: 4-7-8b"); return; }
-
        const n = els.pillNameInput.value.trim() || 'Amigo';
        const m = els.pillMessageInput.value.trim() || 'Respira conmigo...';
-       
        els.shareConfigOverlay.style.display = 'none'; 
        els.load.style.display = 'flex'; 
-
        const baseUrl = location.href.split('?')[0];
        const longUrl = `${baseUrl}?p=${encodeURIComponent(pString)}&to=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
-       
        let finalUrl = longUrl;
        try { 
            const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
            if(response.ok) finalUrl = await response.text(); 
        } catch(e) {}
-
        els.load.style.display = 'none';
        els.shareText.value = `🌿 *Píldora de Respiración*\n${m}\n\nPrueba este ritmo: ${pString}\n${finalUrl}`;
        els.shareModal.style.display = 'flex';
@@ -1059,7 +1001,6 @@
     initCanvas();
 
     // --- REGISTRO DEL SERVICE WORKER (PWA) ---
-    // Esto es lo que permite que funcione Offline
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./service-worker.js')
