@@ -6,7 +6,7 @@
   <title>Respira | Tu Espacio de Calma</title>
   
   <link rel="manifest" href="manifest.json" />
-<link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="theme-color" content="#eefcfd">
   <meta name="description" content="Una aplicación minimalista para respirar, relajarse y leer.">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,747 +22,431 @@
       --dune-light: #eefcfd;
       --dune-mid: #e0f7fa;
       --text-main: #37474f;
-      --text-muted: #78909c;
-      --primary: #4CAF50; 
-      --accent: #00838f;
-      --substack-orange: #FF6719;
-      
-      --c-inhale: #4CAF50; 
-      --c-hold: #FF9800;   
-      --c-exhale: #2196F3; 
+      --text-sub: #78909c;
+      --accent: #4CAF50; 
+      --bg-gradient: linear-gradient(135deg, #eefcfd 0%, #e0f7fa 100%);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,0.05);
+      --font-display: 'Cinzel', serif;
+      --font-body: 'Manrope', sans-serif;
     }
-    
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body {
-      background-color: var(--dune-light);
-      background-image: 
-        radial-gradient(at 0% 0%, hsla(190,40%,96%,1) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, hsla(195,50%,90%,1) 0px, transparent 50%),
-        radial-gradient(at 50% 100%, hsla(185,60%,88%,1) 0px, transparent 50%);
-      background-attachment: fixed;
-      color: var(--text-main); 
-      font-family: 'Manrope', sans-serif;
-      height: 100dvh; width: 100vw; overflow: hidden; 
-      display: flex; flex-direction: column;
+      margin: 0; padding: 0;
+      width: 100%; height: 100vh;
+      overflow: hidden; 
+      background: var(--bg-gradient);
+      font-family: var(--font-body);
+      color: var(--text-main);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: background 0.5s ease;
     }
 
-    /* --- 2. LAYOUT GENERAL --- */
-    .app-layout {
-      flex: 1; display: flex; flex-direction: column; 
-      width: 100%; height: 100%;
+    /* --- 2. LAYOUT & TOP CONTROLS --- */
+    /* AQUÍ ESTÁ LA CLAVE: Mantener position absolute pero ajustar el gap para 5 botones */
+    .top-right {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem; /* Reducido ligeramente para que quepan 5 */
+      z-index: 10;
     }
 
-    .top-bar {
-      flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
-      padding: 15px 25px; z-index: 50; height: 70px;
-    }
-    .top-left, .top-right { pointer-events: auto; display: flex; gap: 12px; align-items: center; }
-
-    .badge {
-      background: rgba(255,255,255,0.6); 
-      backdrop-filter: blur(10px);
-      color: var(--accent); 
-      border: 1px solid rgba(255,255,255,0.4);
-      padding: 6px 14px; border-radius: 20px;
-      font-weight: 700; font-size: 0.85rem; 
-    }
-    
-    .btn-icon {
-      background: rgba(255,255,255,0.5); 
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255,255,255,0.3);
-      width: 44px; height: 44px; border-radius: 50%;
-      color: var(--text-main); font-size: 1.1rem;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      transition: all 0.3s ease;
-    }
-    .btn-icon:hover { background: rgba(255,255,255,0.9); transform: translateY(-2px); }
-    .btn-icon:active { transform: scale(0.95); }
-    
-    /* V1.2.0: Estado ACTIVO para botones toggle (Metrónomo y Frases) */
-    .btn-icon.active { 
-        background: var(--accent); 
-        color: white; 
-        border-color: var(--accent); 
-        box-shadow: 0 0 15px rgba(0, 131, 143, 0.4);
-    }
-
-    .btn-text {
-      background: rgba(255,255,255,0.5); 
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255,255,255,0.3);
-      padding: 8px 20px; border-radius: 30px;
-      color: var(--text-main); font-weight: 600; cursor: pointer; 
-      transition: all 0.3s ease;
-      font-family: 'Manrope', sans-serif;
-    }
-
-    /* --- 3. ESCENARIO CENTRAL --- */
-    .stage-container {
-      flex: 1; display: flex; width: 100%; position: relative;
-      align-items: center; justify-content: center;
-      flex-direction: column; 
-      padding: 10px 0;
-    }
-
-    .panel-side { 
-        flex: 1; display: flex; flex-direction: column; 
-        align-items: center; justify-content: center; 
-        z-index: 20; width: 100%; 
-        min-height: 90px;
-    }
-    
-    .panel-center { 
-        position: relative; z-index: 10; 
-        display: flex; align-items: center; justify-content: center; 
-        margin: 60px 0; 
-        flex-shrink: 0; 
-    }
-
-    .phase-text {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(2.5rem, 6vw, 4rem); 
-      font-weight: 400; letter-spacing: 2px; color: var(--accent);
-      text-transform: uppercase; text-align: center; white-space: nowrap;
-      transition: color 0.5s ease;
-      text-shadow: 0 10px 30px rgba(168, 206, 212, 0.4);
-      z-index: 30;
-      margin-bottom: 5px;
-    }
-
-    .mode-indicator {
-      margin-top: 10px;
-      font-size: 2.5rem; 
-      opacity: 0; transform: translateY(-10px);
-      transition: all 0.5s ease;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-      z-index: 50; 
-    }
-    .mode-indicator.visible { opacity: 1; transform: translateY(0); }
-
-    .quote {
-      padding: 0 25px; color: var(--text-muted);
-      font-family: 'Cinzel', serif; 
-      font-size: 1.15rem; text-align: center;
-      max-width: 500px; 
-      line-height: 1.6;
-      z-index: 30;
-      margin-top: 10px; 
-      /* V1.2.0: Altura mínima para evitar saltos y transición suave */
-      min-height: 2em; 
-      transition: opacity 0.6s ease;
-    }
-
-    .sphere-wrapper {
-      position: relative; 
-      width: min(50vw, 260px); height: min(50vw, 260px);
+    /* Icon buttons */
+    .icon-btn {
+      background: none; border: none; cursor: pointer; padding: 0;
+      color: var(--text-main); opacity: 0.4; transition: all 0.3s ease;
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; 
     }
+    .icon-btn:hover { opacity: 0.7; transform: translateY(-1px); }
+    .icon-btn.active { opacity: 1; color: var(--accent); transform: scale(1.1); }
+    .icon-btn svg { width: 24px; height: 24px; display: block; }
 
+    /* --- 3. MAIN SPHERE --- */
+    .sphere-container {
+      position: relative;
+      width: 280px; height: 280px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 2rem;
+    }
     .sphere {
-      width: 100%; height: 100%; border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), var(--c-phase));
-      box-shadow: 0 20px 70px var(--c-phase), inset 0 0 20px rgba(255,255,255,0.5);
-      display: flex; align-items: center; justify-content: center; flex-direction: column;
-      will-change: transform, background; 
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.1));
+      box-shadow: 
+        inset 0 0 20px rgba(255,255,255,0.5),
+        0 10px 40px rgba(76, 175, 80, 0.2); 
       transform: scale(0.8);
-      transition: background 0.5s ease, box-shadow 0.5s ease;
+      transition: transform 0.1s linear, box-shadow 0.5s ease;
+      position: relative;
+      z-index: 2;
+      /* Propiedad dinámica para el color de la sombra/fase */
+      --c-phase: var(--accent);
+    }
+    /* El anillo exterior que respira (sombra) */
+    .sphere::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 50%; z-index: -1;
+      box-shadow: 0 0 0 0 var(--c-phase);
+      opacity: 0.6;
+      animation: pulseShadow 4s infinite; 
+      transition: box-shadow 0.5s ease;
     }
 
-    .counter-big { 
-      font-family: 'Manrope', sans-serif;
-      font-size: 4rem; font-weight: 800; color: white; 
-      text-shadow: 0 2px 15px rgba(0,0,0,0.15); line-height: 1;
+    /* --- 4. TEXT & UI ELEMENTS --- */
+    .phase-text {
+      position: absolute; 
+      font-family: var(--font-display);
+      font-size: 1.5rem; font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      pointer-events: none; z-index: 5;
+      text-shadow: 0 2px 10px rgba(255,255,255,0.8);
     }
     
-    .sphere-label {
-        margin-top: 10px; 
-        display: flex; align-items: center; justify-content: center; gap: 6px;
-        z-index: 25;
-    }
-    .p-num {
-      font-size: 0.9rem; color: rgba(255,255,255,0.6); font-weight: 500;
-      transition: all 0.2s ease; display: inline-block;
-    }
-    .p-mode-sub { font-size: 0.6em; vertical-align: super; opacity: 0.8; margin-left:1px; }
-
-    .p-sep { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
-    .p-num.active {
-      color: #fff; font-weight: 800; transform: scale(1.4);
-      text-shadow: 0 0 12px rgba(255,255,255,1);
+    .counter-text {
+      position: absolute; top: 65%;
+      font-family: var(--font-body);
+      font-size: 3rem; font-weight: 300;
+      color: var(--text-main); opacity: 0.8;
+      pointer-events: none; z-index: 5;
     }
 
-    /* --- 4. VISUALIZADOR --- */
-    .bottom-viz {
-      flex-shrink: 0; width: 100%; height: 90px; 
-      margin: 0 auto 4vh auto; 
-      position: relative; z-index: 15;
-      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
-      mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
+    /* Nueva UI de Info de Ciclos y Modo */
+    .info-bar {
+      position: absolute; bottom: -60px;
+      display: flex; gap: 1.5rem;
+      font-size: 0.9rem; color: var(--text-sub);
+      font-weight: 600; opacity: 0.8;
     }
-    #breathGraph { width: 100%; height: 100%; display: block; }
+    .info-item { display: flex; align-items: center; gap: 0.4rem; }
+    .mode-icon { opacity: 0; transition: opacity 0.3s ease; font-size: 1.1rem; }
+    .mode-icon.visible { opacity: 1; }
 
-    /* --- 5. MENÚ SELECCIÓN --- */
-    #selectionMenu {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    /* Frases Zen */
+    .zen-quote {
+      position: absolute; bottom: 10%; width: 80%; text-align: center;
+      font-family: var(--font-display); font-size: 1rem; color: var(--text-main);
+      opacity: 0; transition: opacity 1s ease; line-height: 1.6;
+    }
+    
+    /* --- 5. VISUALIZER (CANVAS) --- */
+    .breath-track {
+      position: absolute; bottom: 0; left: 0; width: 100%; height: 120px;
+      z-index: 1; pointer-events: none; opacity: 0.4;
+    }
+
+    /* --- 6. MENUS & OVERLAYS --- */
+    .selection-menu {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(238, 252, 253, 0.95);
-      z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 30px; transition: opacity 0.4s ease;
+      backdrop-filter: blur(10px);
+      z-index: 20;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.4s ease;
     }
-
-    /* --- LUCES (Estacional) --- */
-    .navidad-lights {
-        position: absolute; top: 0; left: 0; width: 100%;
-        display: flex; justify-content: space-around; padding: 8px 0;
-        pointer-events: none; z-index: 120;
+    .menu-title {
+      font-family: var(--font-display); font-size: 2rem; margin-bottom: 2rem;
+      color: var(--text-main); text-align: center;
     }
-    .light {
-        width: 10px; height: 10px; border-radius: 50%;
-        animation: breath-light 4s infinite ease-in-out;
+    .pattern-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+      width: 90%; max-width: 400px;
     }
-    .light.red   { background: #ff4d4d; box-shadow: 0 0 12px #ff4d4d; animation-delay: 0s; }
-    .light.green { background: #2ecc71; box-shadow: 0 0 12px #2ecc71; animation-delay: 1.3s; }
-    .light.blue  { background: #4facfe; box-shadow: 0 0 12px #4facfe; animation-delay: 2.6s; }
-    @keyframes breath-light {
-        0%, 100% { opacity: 0.2; transform: scale(0.8); }
-        50% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 20px currentColor; }
-    }
-
-    /* --- BOTONES Y TEXTOS --- */
-    .global-info-btn {
-        position: absolute; top: 30px; right: 30px;
-        width: 42px; height: 42px; border-radius: 50%;
-        background: rgba(255,255,255,0.9);
-        border: 1px solid rgba(76, 175, 80, 0.3);
-        color: var(--primary);
-        font-family: 'Manrope', sans-serif; font-weight: 800; 
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.2rem; cursor: pointer;
-        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.15); 
-        transition: all 0.3s ease;
-        z-index: 110;
-    }
-    .global-info-btn:hover { 
-        background: var(--primary); color: white; transform: scale(1.1);
-        box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
-    }
-
-    .menu-title { 
-      font-family: 'Cinzel', serif; font-size: 2.2rem; 
-      color: #263238; margin-bottom: 30px; 
-      letter-spacing: 0.1em; font-weight: 500; text-align: center;
-      background: -webkit-linear-gradient(45deg, #263238, #546e7a);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    }
-
-    .menu-actions {
-        display: flex; gap: 15px; margin-bottom: 30px; width: 100%; justify-content: center;
-    }
-    .action-btn {
-        background: white; border: 1px solid rgba(0,0,0,0.05);
-        padding: 12px 20px; border-radius: 30px;
-        color: var(--accent); font-weight: 600; font-size: 0.9rem;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer;
-        display: flex; align-items: center; gap: 8px;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .action-btn:active { transform: scale(0.95); }
-
-    .menu-grid {
-      display: grid; grid-template-columns: 1fr; gap: 15px;
-      width: 100%; max-width: 450px; max-height: 55vh; overflow-y: auto; 
-      padding: 5px;
-    }
-
-    /* --- TARJETAS --- */
-    .menu-card {
-      background: rgba(255, 255, 255, 0.6); 
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      padding: 20px; border-radius: 16px;
-      cursor: pointer; text-align: left;
-      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-      box-shadow: 0 4px 10px rgba(178, 235, 242, 0.1);
+    .pattern-btn {
+      background: #fff; border: 1px solid rgba(0,0,0,0.05);
+      padding: 1.2rem; border-radius: 16px;
+      font-family: var(--font-body); font-weight: 600; font-size: 1rem;
+      color: var(--text-main);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      cursor: pointer; transition: all 0.2s ease;
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
       position: relative;
     }
-    .menu-card:hover { 
-      transform: translateY(-3px) scale(1.01); 
-      background: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 10px 25px rgba(178, 235, 242, 0.3);
-    }
-    .menu-card h3 { 
-        color: #37474f; font-size: 1.1rem; margin-bottom: 4px; 
-        font-weight: 700; font-family: 'Manrope', sans-serif;
-    }
-    .menu-card p { color: #78909c; font-size: 0.9rem; font-weight: 400; }
-    .menu-card.custom-card { border: 2px dashed rgba(0, 131, 143, 0.3); background: rgba(255, 255, 255, 0.4); }
-    .menu-card.custom-card h3 { color: var(--accent); }
-
-    /* --- SUBSTACK CARD (PRO) --- */
-    .substack-card {
-        background: linear-gradient(135deg, #FFFFFF 0%, #F0FFF4 50%, #E0F2F1 100%);
-        border: 1px solid rgba(255, 103, 25, 0.15); 
-        border-radius: 16px; 
-        padding: 25px 22px; 
-        min-height: 100px;
-        cursor: pointer; position: relative; overflow: hidden;
-        box-shadow: 0 8px 25px rgba(200, 230, 201, 0.4);
-        transition: all 0.4s ease;
-        display: flex; flex-direction: row; 
-        align-items: center; justify-content: flex-start; 
-        gap: 15px; 
-        flex-wrap: nowrap; 
-    }
-    .substack-card::before {
-        content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%);
-        opacity: 0.6; pointer-events: none; transform: rotate(30deg);
-    }
-    .substack-card:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 12px 30px rgba(200, 230, 201, 0.6), 0 0 10px rgba(255, 103, 25, 0.1);
-    }
-    .substack-icon {
-        width: 42px; height: 42px; flex-shrink: 0; 
-        background: white; border-radius: 8px; 
-        display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05); z-index: 2;
-    }
-    .substack-content { 
-        z-index: 2; flex: 1; min-width: 0; 
-        display: flex; flex-direction: column; justify-content: center;
-    }
-    .substack-label {
-        font-family: 'Manrope', sans-serif; font-size: 0.65rem; 
-        text-transform: uppercase; letter-spacing: 2px; 
-        color: #78909c; font-weight: 700; margin-bottom: 4px;
-    }
-    .substack-title {
-        font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.2rem; color: #263238;
-        margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        line-height: 1.2;
-    }
-    .substack-author {
-        font-family: 'Manrope', sans-serif; font-size: 0.9rem; color: var(--substack-orange); 
-        font-weight: 600; 
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-
-    /* --- OVERLAYS --- */
-    #customOverlay, #shareConfigOverlay, #guideOverlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(255, 255, 255, 0.98); z-index: 150;
-        display: none; 
-        flex-direction: column; align-items: center; justify-content: flex-start; 
-        padding-top: 15vh;
-        overflow-y: auto; 
-        backdrop-filter: blur(15px); text-align: center;
-    }
+    .pattern-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); border-color: var(--accent); }
+    .pattern-desc { font-size: 0.75rem; color: var(--text-sub); font-weight: 400; text-align: center; }
     
-    .overlay-title { font-family:'Cinzel'; color:var(--text-main); margin-bottom:10px; font-size: 1.5rem; }
-    .overlay-subtitle { color:var(--text-muted); margin-bottom:30px; font-size: 0.95rem; }
-
-    .custom-input-container {
-        position: relative; margin: 15px 0;
-        display: flex; align-items: center; justify-content: center;
+    /* Tooltip info */
+    .info-icon {
+        position: absolute; top: 8px; right: 8px; font-size: 0.8rem; color: #b0bec5;
+        cursor: help;
     }
-    
-    .big-input {
-        font-size: 2.8rem; font-family: 'Manrope', sans-serif; font-weight: 300;
-        border: none; border-bottom: 2px solid var(--accent);
-        background: transparent; color: var(--text-main);
-        width: 320px; text-align: center; letter-spacing: 2px;
-        outline: none; padding-bottom: 5px; border-radius: 0;
-    }
-    
-    .normal-input {
-        width: 80%; max-width: 300px; padding: 12px; margin: 10px 0;
-        border: 1px solid #cfd8dc; border-radius: 10px;
-        font-family: 'Manrope', sans-serif; font-size: 1rem; color: var(--text-main);
-        background: #fcfcfc; outline: none; text-align: center;
-    }
-    .normal-input:focus { border-color: var(--accent); background: white; }
-
-    .info-bubble {
-        width: 32px; height: 32px; 
-        background: var(--text-muted); color: white; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center; 
-        font-size: 1.1rem; font-weight: bold; cursor: pointer; 
-        margin-left: 15px; position: relative;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-    
-    /* TOOLTIP DE AYUDA (Estilo Burbuja) */
     .info-tooltip {
-        position: absolute; top: 50px; left: 50%; transform: translateX(-85%);
-        width: 290px; background: #37474f; color: white; padding: 20px;
-        border-radius: 12px; font-size: 0.9rem; line-height: 1.6;
-        opacity: 0; visibility: hidden; transition: all 0.3s ease; 
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 200; text-align: left;
+        position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+        background: #37474f; color: #fff; padding: 0.5rem; border-radius: 8px;
+        font-size: 0.75rem; width: 180px; text-align: center; pointer-events: none;
+        opacity: 0; transition: opacity 0.2s; z-index: 30; margin-bottom: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
-    .info-tooltip.visible { opacity: 1; visibility: visible; }
-    .info-tooltip::before {
-        content:''; position: absolute; top: -6px; right: 20px;
-        border-width: 6px; border-style: solid; border-color: transparent transparent #37474f transparent;
-    }
-    /* FIX UX: Close button for tooltip */
-    .close-tooltip {
-        float: right; font-size: 1.2rem; cursor: pointer; color: #cfd8dc; 
-        margin: -10px -5px 0 0; font-weight: 300;
-    }
-    .close-tooltip:hover { color: white; }
+    .info-tooltip.visible { opacity: 1; }
 
-
-    /* GUIA ICONOS CARD */
-    .guide-card {
-        background: white; border:1px solid #eee; 
-        border-radius: 16px; padding: 30px; max-width: 90%; width: 350px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.08); text-align: left;
+    /* Custom Input Overlay */
+    .overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.4); z-index: 50;
+        display: none; align-items: center; justify-content: center;
     }
-    .guide-row { display: flex; align-items: center; margin-bottom: 15px; gap: 15px; font-size: 1rem; color: #546e7a; }
-    .guide-icon { width: 30px; text-align: center; font-size: 1.4rem; }
-
-    /* REFUGIO/SUBSTACK OVERLAY */
-    /* MÓVIL (VERTICAL): Diseño original aireado */
-    .refugio-card {
-        background: white;
-        border: 1px solid #EEE;
-        border-radius: 16px;
-        max-width: 380px;
-        width: 90%;
-        padding: 30px 30px 45px 30px; /* Aire original */
-        box-shadow: 0 20px 60px rgba(0,0,0,0.08);
-        text-align: center;
-        margin-bottom: 20px;
-        position: relative;
-        overflow: hidden;
+    .modal {
+        background: #fff; padding: 2rem; border-radius: 20px; width: 90%; max-width: 350px;
+        text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
     }
-    .refugio-card::before {
-        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
-        background: var(--substack-orange);
+    .modal h3 { margin-top: 0; font-family: var(--font-display); color: var(--text-main); }
+    .custom-input {
+        width: 100%; padding: 0.8rem; margin: 1rem 0;
+        border: 2px solid #e0f7fa; border-radius: 12px;
+        font-family: var(--font-body); font-size: 1.2rem; text-align: center; outline: none;
+        color: var(--text-main);
     }
-    .refugio-title {
-        font-family: 'Cinzel', serif; font-size: 1.6rem; color: #2c2c2c;
-        margin-bottom: 10px; font-weight: 700;
+    .custom-input:focus { border-color: var(--accent); }
+    .action-btn {
+        background: var(--accent); color: #fff; border: none; padding: 0.8rem 2rem;
+        border-radius: 50px; font-weight: 700; cursor: pointer; font-size: 1rem;
+        transition: transform 0.2s; margin-top: 0.5rem;
     }
-    .refugio-author {
-        font-family: 'Manrope', sans-serif; font-size: 0.95rem; 
-        color: var(--substack-orange); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
-        margin-bottom: 25px; /* Aire original */
-    }
-    .refugio-excerpt {
-        font-family: 'Manrope', sans-serif; font-size: 1.1rem; color: #555;
-        line-height: 1.6; font-style: italic; 
-        margin-bottom: 35px; /* Aire original */
-    }
-    .refugio-btn {
-        display: inline-block; text-decoration: none;
-        background: var(--substack-orange); color: white;
-        padding: 14px 28px; border-radius: 50px;
-        font-weight: 700; font-family: 'Manrope', sans-serif;
-        box-shadow: 0 5px 15px rgba(255, 103, 25, 0.3);
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .refugio-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(255, 103, 25, 0.4);
+    .action-btn:active { transform: scale(0.95); }
+    .close-btn {
+        background: transparent; color: var(--text-sub); border: none; margin-top: 1rem;
+        cursor: pointer; font-size: 0.9rem; text-decoration: underline;
     }
 
-    /* --- PILL SHARE --- */
-    #pillOverlay, #shareModal {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(255,255,255,0.95); z-index: 200;
-      display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px;
-      backdrop-filter: blur(10px);
+    /* Install Button */
+    .install-btn {
+        position: absolute; bottom: 2rem;
+        background: #37474f; color: #fff; padding: 0.6rem 1.2rem;
+        border-radius: 30px; border: none; font-weight: 600; cursor: pointer;
+        display: none; align-items: center; gap: 0.5rem; font-size: 0.9rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 25;
     }
-    #shareText {
-      width: 100%; max-width: 400px; height: 100px; border: 1px solid #cfd8dc;
-      border-radius: 12px; padding: 15px; font-family: 'Manrope', sans-serif; font-size: 0.9rem; color: #546e7a;
-      margin-bottom: 25px; background: #fcfcfc; resize: none; outline: none;
+
+    /* Pattern Display (Top Left) */
+    .pattern-display {
+      position: absolute; top: 2rem; left: 2rem;
+      font-family: var(--font-body); font-weight: 800; font-size: 1.2rem;
+      color: var(--text-main); opacity: 0.3; letter-spacing: 2px;
+      display: flex; gap: 4px; z-index: 10;
     }
-    .share-actions { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
-    .btn-wa, .btn-copy { padding: 14px 28px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; color: white; }
-    .btn-wa { background: #25D366; } .btn-copy { background: #546e7a; }
+    .p-num { transition: color 0.3s; position: relative; }
+    .p-num.active { color: var(--accent); opacity: 1; transform: scale(1.1); }
+    .p-mode-sub { font-size: 0.6em; vertical-align: sub; margin-left: 1px; opacity: 0.7; }
+    .p-sep { opacity: 0.3; }
+
+    /* Share Config Styles */
+    .pill-form { display: flex; flex-direction: column; gap: 0.8rem; text-align: left; }
+    .pill-label { font-size: 0.8rem; font-weight: 600; color: var(--text-sub); margin-left: 4px; margin-bottom: -4px; }
+    .pill-input {
+        width: 100%; padding: 0.6rem; border: 1px solid #e0e0e0; border-radius: 8px;
+        font-family: var(--font-body); outline: none; font-size: 0.95rem;
+    }
+    .pill-input:focus { border-color: var(--accent); }
+    .pill-buttons { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+    .btn-secondary { background: #eceff1; color: var(--text-main); flex: 1; }
+    .btn-primary { background: var(--accent); color: white; flex: 2; }
+
+    /* Loading Overlay */
+    .loading-overlay {
+        position: absolute; top:0; left:0; width:100%; height:100%;
+        background: rgba(255,255,255,0.8); z-index: 60;
+        display: none; align-items: center; justify-content: center;
+        flex-direction: column; gap: 1rem; color: var(--accent); font-weight: 600;
+    }
+
+    /* MEDIA QUERIES */
+    @media (max-width: 768px) {
+      .sphere-container { width: 240px; height: 240px; }
+      .counter-text { font-size: 2.5rem; }
+      .top-right { top: 1.5rem; right: 1.5rem; gap: 0.5rem; } /* Gap ajustado para móvil */
+      .pattern-display { top: 1.5rem; left: 1.5rem; font-size: 1rem; }
+      .menu-title { font-size: 1.5rem; }
+      .pattern-grid { grid-template-columns: 1fr; }
+      .zen-quote { width: 90%; font-size: 0.9rem; bottom: 8%; }
+    }
     
-    #loadingOverlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(255,255,255,0.8); z-index: 400; backdrop-filter: blur(5px);
-      display: none; flex-direction: column; align-items: center; justify-content: center;
-    }
-    .spinner {
-      width: 40px; height: 40px; border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid var(--accent);
-      border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    
-    /* --- MEDIA QUERIES (PC FIX) --- */
-    @media (min-width: 768px), (orientation: landscape) {
-      #substackOverlay { justify-content: center; padding-top: 20px; }
-      .refugio-card { max-width: 500px; padding: 25px 40px; }
-      .refugio-excerpt { margin-bottom: 25px; }
-
-      .app-layout { grid-template-rows: 60px 1fr 80px; }
-      .stage-container { flex-direction: row; justify-content: space-around; padding: 0 4vw; }
-      .sphere-wrapper { width: 50vh; height: 50vh; }
-      .sphere { width: 65%; height: 65%; }
-      .bottom-viz { height: 70px; width: 80%; }
-      .menu-grid { grid-template-columns: 1fr 1fr; max-width: 800px; gap:25px; }
-      #customOverlay, #shareConfigOverlay, #guideOverlay { padding-top: 5vh; justify-content: center; }
+    @keyframes pulseShadow {
+      0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); }
+      70% { box-shadow: 0 0 0 20px rgba(76, 175, 80, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
     }
   </style>
 </head>
 <body>
 
-  <div id="loadingOverlay">
-    <div class="spinner"></div>
-    <div style="font-family:'Manrope'; color:#546e7a; font-weight:600;">Preparando...</div>
-  </div>
+  <button id="installBtn" class="install-btn" onclick="installApp()">
+     ⬇ Instalar App
+  </button>
 
-  <div id="guideOverlay">
-      <button onclick="document.getElementById('guideOverlay').style.display='none'" style="position:absolute; top:25px; right:25px; background:none; border:none; font-size:2rem; color:#78909c; cursor:pointer; padding:10px; line-height:1; z-index:10;">&times;</button>
-      <h2 class="overlay-title">Guía de Respiración</h2>
-      <p class="overlay-subtitle">Interpretación de símbolos</p>
-      <div class="guide-card">
-          <div class="guide-row"><span class="guide-icon" style="color:var(--c-inhale)">👃</span><span><strong>Inhala</strong> (Verde)</span></div>
-          <div class="guide-row"><span class="guide-icon" style="color:var(--c-hold)">⏸️</span><span><strong>Pausa/Retén</strong> (Naranja)</span></div>
-          <div class="guide-row"><span class="guide-icon" style="color:var(--c-exhale)">👃</span><span><strong>Exhala</strong> (Azul)</span></div>
-          <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-          <div style="font-size:0.9rem; color:#78909c; margin-bottom:10px;">TIP AVANZADO</div>
-          <div class="guide-row"><span class="guide-icon">🌬️</span><span><strong>Boca:</strong> Si ves este icono (o añades 'b'), exhala soplando.</span></div>
-      </div>
-      <div style="margin-top:40px;">
-          <button class="btn-text" style="background:transparent; color:var(--accent); border:1px solid var(--accent);" onclick="document.getElementById('guideOverlay').style.display='none'">Entendido</button>
-      </div>
-  </div>
-  
-  <div id="substackOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:300; display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(15px); padding:20px 20px 50px 20px; text-align:center; visibility:hidden; opacity:0; pointer-events:none; transition:all 0.4s ease; overflow-y:auto;">
-      <button onclick="const el=document.getElementById('substackOverlay'); el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none';" style="position:absolute; top:25px; right:25px; background:none; border:none; font-size:2rem; color:#78909c; cursor:pointer; padding:10px; line-height:1; z-index:10;">&times;</button>
+  <div id="patternDisplay" class="pattern-display">4-7-8</div>
 
-      <h2 style="font-family:'Cinzel'; color:#37474f; margin-bottom:20px; margin-top:40px;">Refugio Poético</h2>
-      
-      <div class="refugio-card">
-          <div class="refugio-title">Vivir a tiempo</div>
-          <div class="refugio-author">by Claudia Cuevas</div>
-          <div class="refugio-excerpt">"la vida no es generosa con los distraídos."</div>
-          <a href="https://open.substack.com/pub/claudiacuevas/p/vivir-a-tiempo?r=2vlvha&utm_campaign=post&utm_medium=web" target="_blank" rel="noopener noreferrer" class="refugio-btn">
-              Leer en Substack
-          </a>
-      </div>
-      
-      <button class="btn-text" style="margin-top:35px; background:transparent; border:1px solid #cfd8dc; color:#78909c;" onclick="const el = document.getElementById('substackOverlay'); el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none';">❮ Volver al Menú</button>
-  </div>
-  <div id="customOverlay">
-      <h2 class="overlay-title">Diseña tu Respiración</h2>
-      <p class="overlay-subtitle">Introduce 4 tiempos<br>Añade 'b' para boca (ej: 4b)</p>
-      <div class="custom-input-container">
-          <input type="text" id="customPatternInput" class="big-input" placeholder="4-2-6b-0" maxlength="10" value="">
-          <div class="info-bubble" onclick="toggleTooltip(this)">?
-              <div class="info-tooltip">
-                  <span class="close-tooltip" onclick="event.stopPropagation(); this.parentElement.classList.remove('visible');">&times;</span>
-                  <strong>Escribe los segundos de cada fase.</strong> El sistema pone los guiones.<br><br>
-                  <span style="color:var(--c-inhale)">1. Inhala (Verde)</span><br>
-                  <span style="color:var(--c-hold)">2. Mantén (Naranja)</span><br>
-                  <span style="color:var(--c-exhale)">3. Exhala (Azul)</span><br>
-                  <span style="color:var(--c-hold)">4. Sostén (Naranja)</span><br><br>
-                  <hr style="border:0; border-top:1px solid rgba(255,255,255,0.2); margin:10px 0;">
-                  <strong>Opciones Extra:</strong><br>
-                  • Añade <strong>'b'</strong> para boca (ej: 8b).<br>
-                  • Usa <strong>0</strong> para saltar una fase.
-              </div>
-          </div>
-      </div>
-      <div style="display:flex; flex-direction:column; gap:15px; margin-bottom: 50px;">
-          <button class="btn-text" style="background:var(--primary); color:white; padding:15px 40px; font-size:1.1rem; border:none;" onclick="startCustom()">Comenzar</button>
-          <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="document.getElementById('customOverlay').style.display='none'">Cancelar</button>
-      </div>
-  </div>
-
-  <div id="shareConfigOverlay">
-      <h2 class="overlay-title">Enviar Píldora</h2>
-      <p class="overlay-subtitle">Configura el regalo</p>
-
-      <div class="custom-input-container">
-          <input type="text" id="pillPatternInput" class="big-input" placeholder="4-7-8b" maxlength="10" value="">
-           <div class="info-bubble" onclick="toggleTooltip(this)">?
-              <div class="info-tooltip">
-                  <span class="close-tooltip" onclick="event.stopPropagation(); this.parentElement.classList.remove('visible');">&times;</span>
-                  <strong>Escribe los segundos de cada fase.</strong> El sistema pone los guiones.<br><br>
-                  <span style="color:var(--c-inhale)">1. Inhala (Verde)</span><br>
-                  <span style="color:var(--c-hold)">2. Mantén (Naranja)</span><br>
-                  <span style="color:var(--c-exhale)">3. Exhala (Azul)</span><br>
-                  <span style="color:var(--c-hold)">4. Sostén (Naranja)</span><br><br>
-                  <hr style="border:0; border-top:1px solid rgba(255,255,255,0.2); margin:10px 0;">
-                  <strong>Opciones Extra:</strong><br>
-                  • Añade <strong>'b'</strong> para boca (ej: 8b).<br>
-                  • Usa <strong>0</strong> para saltar una fase.
-              </div>
-          </div>
-      </div>
-
-      <input type="text" id="pillNameInput" class="normal-input" placeholder="¿Para quién es?" maxlength="20">
-      <input type="text" id="pillMessageInput" class="normal-input" placeholder="Mensaje (opcional)" maxlength="50">
-
-      <div style="display:flex; flex-direction:column; gap:15px; margin-top:20px; margin-bottom: 50px;">
-          <button class="btn-text" style="background:var(--accent); color:white; padding:15px 40px; font-size:1.1rem; border:none;" onclick="generateShareLink()">Generar Enlace</button>
-          <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="document.getElementById('shareConfigOverlay').style.display='none'">Cancelar</button>
-      </div>
-  </div>
-
-  <div id="shareModal">
-    <h2 style="font-family:'Cinzel'; color:#37474f;">✨ ¡Píldora Lista!</h2>
-    <textarea id="shareText" readonly></textarea>
-    <div class="share-actions">
-      <button class="btn-wa" onclick="sendWhatsapp()">WhatsApp</button>
-      <button class="btn-copy" onclick="copyToClipboard()">Copiar</button>
-    </div>
-    <button class="btn-text" style="margin-top:30px; background:transparent; border:none;" onclick="document.getElementById('shareModal').style.display='none'">Cerrar</button>
-  </div>
-
-  <div id="selectionMenu">
-    
-    <div class="navidad-lights">
-        <div class="light red"></div>
-        <div class="light green"></div>
-        <div class="light blue"></div>
-        <div class="light red"></div>
-        <div class="light green"></div>
-        <div class="light blue"></div>
-        <div class="light red"></div>
-        <div class="light green"></div>
-        <div class="light blue"></div>
-    </div>
-
-    <button class="global-info-btn" onclick="document.getElementById('guideOverlay').style.display='flex'">i</button>
-
-    <div class="menu-title">ELIGE TU RITMO</div>
-    
-    <div class="menu-actions">
-        <button class="action-btn" onclick="openShareConfig()">
-            <span>📤 Enviar Píldora</span>
-        </button>
-        <button class="action-btn" id="installBtn" onclick="installApp()">
-            <span>⭐ Instalar App</span>
-        </button>
-    </div>
-
-    <div class="menu-grid">
-      <div class="substack-card" onclick="const el = document.getElementById('substackOverlay'); el.style.visibility='visible'; el.style.opacity='1'; el.style.pointerEvents='auto';">
-          <div class="substack-icon">
-              <svg viewBox="0 0 24 24" fill="#FF6719" width="20" height="20">
-                  <path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/>
-              </svg>
-          </div>
-          <div class="substack-content">
-              <div class="substack-label">Rincón de Lectura</div>
-              <div class="substack-title">Vivir a tiempo</div>
-              <div class="substack-author">by Claudia Cuevas</div>
-          </div>
-      </div>
-
-      <div class="menu-card custom-card" onclick="openCustomModal()">
-        <h3>✨ Crear Personalizado</h3>
-        <p>Define tus tiempos (ej: 4-7-8b)</p>
-      </div>
-      
-      <div class="menu-card" onclick="start('4-4-6-2')">
-        <h3>4-4-6-2 • Relax Profundo</h3>
-        <p>Baja pulsaciones rápidamente</p>
-      </div>
-      <div class="menu-card" onclick="start('4-7-8b')">
-        <h3>4-7-8 • Para Dormir</h3>
-        <p>Técnica del Dr. Weil (Soplar)</p>
-      </div>
-      <div class="menu-card" onclick="start('box')">
-        <h3>Cuadrada • Enfoque</h3>
-        <p>Box Breathing (4-4-4-4)</p>
-      </div>
-      <div class="menu-card" onclick="start('5-5')">
-        <h3>5-5 • Coherencia</h3>
-        <p>Equilibrio total (In 5, Ex 5)</p>
-      </div>
-    </div>
-  </div>
-
-  <div id="pillOverlay">
-    <h1 style="color:var(--accent); font-family:'Cinzel'; margin-bottom:15px;">🍃 Una pausa para ti</h1>
-    <h2 id="pillRecipient" style="color:#546e7a; margin-bottom:25px; font-weight:400; font-family:'Manrope';"></h2>
-    <p id="pillMessage" style="font-size:1.4rem; font-family:'Cinzel'; color:#37474f; margin-bottom:50px; max-width:600px;"></p>
-    <button class="btn-text" style="background:var(--primary); color:white; padding:16px 50px;" onclick="closePill()">Comenzar</button>
-  </div>
-
-  <div class="app-layout">
-    <div class="top-bar">
-      <div class="top-left">
-        <button class="btn-text" onclick="stop()">❮ Menú</button>
-        <div class="badge" id="cycleBadge">🔄 0</div>
-      </div>
-      <div class="top-right" style="position: absolute; top: 15px; right: 15px; display: flex; flex-direction: row; align-items: center; justify-content: flex-end; gap: 8px; z-index: 1000;">
-      
-      <button id="quoteToggleBtn" class="icon-btn active" onclick="toggleQuotes()" aria-label="Frases" 
-              style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  <div class="top-right">
+      <button id="quoteToggleBtn" class="icon-btn active" onclick="toggleQuotes()" aria-label="Frases">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
           <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
         </svg>
       </button>
 
-      <button id="tempoBtn" class="icon-btn" onclick="toggleTempo()" aria-label="Tempo" 
-              style="height: 36px; padding: 0 8px; font-size: 12px; font-weight: 700; width: auto; min-width: 40px; display: flex; align-items: center; justify-content: center; white-space: nowrap;">
+      <button id="tempoBtn" class="icon-btn" onclick="toggleTempo()" aria-label="Tempo" style="font-size: 13px; font-weight: 700; width: auto; padding: 0 4px;">
         ⚡ 1x
       </button>
 
-      <button id="btnMetro" class="icon-btn" onclick="toggleMetro()" aria-label="Metrónomo"
-              style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <button id="btnMetro" class="icon-btn" onclick="toggleMetro()" aria-label="Metrónomo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2v20"></path>
           <path d="M2 12h20"></path>
         </svg>
       </button>
 
-      <button id="btnSound" class="icon-btn active" onclick="toggleSound()" aria-label="Sonido"
-              style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <button id="btnSound" class="icon-btn active" onclick="toggleSound()" aria-label="Sonido">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
           <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
         </svg>
       </button>
 
-      <button id="btnMusic" class="icon-btn active" onclick="toggleMusic()" aria-label="Música"
-              style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 18V5l12-2v13"></path>
-          <circle cx="6" cy="18" r="3"></circle>
-          <circle cx="18" cy="16" r="3"></circle>
+      <button id="btnMusic" class="icon-btn active" onclick="toggleMusic()" aria-label="Música">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+           <path d="M9 18V5l12-2v13"></path>
+           <circle cx="6" cy="18" r="3"></circle>
+           <circle cx="18" cy="16" r="3"></circle>
         </svg>
       </button>
+  </div>
 
-    </div>
-
-    <div class="stage-container">
-      <div class="panel-side">
-        <div class="phase-text" id="phaseText">LISTO</div>
-        <div class="mode-indicator" id="modeIcon">👃</div>
-      </div>
-      
-      <div class="panel-center">
-        <div class="sphere-wrapper" onclick="togglePause()" title="Toca para Pausar/Reanudar">
-          <div class="sphere" id="sphere">
-             <div class="counter-big" id="counterText"></div>
-             <div class="sphere-label" id="patternDisplay"></div>
-          </div>
+  <div class="sphere-container">
+    <div id="sphere" class="sphere"></div>
+    <div id="phaseText" class="phase-text">LISTO</div>
+    <div id="counterText" class="counter-text"></div>
+    
+    <div class="info-bar">
+        <div class="info-item">
+            <span id="cycleBadge">🔄 0</span>
         </div>
-      </div>
+        <div class="info-item">
+            <span id="modeIcon" class="mode-icon">👃</span>
+        </div>
+    </div>
+  </div>
 
-      <div class="panel-side">
-        <div class="quote" id="phraseContent">Respira...</div>
+  <div id="phraseContent" class="zen-quote">
+     Sigue el ritmo, respira, nada más.
+  </div>
+
+  <canvas id="breathGraph" class="breath-track" width="600" height="120"></canvas>
+
+  <div id="selectionMenu" class="selection-menu">
+    <div class="menu-title">Elige tu Ritmo</div>
+    <div class="pattern-grid">
+      <div class="pattern-btn" onclick="start('4-7-8b')">
+         <span>🌙 Relajación</span>
+         <span class="pattern-desc">4-7-8 (Boca) · Dormir</span>
+         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">
+             ℹ
+             <div class="info-tooltip">
+                 Inhala 4s (Nariz)<br>Mantén 7s<br>Exhala 8s (Boca)<br>Ideal para ansiedad y sueño.
+             </div>
+         </div>
+      </div>
+      <div class="pattern-btn" onclick="start('4-4-6-2')">
+         <span>🧘‍♂️ Calma Profunda</span>
+         <span class="pattern-desc">4-4-6-2 · Estrés</span>
+         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">
+             ℹ
+             <div class="info-tooltip">
+                 Inhala 4s, Mantén 4s,<br>Exhala 6s, Vacío 2s.<br>Equilibra el sistema nervioso.
+             </div>
+         </div>
+      </div>
+      <div class="pattern-btn" onclick="start('box')">
+         <span>📦 Box Breathing</span>
+         <span class="pattern-desc">4-4-4-4 · Enfoque</span>
+         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">
+             ℹ
+             <div class="info-tooltip">
+                 4s en cada fase.<br>Usada por Navy SEALs<br>para concentración máxima.
+             </div>
+         </div>
+      </div>
+      <div class="pattern-btn" onclick="start('5-5')">
+         <span>⚖️ Coherencia</span>
+         <span class="pattern-desc">5-5 · Equilibrio</span>
+         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">
+             ℹ
+             <div class="info-tooltip">
+                 Respiración resonante.<br>Sincroniza corazón y cerebro.<br>Perfecto para empezar.
+             </div>
+         </div>
       </div>
     </div>
-
-    <div class="bottom-viz">
-      <canvas id="breathGraph"></canvas>
+    
+    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+        <button onclick="openCustomModal()" style="background:none; border:none; color:var(--text-sub); font-weight:600; cursor:pointer; font-size:0.9rem;">
+           ✨ Crear Propio
+        </button>
+        <button onclick="openShareConfig()" style="background:none; border:none; color:var(--text-sub); font-weight:600; cursor:pointer; font-size:0.9rem;">
+           🎁 Enviar Píldora
+        </button>
     </div>
+  </div>
+
+  <div id="customOverlay" class="overlay">
+      <div class="modal">
+          <h3>Tu Ritmo</h3>
+          <p style="font-size:0.9rem; color:#666;">Formato: Inhala-Mantén-Exhala...<br>Usa 'b' para boca (ej: 4-7-8b)</p>
+          <input type="text" id="customPatternInput" class="custom-input" placeholder="Ej: 4-4-4-4">
+          <button class="action-btn" onclick="startCustom()">Empezar</button>
+          <button class="close-btn" onclick="document.getElementById('customOverlay').style.display='none'">Cancelar</button>
+      </div>
+  </div>
+
+  <div id="shareConfigOverlay" class="overlay">
+      <div class="modal">
+          <h3>Crear Píldora 💊</h3>
+          <div class="pill-form">
+              <div>
+                  <label class="pill-label">Patrón</label>
+                  <input type="text" id="pillPatternInput" class="pill-input" placeholder="Ej: 4-7-8b">
+              </div>
+              <div>
+                  <label class="pill-label">Para</label>
+                  <input type="text" id="pillNameInput" class="pill-input" placeholder="Ej: Mamá">
+              </div>
+              <div>
+                  <label class="pill-label">Mensaje</label>
+                  <textarea id="pillMessageInput" class="pill-input" rows="2" placeholder="Ej: Tómate 1 minuto..."></textarea>
+              </div>
+          </div>
+          <button class="action-btn" onclick="generateShareLink()" style="margin-top:1rem; width:100%;">Generar Enlace</button>
+          <button class="close-btn" onclick="document.getElementById('shareConfigOverlay').style.display='none'">Cancelar</button>
+      </div>
+  </div>
+
+  <div id="shareModal" class="overlay">
+      <div class="modal">
+          <h3>¡Píldora Lista! 💊</h3>
+          <p style="font-size:0.9rem; margin-bottom:1rem;">Comparte este enlace:</p>
+          <textarea id="shareText" style="width:100%; height:80px; padding:0.5rem; border:1px solid #ddd; border-radius:8px; font-size:0.8rem;"></textarea>
+          <div class="pill-buttons">
+              <button class="action-btn btn-primary" onclick="sendWhatsapp()">WhatsApp</button>
+              <button class="action-btn btn-secondary" onclick="copyToClipboard()">Copiar</button>
+          </div>
+          <button class="close-btn" onclick="document.getElementById('shareModal').style.display='none'">Cerrar</button>
+      </div>
+  </div>
+
+  <div id="pillOverlay" class="overlay" style="background: var(--bg-gradient); z-index: 100;">
+      <div class="modal" style="background: rgba(255,255,255,0.95); max-width: 400px;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">💊</div>
+          <h3 id="pillRecipient" style="font-size: 1.5rem;">Hola...</h3>
+          <p id="pillMessage" style="font-style: italic; color: #555; margin: 1.5rem 0; font-size: 1.1rem;">"..."</p>
+          <button class="action-btn" onclick="window.closePill()">Recibir Píldora</button>
+      </div>
+  </div>
+
+  <div id="loadingOverlay" class="loading-overlay">
+      <div class="sphere" style="width: 50px; height: 50px; animation: none; transform: scale(1);"></div>
+      <span>Creando enlace...</span>
   </div>
 
   <script>
@@ -840,7 +524,7 @@
         }
     }
 
-    // STATE: V1.2.0 Quotes ENABLED by default
+    // STATE: Definición correcta de variables
     let state = { 
         pk: null, 
         data: [], 
@@ -855,6 +539,7 @@
         quotesEnabled: true, // Frases - Activado
         music: true          // Música - Activada
     };
+
     let audioCtx = null;
     let nextNoteTime = 0.0;
     let currentBeatIndex = 0;
@@ -1039,23 +724,6 @@
         }
     }
 
-    // --- V1.2.0: LOGICA TOGGLE FRASES ---
-    function toggleQuotes() {
-        state.quotesEnabled = !state.quotesEnabled;
-        const btn = document.getElementById('quoteToggleBtn');
-        
-        if(state.quotesEnabled) {
-            // ENCENDIDO: Botón brilla, frase aparece y se actualiza
-            btn.classList.add('active');
-            updateQuote(); // Cargar nueva frase al encender
-            els.qt.style.opacity = '1';
-        } else {
-            // APAGADO: Botón normal, frase se desvanece (pero el hueco queda)
-            btn.classList.remove('active');
-            els.qt.style.opacity = '0';
-        }
-    }
-
     function draw() {
       if (!state.run) return;
       if(state.paused) { requestAnimationFrame(draw); return; }
@@ -1187,19 +855,13 @@
         }
       });
     }
-// --- CONFIGURACIÓN DE MÚSICA ---
-const ambientAudio = new Audio('ambient.mp3');
-ambientAudio.loop = true;
-ambientAudio.volume = 0.5;
 
-// Aseguramos que el estado de la música exista
-if (typeof state !== 'undefined' && state.music === undefined) {
-  state.music = true;
-}
+    // --- CONFIGURACIÓN DE MÚSICA ---
+    const ambientAudio = new Audio('ambient.mp3');
+    ambientAudio.loop = true;
+    ambientAudio.volume = 0.5;
 
- 
-// --------------------------------
-function start(k) {
+    function start(k) {
       // 1. Primero comprobamos si el patrón es válido
       if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
 
@@ -1237,8 +899,9 @@ function start(k) {
       }, 100);
     }
 
-    function stop() {ambientAudio.pause();
-  ambientAudio.currentTime = 0;
+    function stop() {
+      ambientAudio.pause();
+      ambientAudio.currentTime = 0;
       state.run = false; clearTimeout(scheduleTimerID);
       els.sph.style.transform = 'scale(0.8)'; els.ph.textContent = "LISTO"; els.ph.style.color = 'var(--accent)';
       els.modeIcon.classList.remove('visible');
@@ -1248,7 +911,7 @@ function start(k) {
       els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
     }
 
-  // ==========================================
+    // ==========================================
     // --- CONTROLES DE LOS BOTONES (TOGGLES) ---
     // ==========================================
 
@@ -1286,7 +949,8 @@ function start(k) {
             if(els.qt) els.qt.style.opacity = '0';
         }
     }
-// FUNCIÓN RECUPERADA: TEMPO ⚡
+
+    // 3. TEMPO ⚡
     function toggleTempo() { 
       const t = [1.0, 1.5, 2.0]; 
       const idx = t.indexOf(state.tempo); 
@@ -1301,7 +965,8 @@ function start(k) {
       // Si está corriendo, reiniciamos para aplicar el cambio
       if(state.run) start(state.pk); 
     }
-    // 3. METRÓNOMO ⚡
+
+    // 4. METRÓNOMO ⚡
     function toggleMetro() {
         state.met = !state.met; 
         const btn = document.getElementById('btnMetro');
@@ -1315,7 +980,7 @@ function start(k) {
         }
     }
 
-    // 4. SONIDO FASE (Campana) 🔔
+    // 5. SONIDO FASE (Campana) 🔔
     function toggleSound() {
         state.snd = !state.snd;
         const btn = document.getElementById('btnSound');
