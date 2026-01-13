@@ -43,7 +43,6 @@
     }
 
     /* --- 2. LAYOUT & TOP CONTROLS --- */
-    /* Posición absoluta para no empujar el contenido central */
     .top-right {
       position: absolute;
       top: 2rem;
@@ -51,9 +50,10 @@
       display: flex;
       align-items: center;
       gap: 1rem;
-      z-index: 50;
+      z-index: 10;
     }
 
+    /* Icon buttons */
     .icon-btn {
       background: none; border: none; cursor: pointer; padding: 0;
       color: var(--text-main); opacity: 0.4; transition: all 0.3s ease;
@@ -68,9 +68,7 @@
       position: relative;
       width: 280px; height: 280px;
       display: flex; align-items: center; justify-content: center;
-      /* Margen inferior para separarlo de las frases */
       margin-bottom: 2rem;
-      z-index: 5;
     }
     .sphere {
       width: 100%; height: 100%;
@@ -83,8 +81,10 @@
       transition: transform 0.1s linear, box-shadow 0.5s ease;
       position: relative;
       z-index: 2;
+      /* Propiedad dinámica para el color de la sombra/fase */
       --c-phase: var(--accent);
     }
+    /* El anillo exterior que respira (sombra) */
     .sphere::after {
       content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
       border-radius: 50%; z-index: -1;
@@ -102,7 +102,7 @@
       color: var(--accent);
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      pointer-events: none; z-index: 10;
+      pointer-events: none; z-index: 5;
       text-shadow: 0 2px 10px rgba(255,255,255,0.8);
     }
     
@@ -111,9 +111,10 @@
       font-family: var(--font-body);
       font-size: 3rem; font-weight: 300;
       color: var(--text-main); opacity: 0.8;
-      pointer-events: none; z-index: 10;
+      pointer-events: none; z-index: 5;
     }
 
+    /* Nueva UI de Info de Ciclos y Modo */
     .info-bar {
       position: absolute; bottom: -60px;
       display: flex; gap: 1.5rem;
@@ -124,16 +125,11 @@
     .mode-icon { opacity: 0; transition: opacity 0.3s ease; font-size: 1.1rem; }
     .mode-icon.visible { opacity: 1; }
 
-    /* Frases Zen - CORREGIDO */
-    /* Usamos bottom: 140px para asegurar que NO toque el canvas (que mide 120px) */
+    /* Frases Zen */
     .zen-quote {
-      position: absolute; 
-      bottom: 140px; 
-      width: 90%; 
-      text-align: center;
+      position: absolute; bottom: 10%; width: 80%; text-align: center;
       font-family: var(--font-display); font-size: 1rem; color: var(--text-main);
       opacity: 0; transition: opacity 1s ease; line-height: 1.6;
-      z-index: 20;
     }
     
     /* --- 5. VISUALIZER (CANVAS) --- */
@@ -147,37 +143,84 @@
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(238, 252, 253, 0.95);
       backdrop-filter: blur(10px);
-      z-index: 100;
+      z-index: 20;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       transition: opacity 0.4s ease;
     }
-    .menu-title { font-family: var(--font-display); font-size: 2rem; margin-bottom: 2rem; color: var(--text-main); text-align: center; }
-    .pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 90%; max-width: 400px; }
+    .menu-title {
+      font-family: var(--font-display); font-size: 2rem; margin-bottom: 2rem;
+      color: var(--text-main); text-align: center;
+    }
+    .pattern-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+      width: 90%; max-width: 400px;
+    }
     .pattern-btn {
-      background: #fff; border: 1px solid rgba(0,0,0,0.05); padding: 1.2rem; border-radius: 16px;
-      font-family: var(--font-body); font-weight: 600; font-size: 1rem; color: var(--text-main);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s ease;
-      display: flex; flex-direction: column; align-items: center; gap: 0.5rem; position: relative;
+      background: #fff; border: 1px solid rgba(0,0,0,0.05);
+      padding: 1.2rem; border-radius: 16px;
+      font-family: var(--font-body); font-weight: 600; font-size: 1rem;
+      color: var(--text-main);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      cursor: pointer; transition: all 0.2s ease;
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      position: relative;
     }
     .pattern-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); border-color: var(--accent); }
     .pattern-desc { font-size: 0.75rem; color: var(--text-sub); font-weight: 400; text-align: center; }
     
-    .info-icon { position: absolute; top: 8px; right: 8px; font-size: 0.8rem; color: #b0bec5; cursor: help; }
-    .info-tooltip { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #37474f; color: #fff; padding: 0.5rem; border-radius: 8px; font-size: 0.75rem; width: 180px; text-align: center; pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 30; margin-bottom: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+    /* Tooltip info */
+    .info-icon {
+        position: absolute; top: 8px; right: 8px; font-size: 0.8rem; color: #b0bec5;
+        cursor: help;
+    }
+    .info-tooltip {
+        position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+        background: #37474f; color: #fff; padding: 0.5rem; border-radius: 8px;
+        font-size: 0.75rem; width: 180px; text-align: center; pointer-events: none;
+        opacity: 0; transition: opacity 0.2s; z-index: 30; margin-bottom: 8px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
     .info-tooltip.visible { opacity: 1; }
 
-    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 200; display: none; align-items: center; justify-content: center; }
-    .modal { background: #fff; padding: 2rem; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+    /* Custom Input Overlay */
+    .overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.4); z-index: 50;
+        display: none; align-items: center; justify-content: center;
+    }
+    .modal {
+        background: #fff; padding: 2rem; border-radius: 20px; width: 90%; max-width: 350px;
+        text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
     .modal h3 { margin-top: 0; font-family: var(--font-display); color: var(--text-main); }
-    .custom-input { width: 100%; padding: 0.8rem; margin: 1rem 0; border: 2px solid #e0f7fa; border-radius: 12px; font-family: var(--font-body); font-size: 1.2rem; text-align: center; outline: none; color: var(--text-main); }
+    .custom-input {
+        width: 100%; padding: 0.8rem; margin: 1rem 0;
+        border: 2px solid #e0f7fa; border-radius: 12px;
+        font-family: var(--font-body); font-size: 1.2rem; text-align: center; outline: none;
+        color: var(--text-main);
+    }
     .custom-input:focus { border-color: var(--accent); }
-    .action-btn { background: var(--accent); color: #fff; border: none; padding: 0.8rem 2rem; border-radius: 50px; font-weight: 700; cursor: pointer; font-size: 1rem; transition: transform 0.2s; margin-top: 0.5rem; }
+    .action-btn {
+        background: var(--accent); color: #fff; border: none; padding: 0.8rem 2rem;
+        border-radius: 50px; font-weight: 700; cursor: pointer; font-size: 1rem;
+        transition: transform 0.2s; margin-top: 0.5rem;
+    }
     .action-btn:active { transform: scale(0.95); }
-    .close-btn { background: transparent; color: var(--text-sub); border: none; margin-top: 1rem; cursor: pointer; font-size: 0.9rem; text-decoration: underline; }
+    .close-btn {
+        background: transparent; color: var(--text-sub); border: none; margin-top: 1rem;
+        cursor: pointer; font-size: 0.9rem; text-decoration: underline;
+    }
 
-    .install-btn { position: absolute; bottom: 2rem; background: #37474f; color: #fff; padding: 0.6rem 1.2rem; border-radius: 30px; border: none; font-weight: 600; cursor: pointer; display: none; align-items: center; gap: 0.5rem; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 25; }
+    /* Install Button */
+    .install-btn {
+        position: absolute; bottom: 2rem;
+        background: #37474f; color: #fff; padding: 0.6rem 1.2rem;
+        border-radius: 30px; border: none; font-weight: 600; cursor: pointer;
+        display: none; align-items: center; gap: 0.5rem; font-size: 0.9rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 25;
+    }
 
-    /* Patrón arriba a la izquierda (Asegurado absolute) */
+    /* Pattern Display (Top Left) */
     .pattern-display {
       position: absolute; top: 2rem; left: 2rem;
       font-family: var(--font-body); font-weight: 800; font-size: 1.2rem;
@@ -189,26 +232,35 @@
     .p-mode-sub { font-size: 0.6em; vertical-align: sub; margin-left: 1px; opacity: 0.7; }
     .p-sep { opacity: 0.3; }
 
+    /* Share Config Styles */
     .pill-form { display: flex; flex-direction: column; gap: 0.8rem; text-align: left; }
     .pill-label { font-size: 0.8rem; font-weight: 600; color: var(--text-sub); margin-left: 4px; margin-bottom: -4px; }
-    .pill-input { width: 100%; padding: 0.6rem; border: 1px solid #e0e0e0; border-radius: 8px; font-family: var(--font-body); outline: none; font-size: 0.95rem; }
+    .pill-input {
+        width: 100%; padding: 0.6rem; border: 1px solid #e0e0e0; border-radius: 8px;
+        font-family: var(--font-body); outline: none; font-size: 0.95rem;
+    }
     .pill-input:focus { border-color: var(--accent); }
     .pill-buttons { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
     .btn-secondary { background: #eceff1; color: var(--text-main); flex: 1; }
     .btn-primary { background: var(--accent); color: white; flex: 2; }
 
-    .loading-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.8); z-index: 300; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; color: var(--accent); font-weight: 600; }
+    /* Loading Overlay */
+    .loading-overlay {
+        position: absolute; top:0; left:0; width:100%; height:100%;
+        background: rgba(255,255,255,0.8); z-index: 60;
+        display: none; align-items: center; justify-content: center;
+        flex-direction: column; gap: 1rem; color: var(--accent); font-weight: 600;
+    }
 
+    /* MEDIA QUERIES */
     @media (max-width: 768px) {
       .sphere-container { width: 240px; height: 240px; }
       .counter-text { font-size: 2.5rem; }
-      /* Ajuste fino para móviles */
-      .top-right { top: 1.5rem; right: 1.5rem; gap: 0.5rem; } 
+      .top-right { top: 1.5rem; right: 1.5rem; gap: 0.5rem; } /* Gap ajustado para móvil */
       .pattern-display { top: 1.5rem; left: 1.5rem; font-size: 1rem; }
       .menu-title { font-size: 1.5rem; }
       .pattern-grid { grid-template-columns: 1fr; }
-      /* Aseguramos que la frase no baje demasiado en móviles */
-      .zen-quote { width: 90%; font-size: 0.9rem; bottom: 140px; }
+      .zen-quote { width: 90%; font-size: 0.9rem; bottom: 8%; }
     }
     
     @keyframes pulseShadow {
@@ -220,8 +272,10 @@
 </head>
 <body>
 
-  <button id="installBtn" class="install-btn" onclick="installApp()">⬇ Instalar App</button>
-  
+  <button id="installBtn" class="install-btn" onclick="installApp()">
+     ⬇ Instalar App
+  </button>
+
   <div id="patternDisplay" class="pattern-display">4-7-8</div>
 
   <div class="top-right">
@@ -265,13 +319,21 @@
     <div id="sphere" class="sphere"></div>
     <div id="phaseText" class="phase-text">LISTO</div>
     <div id="counterText" class="counter-text"></div>
+    
     <div class="info-bar">
-        <div class="info-item"><span id="cycleBadge">🔄 0</span></div>
-        <div class="info-item"><span id="modeIcon" class="mode-icon">👃</span></div>
+        <div class="info-item">
+            <span id="cycleBadge">🔄 0</span>
+        </div>
+        <div class="info-item">
+            <span id="modeIcon" class="mode-icon">👃</span>
+        </div>
     </div>
   </div>
 
-  <div id="phraseContent" class="zen-quote">Sigue el ritmo, respira, nada más.</div>
+  <div id="phraseContent" class="zen-quote">
+     Sigue el ritmo, respira, nada más.
+  </div>
+
   <canvas id="breathGraph" class="breath-track" width="600" height="120"></canvas>
 
   <div id="selectionMenu" class="selection-menu">
@@ -280,27 +342,52 @@
       <div class="pattern-btn" onclick="start('4-7-8b')">
          <span>🌙 Relajación</span>
          <span class="pattern-desc">4-7-8 (Boca) · Dormir</span>
-         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">ℹ<div class="info-tooltip">Inhala 4s (Nariz)<br>Mantén 7s<br>Exhala 8s (Boca)<br>Ideal para ansiedad y sueño.</div></div>
+         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">
+             ℹ
+             <div class="info-tooltip">
+                 Inhala 4s (Nariz)<br>Mantén 7s<br>Exhala 8s (Boca)<br>Ideal para ansiedad y sueño.
+             </div>
+         </div>
       </div>
       <div class="pattern-btn" onclick="start('4-4-6-2')">
          <span>🧘‍♂️ Calma Profunda</span>
          <span class="pattern-desc">4-4-6-2 · Estrés</span>
-         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">ℹ<div class="info-tooltip">Inhala 4s, Mantén 4s,<br>Exhala 6s, Vacío 2s.<br>Equilibra el sistema nervioso.</div></div>
+         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">
+             ℹ
+             <div class="info-tooltip">
+                 Inhala 4s, Mantén 4s,<br>Exhala 6s, Vacío 2s.<br>Equilibra el sistema nervioso.
+             </div>
+         </div>
       </div>
       <div class="pattern-btn" onclick="start('box')">
          <span>📦 Box Breathing</span>
          <span class="pattern-desc">4-4-4-4 · Enfoque</span>
-         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">ℹ<div class="info-tooltip">4s en cada fase.<br>Usada por Navy SEALs<br>para concentración máxima.</div></div>
+         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">
+             ℹ
+             <div class="info-tooltip">
+                 4s en cada fase.<br>Usada por Navy SEALs<br>para concentración máxima.
+             </div>
+         </div>
       </div>
       <div class="pattern-btn" onclick="start('5-5')">
          <span>⚖️ Coherencia</span>
          <span class="pattern-desc">5-5 · Equilibrio</span>
-         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">ℹ<div class="info-tooltip">Respiración resonante.<br>Sincroniza corazón y cerebro.<br>Perfecto para empezar.</div></div>
+         <div class="info-icon" onclick="event.stopPropagation(); toggleTooltip(this)">
+             ℹ
+             <div class="info-tooltip">
+                 Respiración resonante.<br>Sincroniza corazón y cerebro.<br>Perfecto para empezar.
+             </div>
+         </div>
       </div>
     </div>
+    
     <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-        <button onclick="openCustomModal()" style="background:none; border:none; color:var(--text-sub); font-weight:600; cursor:pointer; font-size:0.9rem;">✨ Crear Propio</button>
-        <button onclick="openShareConfig()" style="background:none; border:none; color:var(--text-sub); font-weight:600; cursor:pointer; font-size:0.9rem;">🎁 Enviar Píldora</button>
+        <button onclick="openCustomModal()" style="background:none; border:none; color:var(--text-sub); font-weight:600; cursor:pointer; font-size:0.9rem;">
+           ✨ Crear Propio
+        </button>
+        <button onclick="openShareConfig()" style="background:none; border:none; color:var(--text-sub); font-weight:600; cursor:pointer; font-size:0.9rem;">
+           🎁 Enviar Píldora
+        </button>
     </div>
   </div>
 
@@ -318,9 +405,18 @@
       <div class="modal">
           <h3>Crear Píldora 💊</h3>
           <div class="pill-form">
-              <div><label class="pill-label">Patrón</label><input type="text" id="pillPatternInput" class="pill-input" placeholder="Ej: 4-7-8b"></div>
-              <div><label class="pill-label">Para</label><input type="text" id="pillNameInput" class="pill-input" placeholder="Ej: Mamá"></div>
-              <div><label class="pill-label">Mensaje</label><textarea id="pillMessageInput" class="pill-input" rows="2" placeholder="Ej: Tómate 1 minuto..."></textarea></div>
+              <div>
+                  <label class="pill-label">Patrón</label>
+                  <input type="text" id="pillPatternInput" class="pill-input" placeholder="Ej: 4-7-8b">
+              </div>
+              <div>
+                  <label class="pill-label">Para</label>
+                  <input type="text" id="pillNameInput" class="pill-input" placeholder="Ej: Mamá">
+              </div>
+              <div>
+                  <label class="pill-label">Mensaje</label>
+                  <textarea id="pillMessageInput" class="pill-input" rows="2" placeholder="Ej: Tómate 1 minuto..."></textarea>
+              </div>
           </div>
           <button class="action-btn" onclick="generateShareLink()" style="margin-top:1rem; width:100%;">Generar Enlace</button>
           <button class="close-btn" onclick="document.getElementById('shareConfigOverlay').style.display='none'">Cancelar</button>
@@ -361,21 +457,67 @@
     const C_EXHALE = '#2196F3'; 
 
     let patterns = {
-      '4-4-6-2': [ {t:"INHALA", b:4, y:'rise', c:C_INHALE, m:'nose'}, {t:"MANTÉN", b:4, y:'hold_high', c:C_HOLD, m:'nose'}, {t:"EXHALA", b:6, y:'fall', c:C_EXHALE, m:'nose'}, {t:"SOSTÉN", b:2, y:'hold_low', c:C_HOLD, m:'nose'} ],
-      '4-7-8b': [ {t:"INHALA", b:4, y:'rise', c:C_INHALE, m:'nose'}, {t:"MANTÉN", b:7, y:'hold_high', c:C_HOLD, m:'nose'}, {t:"EXHALA", b:8, y:'fall', c:C_EXHALE, m:'mouth'} ],
-      'box': [ {t:"INHALA", b:4, y:'rise', c:C_INHALE, m:'nose'}, {t:"MANTÉN", b:4, y:'hold_high', c:C_HOLD, m:'nose'}, {t:"EXHALA", b:4, y:'fall', c:C_EXHALE, m:'nose'}, {t:"SOSTÉN", b:4, y:'hold_low', c:C_HOLD, m:'nose'} ],
-      '5-5': [ {t:"INHALA", b:5, y:'rise', c:C_INHALE, m:'nose'}, {t:"EXHALA", b:5, y:'fall', c:C_EXHALE, m:'nose'} ]
+      '4-4-6-2': [
+          {t:"INHALA", b:4, y:'rise', c:C_INHALE, m:'nose'},
+          {t:"MANTÉN", b:4, y:'hold_high', c:C_HOLD, m:'nose'},
+          {t:"EXHALA", b:6, y:'fall', c:C_EXHALE, m:'nose'},
+          {t:"SOSTÉN", b:2, y:'hold_low', c:C_HOLD, m:'nose'}
+      ],
+      '4-7-8b': [
+          {t:"INHALA", b:4, y:'rise', c:C_INHALE, m:'nose'},
+          {t:"MANTÉN", b:7, y:'hold_high', c:C_HOLD, m:'nose'},
+          {t:"EXHALA", b:8, y:'fall', c:C_EXHALE, m:'mouth'} 
+      ],
+      'box': [
+          {t:"INHALA", b:4, y:'rise', c:C_INHALE, m:'nose'},
+          {t:"MANTÉN", b:4, y:'hold_high', c:C_HOLD, m:'nose'},
+          {t:"EXHALA", b:4, y:'fall', c:C_EXHALE, m:'nose'},
+          {t:"SOSTÉN", b:4, y:'hold_low', c:C_HOLD, m:'nose'}
+      ],
+      '5-5': [
+          {t:"INHALA", b:5, y:'rise', c:C_INHALE, m:'nose'},
+          {t:"EXHALA", b:5, y:'fall', c:C_EXHALE, m:'nose'}
+      ]
     };
     
     // --- FRASES ZEN ---
-    const pSubjects = [ "El río antiguo", "La brisa suave", "El bambú flexible", "La montaña quieta", "Tu mente clara", "El momento presente", "La hoja seca", "El agua profunda", "Este aliento", "La nube blanca", "El vacío fértil", "La raíz fuerte", "El amor inmenso", "La belleza oculta", "Tu corazón sabio", "La flor del alma", "La luz interior" ];
-    const pActions = [ "fluye sin esfuerzo", "no opone resistencia", "se dobla sin romperse", "observa en silencio", "refleja el cielo", "encuentra su camino", "suelta el control", "descansa en paz", "existe sin más", "acepta el cambio", "danza con el viento", "crece despacio", "abraza lo que es", "florece sin prisa", "sana las heridas", "irradia calidez", "ama sin apego", "ve la verdad" ];
-    const pConclusions = [ "Sé como el agua.", "Todo es perfecto.", "Paz infinita.", "Vuelve al centro.", "Nada que hacer.", "Mente serena.", "Simple y puro.", "Aquí y ahora.", "Conecta contigo.", "Fluye con todo.", "Amor es todo.", "Belleza pura.", "Eres el amor.", "Suelta y confía.", "Eres suficiente.", "Luz radiante." ];
-    const masterQuotes = [ "El vacío es forma, la forma es vacío.", "Si te doblas como el junco, el viento no te romperá.", "El viaje de mil millas comienza con un aliento.", "Conoce lo blanco, pero conserva lo negro.", "Sé el valle del universo, recíbelo todo.", "Poco a poco, el barro se asienta y el agua se aclara.", "Haz nada, y nada quedará sin hacer.", "El amor no reclama posesión, sino que da libertad.", "La belleza no está en el rostro, sino en la luz del corazón.", "Aceptar es el verdadero acto de transformación." ];
+    const pSubjects = [
+        "El río antiguo", "La brisa suave", "El bambú flexible", "La montaña quieta", "Tu mente clara", 
+        "El momento presente", "La hoja seca", "El agua profunda", "Este aliento", "La nube blanca", 
+        "El vacío fértil", "La raíz fuerte", 
+        "El amor inmenso", "La belleza oculta", "Tu corazón sabio", "La flor del alma", "La luz interior"
+    ];
+    
+    const pActions = [
+        "fluye sin esfuerzo", "no opone resistencia", "se dobla sin romperse", "observa en silencio", 
+        "refleja el cielo", "encuentra su camino", "suelta el control", "descansa en paz", 
+        "existe sin más", "acepta el cambio", "danza con el viento", "crece despacio",
+        "abraza lo que es", "florece sin prisa", "sana las heridas", "irradia calidez", "ama sin apego", "ve la verdad"
+    ];
+    
+    const pConclusions = [
+        "Sé como el agua.", "Todo es perfecto.", "Paz infinita.", "Vuelve al centro.", "Nada que hacer.", 
+        "Mente serena.", "Simple y puro.", "Aquí y ahora.", "Conecta contigo.", "Fluye con todo.",
+        "Amor es todo.", "Belleza pura.", "Eres el amor.", "Suelta y confía.", "Eres suficiente.", "Luz radiante."
+    ];
+
+    const masterQuotes = [
+      "El vacío es forma, la forma es vacío.",
+      "Si te doblas como el junco, el viento no te romperá.",
+      "El viaje de mil millas comienza con un aliento.",
+      "Conoce lo blanco, pero conserva lo negro.",
+      "Sé el valle del universo, recíbelo todo.",
+      "Poco a poco, el barro se asienta y el agua se aclara.",
+      "Haz nada, y nada quedará sin hacer.",
+      "El amor no reclama posesión, sino que da libertad.",
+      "La belleza no está en el rostro, sino en la luz del corazón.",
+      "Aceptar es el verdadero acto de transformación."
+    ];
 
     function getWuWeiQuote() {
-        if(Math.random() < 0.3) { return masterQuotes[Math.floor(Math.random() * masterQuotes.length)]; } 
-        else {
+        if(Math.random() < 0.3) {
+            return masterQuotes[Math.floor(Math.random() * masterQuotes.length)];
+        } else {
             const s = pSubjects[Math.floor(Math.random() * pSubjects.length)];
             const a = pActions[Math.floor(Math.random() * pActions.length)];
             const c = pConclusions[Math.floor(Math.random() * pConclusions.length)];
@@ -383,8 +525,8 @@
         }
     }
 
-    // STATE: music activado por defecto
-    let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:true, met:false, quotesEnabled: true, music: true };
+    // STATE: Añadido music: true
+    let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true, music: true };
     
     let audioCtx = null;
     let nextNoteTime = 0.0;
@@ -393,23 +535,32 @@
     const lookahead = 25.0; 
     const scheduleAheadTime = 0.1;
 
-    // AUDIO AMBIENTAL
+    // CONFIGURACIÓN DE AUDIO AMBIENTAL (NUEVO)
     const ambientAudio = new Audio('ambient.mp3');
     ambientAudio.loop = true;
     ambientAudio.volume = 0.5;
 
-    // DOM REFERENCES (IDs sincronizados con el HTML)
+    // --- DOM REFERENCES ---
     const els = {
       menu: document.getElementById('selectionMenu'),
       sph: document.getElementById('sphere'), ph: document.getElementById('phaseText'),
       cnt: document.getElementById('counterText'), qt: document.getElementById('phraseContent'),
       cvs: document.getElementById('breathGraph'), ctx: document.getElementById('breathGraph').getContext('2d'),
-      cyc: document.getElementById('cycleBadge'), pat: document.getElementById('patternDisplay'),
-      load: document.getElementById('loadingOverlay'), shareModal: document.getElementById('shareModal'),
-      shareText: document.getElementById('shareText'), customOverlay: document.getElementById('customOverlay'),
-      customInput: document.getElementById('customPatternInput'), shareConfigOverlay: document.getElementById('shareConfigOverlay'),
-      pillPatternInput: document.getElementById('pillPatternInput'), pillNameInput: document.getElementById('pillNameInput'),
-      pillMessageInput: document.getElementById('pillMessageInput'), modeIcon: document.getElementById('modeIcon')
+      cyc: document.getElementById('cycleBadge'), 
+      pat: document.getElementById('patternDisplay'),
+      load: document.getElementById('loadingOverlay'),
+      shareModal: document.getElementById('shareModal'),
+      shareText: document.getElementById('shareText'),
+      
+      customOverlay: document.getElementById('customOverlay'),
+      customInput: document.getElementById('customPatternInput'),
+      
+      shareConfigOverlay: document.getElementById('shareConfigOverlay'),
+      pillPatternInput: document.getElementById('pillPatternInput'),
+      pillNameInput: document.getElementById('pillNameInput'),
+      pillMessageInput: document.getElementById('pillMessageInput'),
+      
+      modeIcon: document.getElementById('modeIcon')
     };
 
     function formatPatternInput(input) {
@@ -417,31 +568,57 @@
         let formatted = '';
         for(let i=0; i < raw.length; i++) {
             const char = raw[i];
-            if (/[0-9]/.test(char)) { if (formatted.length > 0) formatted += '-'; formatted += char; } 
-            else { if (formatted.length > 0 && formatted.slice(-1) !== 'b') formatted += char; }
+            const isDigit = /[0-9]/.test(char);
+            if (isDigit) {
+                if (formatted.length > 0) formatted += '-';
+                formatted += char;
+            } else {
+                if (formatted.length > 0 && formatted.slice(-1) !== 'b') {
+                    formatted += char;
+                }
+            }
         }
         input.value = formatted;
     }
+
     if(els.customInput) els.customInput.addEventListener('input', (e) => formatPatternInput(e.target));
     if(els.pillPatternInput) els.pillPatternInput.addEventListener('input', (e) => formatPatternInput(e.target));
 
-    window.toggleTooltip = function(el) { const tip = el.querySelector('.info-tooltip'); if(tip) tip.classList.toggle('visible'); }
+    window.toggleTooltip = function(el) {
+        const tip = el.querySelector('.info-tooltip');
+        if(tip) tip.classList.toggle('visible');
+    }
     
     let deferredPrompt;
     const installBtn = document.getElementById('installBtn');
-    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'flex'; });
-    async function installApp() { if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; } else { alert("Para instalar: Usa el menú del navegador 'Añadir a inicio'."); } }
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'flex';
+    });
+    async function installApp() {
+        if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; } 
+        else { alert("Para instalar: Usa el menú del navegador 'Añadir a inicio'."); }
+    }
 
-    function openCustomModal() { els.customOverlay.style.display = 'flex'; els.customInput.value = ''; els.customInput.focus(); }
+    function openCustomModal() {
+        els.customOverlay.style.display = 'flex';
+        els.customInput.value = ''; els.customInput.focus();
+    }
 
     function parsePatternString(str) {
         const chunks = str.split('-');
-        const defs = [ {t:"INHALA", y:'rise', c:C_INHALE}, {t:"MANTÉN", y:'hold_high', c:C_HOLD}, {t:"EXHALA", y:'fall', c:C_EXHALE}, {t:"SOSTÉN", y:'hold_low', c:C_HOLD}, {t:"PAUSA", y:'hold_low', c:C_HOLD} ];
+        const defs = [
+            {t:"INHALA", y:'rise', c:C_INHALE},
+            {t:"MANTÉN", y:'hold_high', c:C_HOLD},
+            {t:"EXHALA", y:'fall', c:C_EXHALE},
+            {t:"SOSTÉN", y:'hold_low', c:C_HOLD},
+            {t:"PAUSA", y:'hold_low', c:C_HOLD}
+        ];
         let newPattern = [];
         chunks.forEach((chunk, i) => {
             let beats = parseInt(chunk.replace(/\D/g,''));
             if(!isNaN(beats) && beats > 0) {
-                let mode = 'nose'; if(chunk.toLowerCase().includes('b')) mode = 'mouth';
+                let mode = 'nose';
+                if(chunk.toLowerCase().includes('b')) mode = 'mouth';
                 let defIdx = i % defs.length;
                 newPattern.push({ t: defs[defIdx].t, b: beats, y: defs[defIdx].y, c: defs[defIdx].c, m: mode });
             }
@@ -453,27 +630,36 @@
         const val = els.customInput.value.trim();
         const newPattern = parsePatternString(val);
         if (newPattern.length < 2) { alert("Introduce al menos 2 fases válidas."); return; }
-        patterns['custom'] = newPattern; els.customOverlay.style.display = 'none'; start('custom');
+        patterns['custom'] = newPattern;
+        els.customOverlay.style.display = 'none';
+        start('custom');
     }
 
-    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{}); }
+    function initAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
+    }
 
     function playTone(freq, type, dur, time) {
       if (!state.snd && !state.met) return; 
       try {
-        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
         osc.type = type; osc.frequency.setValueAtTime(freq, time);
         let vol = 0.0;
         if (state.snd) vol = 0.05; 
         if (state.met && type === 'square') vol = 0.05; 
         if (state.met && state.snd && type === 'square') vol = 0.08; 
-        gain.gain.setValueAtTime(vol, time); gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
-        osc.connect(gain); gain.connect(audioCtx.destination); osc.start(time); osc.stop(time + dur);
+        gain.gain.setValueAtTime(vol, time);
+        gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(time); osc.stop(time + dur);
       } catch(e) {}
     }
 
     function scheduleNote(beatNumber, time) {
       if(state.paused) return;
+
       let accumulatedBeats = 0; let phase = null; let beatInPhase = 0;
       for (let p of state.data) {
         if (beatNumber < accumulatedBeats + p.b) { phase = p; beatInPhase = beatNumber - accumulatedBeats + 1; break; }
@@ -482,7 +668,8 @@
       if (phase) {
         if (beatInPhase === 1) { 
            let freq = 440;
-           if(phase.y === 'rise') freq = 300; else if(phase.y === 'hold_high') freq = 450; else if(phase.y === 'fall') freq = 400; else freq = 250;
+           if(phase.y === 'rise') freq = 300; else if(phase.y === 'hold_high') freq = 450;
+           else if(phase.y === 'fall') freq = 400; else freq = 250;
            playTone(freq, 'sine', 0.2, time);
         }
         if (state.met) playTone(beatInPhase === 1 ? 1200 : 800, 'square', 0.05, time); 
@@ -493,16 +680,27 @@
       if(state.paused) return; 
       const secondsPerBeat = state.tempo; nextNoteTime += secondsPerBeat; currentBeatIndex++; 
       const totalBeats = state.data.reduce((acc, p) => acc + p.b, 0);
-      if (currentBeatIndex >= totalBeats) { currentBeatIndex = 0; state.cyc++; if(state.quotesEnabled) updateQuote(); }
+      if (currentBeatIndex >= totalBeats) { 
+          currentBeatIndex = 0; 
+          state.cyc++; 
+          if(state.quotesEnabled) updateQuote();
+      }
     }
     
-    function updateQuote() { const rawQuote = getWuWeiQuote(); els.qt.innerHTML = rawQuote.replace('. ', '.<br>'); }
+    function updateQuote() {
+        const rawQuote = getWuWeiQuote();
+        els.qt.innerHTML = rawQuote.replace('. ', '.<br>');
+    }
 
     function scheduler() {
       if (state.run) {
           if (!state.paused) {
-              while (nextNoteTime < audioCtx.currentTime + scheduleAheadTime) { scheduleNote(currentBeatIndex, nextNoteTime); nextBeat(); }
-          } else { nextNoteTime = audioCtx.currentTime; }
+              while (nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
+                scheduleNote(currentBeatIndex, nextNoteTime); nextBeat();
+              }
+          } else {
+              nextNoteTime = audioCtx.currentTime; 
+          }
           scheduleTimerID = setTimeout(scheduler, lookahead);
       }
     }
@@ -510,8 +708,13 @@
     function togglePause() {
         if(!state.run) return;
         state.paused = !state.paused;
-        if(state.paused) { els.ph.textContent = "PAUSA"; els.ph.style.color = "#78909c"; els.modeIcon.style.opacity = '0.5'; } 
-        else { nextNoteTime = audioCtx.currentTime; }
+        if(state.paused) {
+            els.ph.textContent = "PAUSA";
+            els.ph.style.color = "#78909c";
+            els.modeIcon.style.opacity = '0.5';
+        } else {
+            nextNoteTime = audioCtx.currentTime;
+        }
     }
 
     function draw() {
@@ -529,17 +732,32 @@
 
       if (p) {
         if (els.ph.textContent !== p.t) { 
-            els.ph.textContent = p.t; els.ph.style.color = p.c; 
+            els.ph.textContent = p.t; 
+            els.ph.style.color = p.c; 
+            
             const isHold = (p.y === 'hold_high' || p.y === 'hold_low');
-            if (isHold) { els.modeIcon.textContent = "⏸️"; els.modeIcon.classList.add('visible'); } 
-            else { els.modeIcon.textContent = (p.m === 'mouth') ? "🌬️" : "👃"; els.modeIcon.classList.add('visible'); }
+            if (isHold) {
+                 els.modeIcon.textContent = "⏸️"; 
+                 els.modeIcon.classList.add('visible');
+            } else {
+                 if(p.m === 'mouth') {
+                     els.modeIcon.textContent = "🌬️"; 
+                     els.modeIcon.classList.add('visible');
+                 } else {
+                     els.modeIcon.textContent = "👃"; 
+                     els.modeIcon.classList.add('visible');
+                 }
+            }
         }
         els.sph.style.setProperty('--c-phase', p.c);
         
         const currentPhaseIdx = state.data.indexOf(p);
         state.data.forEach((_, idx) => {
             const el = document.getElementById(`p-step-${idx}`);
-            if(el) { (idx === currentPhaseIdx) ? el.classList.add('active') : el.classList.remove('active'); }
+            if(el) { 
+                if(idx === currentPhaseIdx) el.classList.add('active'); 
+                else el.classList.remove('active'); 
+            }
         });
 
         const timeInPhase = timeInCycle - p.start;
@@ -549,7 +767,9 @@
 
         const progress = timeInPhase / p.dur; 
         const ease = -(Math.cos(Math.PI * progress) - 1) / 2;
-        let maxScale = (window.innerWidth < 400) ? 1.35 : 1.45; 
+        let maxScale = 1.45; 
+        if (window.innerWidth < 400) maxScale = 1.35; 
+
         let rawScale = 1;
         if (p.y === 'rise') rawScale = 0.8 + ((maxScale - 0.8) * ease); 
         else if (p.y === 'fall') rawScale = maxScale - ((maxScale - 0.8) * ease);
@@ -592,7 +812,10 @@
     function prepareData(k) {
       if(!patterns[k]) return false;
       state.pk = k; state.data = []; let acc = 0;
-      patterns[k].forEach(x => { const d = x.b * state.tempo; state.data.push({...x, start:acc, end:acc+d, dur:d}); acc += d; });
+      patterns[k].forEach(x => { 
+          const d = x.b * state.tempo; 
+          state.data.push({...x, start:acc, end:acc+d, dur:d}); acc += d; 
+      });
       state.dur = acc;
       return true;
     }
@@ -608,45 +831,72 @@
       patterns[k].forEach((step, idx) => {
         const numSpan = document.createElement('span');
         numSpan.textContent = step.b;
-        if(step.m === 'mouth') { const sub = document.createElement('span'); sub.textContent = 'b'; sub.className = 'p-mode-sub'; numSpan.appendChild(sub); }
-        numSpan.className = 'p-num'; numSpan.id = `p-step-${idx}`; els.pat.appendChild(numSpan);
-        if (idx < patterns[k].length - 1) { const sep = document.createElement('span'); sep.textContent = '-'; sep.className = 'p-sep'; els.pat.appendChild(sep); }
+        if(step.m === 'mouth') {
+            const sub = document.createElement('span');
+            sub.textContent = 'b';
+            sub.className = 'p-mode-sub';
+            numSpan.appendChild(sub);
+        }
+        numSpan.className = 'p-num';
+        numSpan.id = `p-step-${idx}`; 
+        els.pat.appendChild(numSpan);
+        if (idx < patterns[k].length - 1) {
+          const sep = document.createElement('span');
+          sep.textContent = '-';
+          sep.className = 'p-sep';
+          els.pat.appendChild(sep);
+        }
       });
     }
 
     function start(k) {
       if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
-      if(state.music || state.music === undefined) { ambientAudio.currentTime = 0; ambientAudio.play().catch(e => console.log(e)); }
-      initAudio(); renderPattern(k);
-      els.menu.style.opacity = '0'; setTimeout(()=>els.menu.style.display='none', 400);
       
-      // Actualizamos visualmente los botones al estado actual
-      updateButtonState('quoteToggleBtn', state.quotesEnabled);
-      updateButtonState('soundBtn', state.snd);
-      updateButtonState('metronomeBtn', state.met);
-      updateButtonState('btnMusic', state.music);
-      if(state.quotesEnabled && els.qt) els.qt.style.opacity = '1';
+      // MÚSICA: Iniciar si está activa
+      if(state.music || state.music === undefined) { 
+         ambientAudio.currentTime = 0;
+         ambientAudio.play().catch(e => console.log(e));
+      }
 
+      initAudio(); 
+      renderPattern(k);
+      els.menu.style.opacity = '0'; 
+      setTimeout(()=>els.menu.style.display='none', 400);
+      
+      // RESETEO DE ESTADOS
+      state.quotesEnabled = true;
+      const btn = document.getElementById('quoteToggleBtn');
+      if(btn) btn.classList.add('active');
+      if(els.qt) {
+          els.qt.style.opacity = '1';  
+          els.qt.textContent = "Sigue el ritmo, respira, nada más."; 
+      }
+      
       setTimeout(() => {
-        initCanvas(); state.run = true; state.paused = false;
-        state.startAudioTime = audioCtx ? audioCtx.currentTime : 0; nextNoteTime = state.startAudioTime;
-        currentBeatIndex = 0; state.cyc = 0; if(audioCtx) scheduler(); requestAnimationFrame(draw);
+        initCanvas(); 
+        state.run = true; 
+        state.paused = false;
+        state.startAudioTime = audioCtx ? audioCtx.currentTime : 0;
+        nextNoteTime = state.startAudioTime;
+        currentBeatIndex = 0; 
+        state.cyc = 0; 
+        if(audioCtx) scheduler(); 
+        requestAnimationFrame(draw);
       }, 100);
     }
 
     function stop() {
-      ambientAudio.pause(); ambientAudio.currentTime = 0;
+      // MÚSICA: Parar
+      ambientAudio.pause();
+      ambientAudio.currentTime = 0;
+
       state.run = false; clearTimeout(scheduleTimerID);
       els.sph.style.transform = 'scale(0.8)'; els.ph.textContent = "LISTO"; els.ph.style.color = 'var(--accent)';
-      els.modeIcon.classList.remove('visible'); els.cnt.textContent = ""; els.cyc.textContent = "🔄 0"; els.sph.style.setProperty('--c-phase', '#4CAF50');
+      els.modeIcon.classList.remove('visible');
+      els.cnt.textContent = ""; els.cyc.textContent = "🔄 0"; els.sph.style.setProperty('--c-phase', '#4CAF50');
       els.menu.style.display = 'flex'; setTimeout(()=>els.menu.style.opacity='1',10);
-      els.pat.innerHTML = ''; els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
-    }
-
-    // --- FUNCIONES BOTONES CORREGIDAS (Sin borrar SVGs) ---
-    function updateButtonState(id, isActive) {
-        const btn = document.getElementById(id);
-        if(btn) { if(isActive) btn.classList.add('active'); else btn.classList.remove('active'); }
+      els.pat.innerHTML = ''; 
+      els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
     }
 
     function toggleTempo() { 
@@ -659,72 +909,104 @@
 
     function toggleSound() { 
       state.snd=!state.snd; 
-      updateButtonState('soundBtn', state.snd);
-      if(state.snd && state.run) initAudio();
+      const btn = document.getElementById('soundBtn');
+      if(state.snd) { btn.classList.add('active'); if(state.run) initAudio(); }
+      else { btn.classList.remove('active'); }
     }
 
     function toggleMetronome() { 
       state.met=!state.met; 
-      updateButtonState('metronomeBtn', state.met);
+      const btn = document.getElementById('metronomeBtn');
+      if(state.met) btn.classList.add('active');
+      else btn.classList.remove('active');
     }
 
     function toggleQuotes() {
         state.quotesEnabled = !state.quotesEnabled;
-        updateButtonState('quoteToggleBtn', state.quotesEnabled);
-        if(els.qt) els.qt.style.opacity = state.quotesEnabled ? '1' : '0';
-        if(state.quotesEnabled) updateQuote();
+        const btn = document.getElementById('quoteToggleBtn');
+        if(state.quotesEnabled) {
+            btn.classList.add('active'); els.qt.style.opacity = '1'; updateQuote();
+        } else {
+            btn.classList.remove('active'); els.qt.style.opacity = '0';
+        }
     }
 
     function toggleMusic() {
         if (typeof state.music === 'undefined') state.music = true;
         state.music = !state.music;
-        updateButtonState('btnMusic', state.music);
-        if(state.music) { if(state.run) ambientAudio.play(); } 
-        else { ambientAudio.pause(); }
+        const btn = document.getElementById('btnMusic');
+        if(state.music) {
+            btn.classList.add('active');
+            if(state.run) ambientAudio.play(); 
+        } else {
+            btn.classList.remove('active');
+            ambientAudio.pause();
+        }
     }
 
     function openShareConfig() {
-        let lastP = state.pk; if(lastP && lastP !== 'custom') { els.pillPatternInput.value = lastP; }
-        els.shareConfigOverlay.style.display = 'flex'; els.pillPatternInput.focus();
+        let lastP = state.pk;
+        if(lastP && lastP !== 'custom') { els.pillPatternInput.value = lastP; }
+        els.shareConfigOverlay.style.display = 'flex';
+        els.pillPatternInput.focus();
     }
 
     async function generateShareLink() {
-       let pString = els.pillPatternInput.value.trim(); if(!pString) { alert("Falta el patrón."); return; }
-       const testP = parsePatternString(pString); if(testP.length < 2) { alert("Patrón inválido. Ej: 4-7-8b"); return; }
-       const n = els.pillNameInput.value.trim() || 'Amigo'; const m = els.pillMessageInput.value.trim() || 'Respira conmigo...';
-       els.shareConfigOverlay.style.display = 'none'; els.load.style.display = 'flex'; 
+       let pString = els.pillPatternInput.value.trim();
+       if(!pString) { alert("Falta el patrón."); return; }
+       const testP = parsePatternString(pString);
+       if(testP.length < 2) { alert("Patrón inválido. Ej: 4-7-8b"); return; }
+       const n = els.pillNameInput.value.trim() || 'Amigo';
+       const m = els.pillMessageInput.value.trim() || 'Respira conmigo...';
+       els.shareConfigOverlay.style.display = 'none'; 
+       els.load.style.display = 'flex'; 
        const baseUrl = location.href.split('?')[0];
        const longUrl = `${baseUrl}?p=${encodeURIComponent(pString)}&to=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
        let finalUrl = longUrl;
-       try { const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`); if(response.ok) finalUrl = await response.text(); } catch(e) {}
+       try { 
+           const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
+           if(response.ok) finalUrl = await response.text(); 
+       } catch(e) {}
        els.load.style.display = 'none';
        els.shareText.value = `🌿 *Píldora de Respiración*\n${m}\n\nPrueba este ritmo: ${pString}\n${finalUrl}`;
        els.shareModal.style.display = 'flex';
     }
 
     function sendWhatsapp() { window.open(`https://wa.me/?text=${encodeURIComponent(els.shareText.value)}`, '_blank'); }
-    function copyToClipboard() { els.shareText.select(); els.shareText.setSelectionRange(0, 99999); try { navigator.clipboard.writeText(els.shareText.value).then(() => alert("¡Copiado!")); } catch(e) { document.execCommand('copy'); alert("¡Copiado!"); } }
+    function copyToClipboard() {
+      els.shareText.select(); els.shareText.setSelectionRange(0, 99999);
+      try { navigator.clipboard.writeText(els.shareText.value).then(() => alert("¡Copiado!")); } catch(e) { document.execCommand('copy'); alert("¡Copiado!"); }
+    }
     function closePill() { document.getElementById('pillOverlay').style.display='none'; }
 
     const q = new URLSearchParams(location.search);
     if(q.get('p')) {
-        let pCode = q.get('p'); const dynamicP = parsePatternString(pCode);
+        let pCode = q.get('p'); 
+        const dynamicP = parsePatternString(pCode);
         if(dynamicP.length >= 2) {
-           patterns[pCode] = dynamicP; document.getElementById('pillOverlay').style.display = 'flex';
+           patterns[pCode] = dynamicP; 
+           document.getElementById('pillOverlay').style.display = 'flex';
            const recipient = q.get('to') || q.get('para') || 'Ti';
            document.getElementById('pillRecipient').textContent = `Hola, ${recipient}`;
            document.getElementById('pillMessage').textContent = `"${q.get('msg')}"`;
            els.menu.style.display = 'none'; 
            window.closePill = () => { document.getElementById('pillOverlay').style.display='none'; start(pCode); };
         }
-    } else { prepareData('4-7-8b'); els.pat.textContent = "4-7-8b"; }
+    } else {
+       prepareData('4-7-8b'); els.pat.textContent = "4-7-8b"; 
+    }
     
     window.addEventListener('resize', () => { if(state.run) initCanvas(); });
     initCanvas();
 
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => { navigator.serviceWorker.register('./service-worker.js').then((reg) => console.log('Service Worker registrado:', reg.scope)).catch((err) => console.log('Error al registrar SW:', err)); });
-    }
+    // --- REGISTRO DEL SERVICE WORKER (COMENTADO PARA DEBUGGING) ---
+    // if ('serviceWorker' in navigator) {
+    //   window.addEventListener('load', () => {
+    //     navigator.serviceWorker.register('./service-worker.js')
+    //       .then((reg) => console.log('Service Worker registrado:', reg.scope))
+    //       .catch((err) => console.log('Error al registrar SW:', err));
+    //   });
+    // }
   </script>
 </body>
 </html>
