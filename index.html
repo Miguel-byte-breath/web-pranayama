@@ -6,7 +6,7 @@
   <title>Respira | Tu Espacio de Calma</title>
   
   <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
   <meta name="theme-color" content="#eefcfd">
   <meta name="description" content="Una aplicación minimalista para respirar, relajarse y leer.">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -405,122 +405,219 @@
     .info-tooltip.visible { opacity: 1; visibility: visible; }
     .info-tooltip::before {
         content:''; position: absolute; top: -6px; right: 20px;
-        border-width: 6px; border-style: solid; 
-        border-color: transparent transparent #37474f transparent;
+        border-width: 6px; border-style: solid; border-color: transparent transparent #37474f transparent;
     }
+    /* FIX UX: Close button for tooltip */
+    .close-tooltip {
+        float: right; font-size: 1.2rem; cursor: pointer; color: #cfd8dc; 
+        margin: -10px -5px 0 0; font-weight: 300;
+    }
+    .close-tooltip:hover { color: white; }
 
-    .guide-row { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; text-align: left; }
-    .guide-icon { font-size: 1.5rem; width: 40px; text-align: center; }
-    
-    .overlay-btn-group { display: flex; gap: 15px; margin-top: 30px; }
-    
+
+    /* GUIA ICONOS CARD */
+    .guide-card {
+        background: white; border:1px solid #eee; 
+        border-radius: 16px; padding: 30px; max-width: 90%; width: 350px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08); text-align: left;
+    }
+    .guide-row { display: flex; align-items: center; margin-bottom: 15px; gap: 15px; font-size: 1rem; color: #546e7a; }
+    .guide-icon { width: 30px; text-align: center; font-size: 1.4rem; }
+
+    /* REFUGIO/SUBSTACK OVERLAY */
+    /* MÓVIL (VERTICAL): Diseño original aireado */
+    .refugio-card {
+        background: white;
+        border: 1px solid #EEE;
+        border-radius: 16px;
+        max-width: 380px;
+        width: 90%;
+        padding: 30px 30px 45px 30px; /* Aire original */
+        box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+        text-align: center;
+        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+    .refugio-card::before {
+        content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+        background: var(--substack-orange);
+    }
+    .refugio-title {
+        font-family: 'Cinzel', serif; font-size: 1.6rem; color: #2c2c2c;
+        margin-bottom: 10px; font-weight: 700;
+    }
+    .refugio-author {
+        font-family: 'Manrope', sans-serif; font-size: 0.95rem; 
+        color: var(--substack-orange); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+        margin-bottom: 25px; /* Aire original */
+    }
+    .refugio-excerpt {
+        font-family: 'Manrope', sans-serif; font-size: 1.1rem; color: #555;
+        line-height: 1.6; font-style: italic; 
+        margin-bottom: 35px; /* Aire original */
+    }
     .refugio-btn {
-        background: linear-gradient(135deg, #FF6719 0%, #FF8A50 100%);
-        color: white; border: none; padding: 15px 40px; font-size: 1.1rem;
-        border-radius: 50px; font-weight: 700; font-family: 'Manrope', sans-serif;
+        display: inline-block; text-decoration: none;
+        background: var(--substack-orange); color: white;
+        padding: 14px 28px; border-radius: 50px;
+        font-weight: 700; font-family: 'Manrope', sans-serif;
         box-shadow: 0 5px 15px rgba(255, 103, 25, 0.3);
         transition: transform 0.2s, box-shadow 0.2s;
     }
-    .refugio-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 103, 25, 0.4); }
+    .refugio-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 103, 25, 0.4);
+    }
 
     /* --- PILL SHARE --- */
     #pillOverlay, #shareModal {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(255,255,255,0.95); z-index: 250;
-        display: none; flex-direction: column; align-items: center; justify-content: center;
-        padding: 30px; text-align: center;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255,255,255,0.95); z-index: 200;
+      display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px;
+      backdrop-filter: blur(10px);
     }
     #shareText {
-        width: 100%; max-width: 350px; height: 100px;
-        margin: 20px 0; padding: 15px; border-radius: 12px;
-        border: 1px solid #ddd; font-family: 'Manrope', sans-serif;
-        background: #f9f9f9; font-size: 0.9rem;
+      width: 100%; max-width: 400px; height: 100px; border: 1px solid #cfd8dc;
+      border-radius: 12px; padding: 15px; font-family: 'Manrope', sans-serif; font-size: 0.9rem; color: #546e7a;
+      margin-bottom: 25px; background: #fcfcfc; resize: none; outline: none;
     }
-    .share-actions { display: flex; gap: 10px; width: 100%; max-width: 350px; }
-    .btn-wa { flex: 1; background: #25D366; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-    .btn-copy { flex: 1; background: #607d8b; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-
-    /* --- LOADING --- */
-    .loading-overlay {
-        position: absolute; top:0; left:0; width:100%; height:100%;
-        background: rgba(255,255,255,0.9); z-index: 300;
-        display: none; align-items: center; justify-content: center;
-        flex-direction: column; gap: 15px; color: var(--accent); font-weight: 600;
+    .share-actions { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+    .btn-wa, .btn-copy { padding: 14px 28px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer; color: white; }
+    .btn-wa { background: #25D366; } .btn-copy { background: #546e7a; }
+    
+    #loadingOverlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255,255,255,0.8); z-index: 400; backdrop-filter: blur(5px);
+      display: none; flex-direction: column; align-items: center; justify-content: center;
     }
     .spinner {
-        width: 40px; height: 40px; border: 4px solid #e0f7fa; 
-        border-top: 4px solid var(--accent); border-radius: 50%;
-        animation: spin 1s linear infinite;
+      width: 40px; height: 40px; border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid var(--accent);
+      border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    /* --- MEDIA QUERIES (PC FIX) --- */
+    @media (min-width: 768px), (orientation: landscape) {
+      #substackOverlay { justify-content: center; padding-top: 20px; }
+      .refugio-card { max-width: 500px; padding: 25px 40px; }
+      .refugio-excerpt { margin-bottom: 25px; }
 
-    @media (max-width: 768px) {
-      .sphere-wrapper { width: 260px; height: 260px; }
-      .phase-text { font-size: 2.5rem; }
-      .counter-big { font-size: 3.5rem; }
-      .top-bar { padding: 10px 15px; height: 60px; }
-      .badge { font-size: 0.75rem; padding: 4px 10px; }
-      .btn-icon { width: 40px; height: 40px; font-size: 1rem; }
-      .substack-card { padding: 15px; gap: 12px; }
-      .substack-icon { width: 36px; height: 36px; }
-      .substack-title { font-size: 1rem; }
-      .big-input { width: 260px; font-size: 2.2rem; }
-      .global-info-btn { top: 15px; right: 15px; width: 36px; height: 36px; font-size: 1rem; }
-      .info-tooltip { width: 260px; top: 45px; right: -10px; transform: translateX(0); left: auto; }
-      .info-tooltip::before { right: 14px; left: auto; }
+      .app-layout { grid-template-rows: 60px 1fr 80px; }
+      .stage-container { flex-direction: row; justify-content: space-around; padding: 0 4vw; }
+      .sphere-wrapper { width: 50vh; height: 50vh; }
+      .sphere { width: 65%; height: 65%; }
+      .bottom-viz { height: 70px; width: 80%; }
+      .menu-grid { grid-template-columns: 1fr 1fr; max-width: 800px; gap:25px; }
+      #customOverlay, #shareConfigOverlay, #guideOverlay { padding-top: 5vh; justify-content: center; }
     }
   </style>
 </head>
 <body>
 
-  <div id="loadingOverlay" class="loading-overlay">
-      <div class="spinner"></div>
-      <span>Preparando tu calma...</span>
+  <div id="loadingOverlay">
+    <div class="spinner"></div>
+    <div style="font-family:'Manrope'; color:#546e7a; font-weight:600;">Preparando...</div>
   </div>
 
-  <button class="global-info-btn" onclick="document.getElementById('guideOverlay').style.display='flex'">?</button>
-
-  <div class="app-layout">
-    <div class="top-bar">
-      <div class="top-left">
-        <div id="patternBadge" class="badge">4-7-8</div>
+  <div id="guideOverlay">
+      <button onclick="document.getElementById('guideOverlay').style.display='none'" style="position:absolute; top:25px; right:25px; background:none; border:none; font-size:2rem; color:#78909c; cursor:pointer; padding:10px; line-height:1; z-index:10;">&times;</button>
+      <h2 class="overlay-title">Guía de Respiración</h2>
+      <p class="overlay-subtitle">Interpretación de símbolos</p>
+      <div class="guide-card">
+          <div class="guide-row"><span class="guide-icon" style="color:var(--c-inhale)">👃</span><span><strong>Inhala</strong> (Verde)</span></div>
+          <div class="guide-row"><span class="guide-icon" style="color:var(--c-hold)">⏸️</span><span><strong>Pausa/Retén</strong> (Naranja)</span></div>
+          <div class="guide-row"><span class="guide-icon" style="color:var(--c-exhale)">👃</span><span><strong>Exhala</strong> (Azul)</span></div>
+          <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+          <div style="font-size:0.9rem; color:#78909c; margin-bottom:10px;">TIP AVANZADO</div>
+          <div class="guide-row"><span class="guide-icon">🌬️</span><span><strong>Boca:</strong> Si ves este icono (o añades 'b'), exhala soplando.</span></div>
       </div>
-      <div class="top-right">
-        <div id="quoteToggleBtn" class="btn-icon active" onclick="toggleQuotes()">❝</div>
-        <div id="tempoBtn" class="btn-icon" onclick="toggleTempo()">⚡</div>
-        <div id="metronomeBtn" class="btn-icon" onclick="toggleMetronome()">⏱️</div>
-        <div id="soundBtn" class="btn-icon" onclick="toggleSound()">🔊</div>
-        <div id="musicBtn" class="btn-icon active" onclick="toggleMusic()">🎶</div>
+      <div style="margin-top:40px;">
+          <button class="btn-text" style="background:transparent; color:var(--accent); border:1px solid var(--accent);" onclick="document.getElementById('guideOverlay').style.display='none'">Entendido</button>
       </div>
-    </div>
+  </div>
+  
+  <div id="substackOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:300; display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(15px); padding:20px 20px 50px 20px; text-align:center; visibility:hidden; opacity:0; pointer-events:none; transition:all 0.4s ease; overflow-y:auto;">
+      <button onclick="const el=document.getElementById('substackOverlay'); el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none';" style="position:absolute; top:25px; right:25px; background:none; border:none; font-size:2rem; color:#78909c; cursor:pointer; padding:10px; line-height:1; z-index:10;">&times;</button>
 
-    <div class="stage-container">
+      <h2 style="font-family:'Cinzel'; color:#37474f; margin-bottom:20px; margin-top:40px;">Refugio Poético</h2>
       
-      <div class="panel-side" style="justify-content: flex-end;">
-         <div id="phaseText" class="phase-text">LISTO</div>
-         <div id="modeIcon" class="mode-indicator">👃</div>
+      <div class="refugio-card">
+          <div class="refugio-title">Vivir a tiempo</div>
+          <div class="refugio-author">by Claudia Cuevas</div>
+          <div class="refugio-excerpt">"la vida no es generosa con los distraídos."</div>
+          <a href="https://open.substack.com/pub/claudiacuevas/p/vivir-a-tiempo?r=2vlvha&utm_campaign=post&utm_medium=web" target="_blank" rel="noopener noreferrer" class="refugio-btn">
+              Leer en Substack
+          </a>
       </div>
-
-      <div class="panel-center">
-        <div class="sphere-wrapper" onclick="togglePause()">
-          <div id="sphere" class="sphere">
-             <div id="counterText" class="counter-big"></div>
+      
+      <button class="btn-text" style="margin-top:35px; background:transparent; border:1px solid #cfd8dc; color:#78909c;" onclick="const el = document.getElementById('substackOverlay'); el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none';">❮ Volver al Menú</button>
+  </div>
+  <div id="customOverlay">
+      <h2 class="overlay-title">Diseña tu Respiración</h2>
+      <p class="overlay-subtitle">Introduce 4 tiempos<br>Añade 'b' para boca (ej: 4b)</p>
+      <div class="custom-input-container">
+          <input type="text" id="customPatternInput" class="big-input" placeholder="4-2-6b-0" maxlength="10" value="">
+          <div class="info-bubble" onclick="toggleTooltip(this)">?
+              <div class="info-tooltip">
+                  <span class="close-tooltip" onclick="event.stopPropagation(); this.parentElement.classList.remove('visible');">&times;</span>
+                  <strong>Escribe los segundos de cada fase.</strong> El sistema pone los guiones.<br><br>
+                  <span style="color:var(--c-inhale)">1. Inhala (Verde)</span><br>
+                  <span style="color:var(--c-hold)">2. Mantén (Naranja)</span><br>
+                  <span style="color:var(--c-exhale)">3. Exhala (Azul)</span><br>
+                  <span style="color:var(--c-hold)">4. Sostén (Naranja)</span><br><br>
+                  <hr style="border:0; border-top:1px solid rgba(255,255,255,0.2); margin:10px 0;">
+                  <strong>Opciones Extra:</strong><br>
+                  • Añade <strong>'b'</strong> para boca (ej: 8b).<br>
+                  • Usa <strong>0</strong> para saltar una fase.
+              </div>
           </div>
-        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:15px; margin-bottom: 50px;">
+          <button class="btn-text" style="background:var(--primary); color:white; padding:15px 40px; font-size:1.1rem; border:none;" onclick="startCustom()">Comenzar</button>
+          <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="document.getElementById('customOverlay').style.display='none'">Cancelar</button>
+      </div>
+  </div>
+
+  <div id="shareConfigOverlay">
+      <h2 class="overlay-title">Enviar Píldora</h2>
+      <p class="overlay-subtitle">Configura el regalo</p>
+
+      <div class="custom-input-container">
+          <input type="text" id="pillPatternInput" class="big-input" placeholder="4-7-8b" maxlength="10" value="">
+           <div class="info-bubble" onclick="toggleTooltip(this)">?
+              <div class="info-tooltip">
+                  <span class="close-tooltip" onclick="event.stopPropagation(); this.parentElement.classList.remove('visible');">&times;</span>
+                  <strong>Escribe los segundos de cada fase.</strong> El sistema pone los guiones.<br><br>
+                  <span style="color:var(--c-inhale)">1. Inhala (Verde)</span><br>
+                  <span style="color:var(--c-hold)">2. Mantén (Naranja)</span><br>
+                  <span style="color:var(--c-exhale)">3. Exhala (Azul)</span><br>
+                  <span style="color:var(--c-hold)">4. Sostén (Naranja)</span><br><br>
+                  <hr style="border:0; border-top:1px solid rgba(255,255,255,0.2); margin:10px 0;">
+                  <strong>Opciones Extra:</strong><br>
+                  • Añade <strong>'b'</strong> para boca (ej: 8b).<br>
+                  • Usa <strong>0</strong> para saltar una fase.
+              </div>
+          </div>
       </div>
 
-      <div class="panel-side" style="justify-content: flex-start;">
-         <div id="patternSteps" class="sphere-label"></div>
-         <div id="phraseContent" class="quote">
-            "Sigue el ritmo, respira, nada más."
-         </div>
-      </div>
-      
-    </div>
+      <input type="text" id="pillNameInput" class="normal-input" placeholder="¿Para quién es?" maxlength="20">
+      <input type="text" id="pillMessageInput" class="normal-input" placeholder="Mensaje (opcional)" maxlength="50">
 
-    <div class="bottom-viz">
-      <canvas id="breathGraph" width="600" height="90"></canvas>
+      <div style="display:flex; flex-direction:column; gap:15px; margin-top:20px; margin-bottom: 50px;">
+          <button class="btn-text" style="background:var(--accent); color:white; padding:15px 40px; font-size:1.1rem; border:none;" onclick="generateShareLink()">Generar Enlace</button>
+          <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="document.getElementById('shareConfigOverlay').style.display='none'">Cancelar</button>
+      </div>
+  </div>
+
+  <div id="shareModal">
+    <h2 style="font-family:'Cinzel'; color:#37474f;">✨ ¡Píldora Lista!</h2>
+    <textarea id="shareText" readonly></textarea>
+    <div class="share-actions">
+      <button class="btn-wa" onclick="sendWhatsapp()">WhatsApp</button>
+      <button class="btn-copy" onclick="copyToClipboard()">Copiar</button>
     </div>
+    <button class="btn-text" style="margin-top:30px; background:transparent; border:none;" onclick="document.getElementById('shareModal').style.display='none'">Cerrar</button>
   </div>
 
   <div id="selectionMenu">
@@ -531,121 +628,109 @@
         <div class="light blue"></div>
         <div class="light red"></div>
         <div class="light green"></div>
+        <div class="light blue"></div>
+        <div class="light red"></div>
+        <div class="light green"></div>
+        <div class="light blue"></div>
     </div>
 
-    <h2 class="menu-title">Elige tu Ritmo</h2>
+    <button class="global-info-btn" onclick="document.getElementById('guideOverlay').style.display='flex'">i</button>
+
+    <div class="menu-title">ELIGE TU RITMO</div>
     
     <div class="menu-actions">
-        <div class="action-btn" onclick="openCustomModal()"><span>✨</span> Crear</div>
-        <div class="action-btn" onclick="openShareConfig()"><span>🎁</span> Compartir</div>
+        <button class="action-btn" onclick="openShareConfig()">
+            <span>📤 Enviar Píldora</span>
+        </button>
+        <button class="action-btn" id="installBtn" onclick="installApp()">
+            <span>⭐ Instalar App</span>
+        </button>
     </div>
 
     <div class="menu-grid">
-      <div class="substack-card" onclick="window.open('https://elrefugiomental.substack.com', '_blank')">
-          <div class="substack-icon">🧡</div>
+      <div class="substack-card" onclick="const el = document.getElementById('substackOverlay'); el.style.visibility='visible'; el.style.opacity='1'; el.style.pointerEvents='auto';">
+          <div class="substack-icon">
+              <svg viewBox="0 0 24 24" fill="#FF6719" width="20" height="20">
+                  <path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/>
+              </svg>
+          </div>
           <div class="substack-content">
-              <div class="substack-label">SUSCRÍBETE A</div>
-              <div class="substack-title">El Refugio Mental</div>
-              <div class="substack-author">de Jesús García</div>
+              <div class="substack-label">Rincón de Lectura</div>
+              <div class="substack-title">Vivir a tiempo</div>
+              <div class="substack-author">by Claudia Cuevas</div>
           </div>
       </div>
 
-      <div class="menu-card" onclick="start('4-7-8b')">
-        <h3>🌙 Relajación (4-7-8)</h3>
-        <p>Inhala 4, Mantén 7, Exhala 8. Ideal para dormir.</p>
+      <div class="menu-card custom-card" onclick="openCustomModal()">
+        <h3>✨ Crear Personalizado</h3>
+        <p>Define tus tiempos (ej: 4-7-8b)</p>
       </div>
+      
       <div class="menu-card" onclick="start('4-4-6-2')">
-        <h3>🧘‍♂️ Calma Profunda</h3>
-        <p>4-4-6-2. Equilibra el sistema nervioso.</p>
+        <h3>4-4-6-2 • Relax Profundo</h3>
+        <p>Baja pulsaciones rápidamente</p>
+      </div>
+      <div class="menu-card" onclick="start('4-7-8b')">
+        <h3>4-7-8 • Para Dormir</h3>
+        <p>Técnica del Dr. Weil (Soplar)</p>
       </div>
       <div class="menu-card" onclick="start('box')">
-        <h3>📦 Box Breathing</h3>
-        <p>4-4-4-4. Enfoque mental y control.</p>
+        <h3>Cuadrada • Enfoque</h3>
+        <p>Box Breathing (4-4-4-4)</p>
       </div>
       <div class="menu-card" onclick="start('5-5')">
-        <h3>⚖️ Coherencia</h3>
-        <p>5-5. Sincroniza corazón y cerebro.</p>
+        <h3>5-5 • Coherencia</h3>
+        <p>Equilibrio total (In 5, Ex 5)</p>
       </div>
     </div>
   </div>
 
-  <div id="customOverlay">
-      <div class="overlay-title">Crea tu Ritmo</div>
-      <div class="overlay-subtitle">Escribe los tiempos separados por guiones</div>
+  <div id="pillOverlay">
+    <h1 style="color:var(--accent); font-family:'Cinzel'; margin-bottom:15px;">🍃 Una pausa para ti</h1>
+    <h2 id="pillRecipient" style="color:#546e7a; margin-bottom:25px; font-weight:400; font-family:'Manrope';"></h2>
+    <p id="pillMessage" style="font-size:1.4rem; font-family:'Cinzel'; color:#37474f; margin-bottom:50px; max-width:600px;"></p>
+    <button class="btn-text" style="background:var(--primary); color:white; padding:16px 50px;" onclick="closePill()">Comenzar</button>
+  </div>
+
+  <div class="app-layout">
+    <div class="top-bar">
+      <div class="top-left">
+        <button class="btn-text" onclick="stop()">❮ Menú</button>
+        <div class="badge" id="cycleBadge">🔄 0</div>
+      </div>
+      <div class="top-right">
+        <button class="btn-icon active" id="quoteToggleBtn" onclick="toggleQuotes()">❝</button>
+        
+        <button class="btn-text" id="tempoBtn" onclick="toggleTempo()">⚡ 1x</button>
+        <button class="btn-icon" id="soundBtn" onclick="toggleSound()">🔇</button>
+        <button class="btn-icon" id="metronomeBtn" onclick="toggleMetronome()">⏱️</button>
+      </div>
+    </div>
+
+    <div class="stage-container">
+      <div class="panel-side">
+        <div class="phase-text" id="phaseText">LISTO</div>
+        <div class="mode-indicator" id="modeIcon">👃</div>
+      </div>
       
-      <div class="custom-input-container">
-          <input type="text" id="customPatternInput" class="big-input" placeholder="4-7-8b" autocomplete="off">
-          <div class="info-bubble" onclick="toggleTooltip()">?
-               <div id="inputTooltip" class="info-tooltip">
-                   <strong>Formato:</strong> Inhala-Mantén-Exhala...<br><br>
-                   • Usa números para segundos.<br>
-                   • Añade 'b' para exhalar por boca.<br>
-                   • Ej: <strong>4-7-8b</strong> (4 in, 7 hold, 8 out boca).
-               </div>
+      <div class="panel-center">
+        <div class="sphere-wrapper" onclick="togglePause()" title="Toca para Pausar/Reanudar">
+          <div class="sphere" id="sphere">
+             <div class="counter-big" id="counterText"></div>
+             <div class="sphere-label" id="patternDisplay"></div>
           </div>
+        </div>
       </div>
 
-      <div class="overlay-btn-group">
-          <button class="action-btn" onclick="startCustom()">Empezar</button>
-          <button class="action-btn" style="background:transparent; border:1px solid #ccc; color:#666;" onclick="document.getElementById('customOverlay').style.display='none'">Cancelar</button>
+      <div class="panel-side">
+        <div class="quote" id="phraseContent">Respira...</div>
       </div>
-  </div>
+    </div>
 
-  <div id="shareConfigOverlay">
-      <div class="overlay-title">Regala Calma 💊</div>
-      <div class="overlay-subtitle">Crea una píldora de respiración para alguien</div>
-      
-      <input type="text" id="pillNameInput" class="normal-input" placeholder="¿Para quién es?" autocomplete="off">
-      <input type="text" id="pillMessageInput" class="normal-input" placeholder="Mensaje (ej: Tómate 1 min)" autocomplete="off">
-      
-      <div class="overlay-btn-group">
-          <button class="action-btn" onclick="generateShareLink()">Crear Píldora</button>
-          <button class="action-btn" style="background:transparent; border:1px solid #ccc; color:#666;" onclick="document.getElementById('shareConfigOverlay').style.display='none'">Cancelar</button>
-      </div>
+    <div class="bottom-viz">
+      <canvas id="breathGraph"></canvas>
+    </div>
   </div>
-
-  <div id="guideOverlay">
-      <div class="overlay-title">Guía Visual</div>
-      <div style="text-align:left; max-width:320px; background:white; padding:20px; border-radius:15px; box-shadow:0 10px 30px rgba(0,0,0,0.05);">
-          <div class="guide-row"><span class="guide-icon">👃</span><span><strong>Nariz:</strong> Inhala suave y profundo por la nariz.</span></div>
-          <div class="guide-row"><span class="guide-icon">⏸️</span><span><strong>Pausa:</strong> Retén el aire sin tensar el cuerpo.</span></div>
-          <div class="guide-row"><span class="guide-icon">🌬️</span><span><strong>Boca:</strong> Exhala soltando todo el aire por la boca.</span></div>
-          
-          <div style="margin-top:20px; font-size:0.8rem; color:#888; border-top:1px solid #eee; padding-top:10px; margin-bottom:10px;">TIP AVANZADO</div>
-          <div class="guide-row"><span class="guide-icon">🌬️</span><span><strong>Boca:</strong> Si ves este icono (o añades 'b'), exhala soplando.</span></div>
-      </div>
-      
-      <div style="margin-top:40px;">
-          <button class="btn-text" style="background:transparent; color:var(--accent); border:1px solid var(--accent);" onclick="document.getElementById('guideOverlay').style.display='none'">Entendido</button>
-      </div>
-  </div>
-  
-  <div id="substackOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:300; display:flex; flex-direction:column; align-items:center; justify-content:center; display:none; text-align:center; padding:20px;">
-      <h2 class="menu-title">🧡 El Refugio Mental</h2>
-      <p style="max-width:400px; color:#555; line-height:1.6; margin-bottom:30px;">
-          Únete a más de 200 personas que reciben mis reflexiones semanales sobre calma, productividad y vida consciente.
-      </p>
-      <button class="refugio-btn" onclick="window.open('https://elrefugiomental.substack.com', '_blank'); document.getElementById('substackOverlay').style.display='none';">Suscribirme Gratis</button>
-      <button style="background:none; border:none; margin-top:20px; color:#999; text-decoration:underline; cursor:pointer;" onclick="document.getElementById('substackOverlay').style.display='none'">Quizás luego</button>
-  </div>
-
-  <div id="shareModal">
-      <h2 class="overlay-title">¡Píldora Lista!</h2>
-      <textarea id="shareText" readonly></textarea>
-      <div class="share-actions">
-          <button class="btn-wa" onclick="sendWhatsapp()">WhatsApp</button>
-          <button class="btn-copy" onclick="copyToClipboard()">Copiar</button>
-      </div>
-      <button class="btn-text" style="margin-top:30px; background:transparent; border:none;" onclick="document.getElementById('shareModal').style.display='none'">Cerrar</button>
-  </div>
-  
-  <div id="pillOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--dune-light); z-index:400; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px;">
-      <div style="font-size:4rem; margin-bottom:20px;">💊</div>
-      <h3 id="pillRecipient" style="font-family:'Cinzel'; font-size:2rem; color:var(--text-main); margin-bottom:10px;">Hola...</h3>
-      <p id="pillMessage" style="font-style:italic; color:#666; font-size:1.2rem; max-width:400px; line-height:1.5;">"..."</p>
-      <button class="action-btn" style="margin-top:40px; transform:scale(1.2);" onclick="window.closePill()">Recibir Píldora</button>
-  </div>
-
 
   <script>
     // --- VARIABLES Y CONFIGURACIÓN ---
@@ -678,20 +763,52 @@
     };
     
     // --- FRASES ZEN ---
-    const pSubjects = [ "El río", "La brisa", "El bambú", "La montaña", "Tu mente", "El ahora", "La hoja", "El agua", "Este aire", "La nube", "El vacío", "La raíz" ];
-    const pActions = [ "fluye", "cede", "se dobla", "observa", "refleja", "existe", "suelta", "descansa", "sana", "pasa", "acoge", "crece" ];
-    const pConclusions = [ "Sé agua.", "Paz.", "Calma.", "Centro.", "Nada más.", "Serena.", "Simple.", "Aquí.", "Conecta.", "Fluye.", "Amor.", "Luz." ];
+    const pSubjects = [
+        "El río antiguo", "La brisa suave", "El bambú flexible", "La montaña quieta", "Tu mente clara", 
+        "El momento presente", "La hoja seca", "El agua profunda", "Este aliento", "La nube blanca", 
+        "El vacío fértil", "La raíz fuerte", 
+        "El amor inmenso", "La belleza oculta", "Tu corazón sabio", "La flor del alma", "La luz interior"
+    ];
+    
+    const pActions = [
+        "fluye sin esfuerzo", "no opone resistencia", "se dobla sin romperse", "observa en silencio", 
+        "refleja el cielo", "encuentra su camino", "suelta el control", "descansa en paz", 
+        "existe sin más", "acepta el cambio", "danza con el viento", "crece despacio",
+        "abraza lo que es", "florece sin prisa", "sana las heridas", "irradia calidez", "ama sin apego", "ve la verdad"
+    ];
+    
+    const pConclusions = [
+        "Sé como el agua.", "Todo es perfecto.", "Paz infinita.", "Vuelve al centro.", "Nada que hacer.", 
+        "Mente serena.", "Simple y puro.", "Aquí y ahora.", "Conecta contigo.", "Fluye con todo.",
+        "Amor es todo.", "Belleza pura.", "Eres el amor.", "Suelta y confía.", "Eres suficiente.", "Luz radiante."
+    ];
+
+    const masterQuotes = [
+      "El vacío es forma, la forma es vacío.",
+      "Si te doblas como el junco, el viento no te romperá.",
+      "El viaje de mil millas comienza con un aliento.",
+      "Conoce lo blanco, pero conserva lo negro.",
+      "Sé el valle del universo, recíbelo todo.",
+      "Poco a poco, el barro se asienta y el agua se aclara.",
+      "Haz nada, y nada quedará sin hacer.",
+      "El amor no reclama posesión, sino que da libertad.",
+      "La belleza no está en el rostro, sino en la luz del corazón.",
+      "Aceptar es el verdadero acto de transformación."
+    ];
 
     function getWuWeiQuote() {
-        const s = pSubjects[Math.floor(Math.random() * pSubjects.length)];
-        const a = pActions[Math.floor(Math.random() * pActions.length)];
-        const c = pConclusions[Math.floor(Math.random() * pConclusions.length)];
-        return `${s} ${a}. ${c}`;
+        if(Math.random() < 0.3) {
+            return masterQuotes[Math.floor(Math.random() * masterQuotes.length)];
+        } else {
+            const s = pSubjects[Math.floor(Math.random() * pSubjects.length)];
+            const a = pActions[Math.floor(Math.random() * pActions.length)];
+            const c = pConclusions[Math.floor(Math.random() * pConclusions.length)];
+            return `${s} ${a}. ${c}`;
+        }
     }
 
-    // STATE: Añadido music: true por defecto
-    let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true, music: true };
-    
+    // STATE: V1.2.0 Quotes ENABLED by default
+    let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true };
     let audioCtx = null;
     let nextNoteTime = 0.0;
     let currentBeatIndex = 0;
@@ -699,41 +816,101 @@
     const lookahead = 25.0; 
     const scheduleAheadTime = 0.1;
 
-    // AUDIO AMBIENTAL
-    const ambientAudio = new Audio('ambient.mp3');
-    ambientAudio.loop = true;
-    ambientAudio.volume = 0.5;
-
     // --- DOM REFERENCES ---
     const els = {
       menu: document.getElementById('selectionMenu'),
       sph: document.getElementById('sphere'), ph: document.getElementById('phaseText'),
       cnt: document.getElementById('counterText'), qt: document.getElementById('phraseContent'),
       cvs: document.getElementById('breathGraph'), ctx: document.getElementById('breathGraph').getContext('2d'),
-      pat: document.getElementById('patternSteps'), badge: document.getElementById('patternBadge'),
-      modeIcon: document.getElementById('modeIcon'),
-      loading: document.getElementById('loadingOverlay')
+      cyc: document.getElementById('cycleBadge'), 
+      pat: document.getElementById('patternDisplay'),
+      load: document.getElementById('loadingOverlay'),
+      shareModal: document.getElementById('shareModal'),
+      shareText: document.getElementById('shareText'),
+      
+      customOverlay: document.getElementById('customOverlay'),
+      customInput: document.getElementById('customPatternInput'),
+      
+      shareConfigOverlay: document.getElementById('shareConfigOverlay'),
+      pillPatternInput: document.getElementById('pillPatternInput'),
+      pillNameInput: document.getElementById('pillNameInput'),
+      pillMessageInput: document.getElementById('pillMessageInput'),
+      
+      modeIcon: document.getElementById('modeIcon')
     };
 
-    // --- UTILS ---
     function formatPatternInput(input) {
         let raw = input.value.replace(/[^0-9bB]/g, '').toLowerCase();
         let formatted = '';
         for(let i=0; i < raw.length; i++) {
             const char = raw[i];
-            if(/[0-9]/.test(char)) { if(formatted.length>0) formatted+='-'; formatted+=char; }
-            else { if(formatted.length>0 && formatted.slice(-1)!=='b') formatted+=char; }
+            const isDigit = /[0-9]/.test(char);
+            if (isDigit) {
+                if (formatted.length > 0) formatted += '-';
+                formatted += char;
+            } else {
+                if (formatted.length > 0 && formatted.slice(-1) !== 'b') {
+                    formatted += char;
+                }
+            }
         }
         input.value = formatted;
     }
-    const inputs = document.querySelectorAll('.big-input, .normal-input');
-    inputs.forEach(el => el.addEventListener('input', (e) => formatPatternInput(e.target)));
 
-    function toggleTooltip() {
-        document.getElementById('inputTooltip').classList.toggle('visible');
+    if(els.customInput) els.customInput.addEventListener('input', (e) => formatPatternInput(e.target));
+    if(els.pillPatternInput) els.pillPatternInput.addEventListener('input', (e) => formatPatternInput(e.target));
+
+    window.toggleTooltip = function(el) {
+        const tip = el.querySelector('.info-tooltip');
+        if(tip) tip.classList.toggle('visible');
+    }
+    
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault(); deferredPrompt = e; installBtn.style.display = 'flex';
+    });
+    async function installApp() {
+        if (deferredPrompt) { deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null; } 
+        else { alert("Para instalar: Usa el menú del navegador 'Añadir a inicio'."); }
     }
 
-    // --- AUDIO SYSTEM ---
+    function openCustomModal() {
+        els.customOverlay.style.display = 'flex';
+        els.customInput.value = ''; els.customInput.focus();
+    }
+
+    function parsePatternString(str) {
+        const chunks = str.split('-');
+        const defs = [
+            {t:"INHALA", y:'rise', c:C_INHALE},
+            {t:"MANTÉN", y:'hold_high', c:C_HOLD},
+            {t:"EXHALA", y:'fall', c:C_EXHALE},
+            {t:"SOSTÉN", y:'hold_low', c:C_HOLD},
+            {t:"PAUSA", y:'hold_low', c:C_HOLD}
+        ];
+        let newPattern = [];
+        chunks.forEach((chunk, i) => {
+            let beats = parseInt(chunk.replace(/\D/g,''));
+            if(!isNaN(beats) && beats > 0) {
+                let mode = 'nose';
+                if(chunk.toLowerCase().includes('b')) mode = 'mouth';
+                let defIdx = i % defs.length;
+                newPattern.push({ t: defs[defIdx].t, b: beats, y: defs[defIdx].y, c: defs[defIdx].c, m: mode });
+            }
+        });
+        return newPattern;
+    }
+
+    function startCustom() {
+        const val = els.customInput.value.trim();
+        const newPattern = parsePatternString(val);
+        if (newPattern.length < 2) { alert("Introduce al menos 2 fases válidas."); return; }
+        patterns['custom'] = newPattern;
+        els.customOverlay.style.display = 'none';
+        start('custom');
+    }
+
     function initAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
@@ -758,6 +935,7 @@
 
     function scheduleNote(beatNumber, time) {
       if(state.paused) return;
+
       let accumulatedBeats = 0; let phase = null; let beatInPhase = 0;
       for (let p of state.data) {
         if (beatNumber < accumulatedBeats + p.b) { phase = p; beatInPhase = beatNumber - accumulatedBeats + 1; break; }
@@ -779,12 +957,16 @@
       const secondsPerBeat = state.tempo; nextNoteTime += secondsPerBeat; currentBeatIndex++; 
       const totalBeats = state.data.reduce((acc, p) => acc + p.b, 0);
       if (currentBeatIndex >= totalBeats) { 
-          currentBeatIndex = 0; state.cyc++; 
+          currentBeatIndex = 0; 
+          state.cyc++; 
           if(state.quotesEnabled) updateQuote();
       }
     }
     
-    function updateQuote() { els.qt.innerHTML = getWuWeiQuote(); }
+    function updateQuote() {
+        const rawQuote = getWuWeiQuote();
+        els.qt.innerHTML = rawQuote.replace('. ', '.<br>');
+    }
 
     function scheduler() {
       if (state.run) {
@@ -792,19 +974,40 @@
               while (nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
                 scheduleNote(currentBeatIndex, nextNoteTime); nextBeat();
               }
-          } else { nextNoteTime = audioCtx.currentTime; }
+          } else {
+              nextNoteTime = audioCtx.currentTime; 
+          }
           scheduleTimerID = setTimeout(scheduler, lookahead);
       }
     }
 
-    // --- GRAPHICS & LOGIC ---
     function togglePause() {
         if(!state.run) return;
         state.paused = !state.paused;
         if(state.paused) {
-            els.ph.textContent = "PAUSA"; els.ph.style.color = "#78909c";
+            els.ph.textContent = "PAUSA";
+            els.ph.style.color = "#78909c";
             els.modeIcon.style.opacity = '0.5';
-        } else { nextNoteTime = audioCtx.currentTime; }
+        } else {
+            nextNoteTime = audioCtx.currentTime;
+        }
+    }
+
+    // --- V1.2.0: LOGICA TOGGLE FRASES ---
+    function toggleQuotes() {
+        state.quotesEnabled = !state.quotesEnabled;
+        const btn = document.getElementById('quoteToggleBtn');
+        
+        if(state.quotesEnabled) {
+            // ENCENDIDO: Botón brilla, frase aparece y se actualiza
+            btn.classList.add('active');
+            updateQuote(); // Cargar nueva frase al encender
+            els.qt.style.opacity = '1';
+        } else {
+            // APAGADO: Botón normal, frase se desvanece (pero el hueco queda)
+            btn.classList.remove('active');
+            els.qt.style.opacity = '0';
+        }
     }
 
     function draw() {
@@ -816,24 +1019,38 @@
       const totalCycleDur = state.dur;
       const cycleCountVisual = Math.floor(elapsed / totalCycleDur);
       
+      els.cyc.textContent = `🔄 ${cycleCountVisual}`;
       const timeInCycle = elapsed % totalCycleDur;
       const p = state.data.find(x => timeInCycle >= x.start && timeInCycle < x.end);
 
       if (p) {
         if (els.ph.textContent !== p.t) { 
-            els.ph.textContent = p.t; els.ph.style.color = p.c; 
-            const isHold = (p.y.includes('hold'));
-            els.modeIcon.textContent = isHold ? "⏸️" : (p.m==='mouth'?"🌬️":"👃");
-            els.modeIcon.classList.add('visible');
+            els.ph.textContent = p.t; 
+            els.ph.style.color = p.c; 
+            
+            const isHold = (p.y === 'hold_high' || p.y === 'hold_low');
+            if (isHold) {
+                 els.modeIcon.textContent = "⏸️"; 
+                 els.modeIcon.classList.add('visible');
+            } else {
+                 if(p.m === 'mouth') {
+                     els.modeIcon.textContent = "🌬️"; 
+                     els.modeIcon.classList.add('visible');
+                 } else {
+                     els.modeIcon.textContent = "👃"; 
+                     els.modeIcon.classList.add('visible');
+                 }
+            }
         }
         els.sph.style.setProperty('--c-phase', p.c);
         
-        // Highlight active step number
         const currentPhaseIdx = state.data.indexOf(p);
-        const steps = document.querySelectorAll('.p-num');
-        steps.forEach((el, idx) => {
-            if(idx === currentPhaseIdx) el.classList.add('active');
-            else el.classList.remove('active');
+        state.data.forEach((_, idx) => {
+            const el = document.getElementById(`p-step-${idx}`);
+            if(el) { 
+                if(idx === currentPhaseIdx) el.classList.add('active'); 
+                else el.classList.remove('active'); 
+            }
         });
 
         const timeInPhase = timeInCycle - p.start;
@@ -844,7 +1061,8 @@
         const progress = timeInPhase / p.dur; 
         const ease = -(Math.cos(Math.PI * progress) - 1) / 2;
         let maxScale = 1.45; 
-        
+        if (window.innerWidth < 400) maxScale = 1.35; 
+
         let rawScale = 1;
         if (p.y === 'rise') rawScale = 0.8 + ((maxScale - 0.8) * ease); 
         else if (p.y === 'fall') rawScale = maxScale - ((maxScale - 0.8) * ease);
@@ -854,13 +1072,12 @@
         els.sph.style.transform = `scale(${rawScale})`;
       }
 
-      // Canvas
-      const w = els.cvs.width; const h = els.cvs.height;
+      const w = els.cvs.width / (window.devicePixelRatio||1);
+      const h = els.cvs.height / (window.devicePixelRatio||1);
       els.ctx.clearRect(0, 0, w, h);
       const centerX = w / 2; const trackY = h / 2; const trackH = 14; 
       const pxPerSec = w / (7 * state.tempo);
 
-      // Draw future/past cycles
       for (let c = cycleCountVisual - 1; c <= cycleCountVisual + 1; c++) {
           const cycleStartTime = c * totalCycleDur;
           state.data.forEach(phase => {
@@ -869,22 +1086,19 @@
               const xStart = centerX + (pStartAbs - elapsed) * pxPerSec;
               const xEnd = centerX + (pEndAbs - elapsed) * pxPerSec;
               if(xEnd < 0 || xStart > w) return;
-              
               els.ctx.fillStyle = phase.c;
               els.ctx.fillRect(xStart, trackY - trackH/2, xEnd - xStart, trackH);
-              
-              // Beat markers
-              els.ctx.strokeStyle = 'rgba(255,255,255,0.5)'; els.ctx.lineWidth = 1;
-              for(let b = 1; b < phase.b; b++) {
+              els.ctx.strokeStyle = 'rgba(255,255,255,0.9)'; els.ctx.lineWidth = 2;
+              for(let b = 0; b <= phase.b; b++) {
                    const beatTimeAbs = pStartAbs + (b * state.tempo);
                    const markX = centerX + (beatTimeAbs - elapsed) * pxPerSec;
-                   els.ctx.beginPath(); els.ctx.moveTo(markX, trackY - trackH/2); els.ctx.lineTo(markX, trackY + trackH/2); els.ctx.stroke();
+                   els.ctx.beginPath(); els.ctx.moveTo(markX, trackY - trackH - 2); els.ctx.lineTo(markX, trackY + trackH + 2); els.ctx.stroke();
               }
           });
       }
-      // Center cursor
-      els.ctx.beginPath(); els.ctx.fillStyle = '#fff'; els.ctx.arc(centerX, trackY, 5, 0, Math.PI*2); els.ctx.fill();
-      
+      els.ctx.beginPath(); els.ctx.fillStyle = '#FFFFFF'; els.ctx.arc(centerX, trackY, 9, 0, Math.PI * 2); els.ctx.fill();
+      els.ctx.strokeStyle = 'rgba(0,0,0,0.1)'; els.ctx.lineWidth = 1; els.ctx.stroke();
+      els.ctx.beginPath(); els.ctx.fillStyle = '#37474f'; els.ctx.moveTo(centerX - 6, trackY - 25); els.ctx.lineTo(centerX + 6, trackY - 25); els.ctx.lineTo(centerX, trackY - 15); els.ctx.fill();
       requestAnimationFrame(draw);
     }
 
@@ -900,191 +1114,150 @@
     }
 
     function initCanvas() {
-      if(!els.cvs) return; 
-      const rect = els.cvs.getBoundingClientRect(); 
-      els.cvs.width = rect.width; els.cvs.height = rect.height; 
+      if(!els.cvs) return; const dpr = window.devicePixelRatio || 1;
+      const rect = els.cvs.getBoundingClientRect(); els.cvs.width = rect.width * dpr; els.cvs.height = rect.height * dpr; els.ctx.scale(dpr, dpr);
     }
 
-    function renderPatternBadge(k) {
-      els.badge.textContent = k.toUpperCase();
-      // Render steps below sphere
-      els.pat.innerHTML = '';
+    function renderPattern(k) {
+      if(!patterns[k]) return;
+      els.pat.innerHTML = ''; 
       patterns[k].forEach((step, idx) => {
-        const s = document.createElement('span'); s.className = 'p-num'; 
-        s.textContent = step.b;
-        if(step.m==='mouth') s.innerHTML += '<span class="p-mode-sub">b</span>';
-        els.pat.appendChild(s);
-        if(idx < patterns[k].length-1) {
-            const sep = document.createElement('span'); sep.className = 'p-sep'; sep.textContent = '-';
-            els.pat.appendChild(sep);
+        const numSpan = document.createElement('span');
+        numSpan.textContent = step.b;
+        if(step.m === 'mouth') {
+            const sub = document.createElement('span');
+            sub.textContent = 'b';
+            sub.className = 'p-mode-sub';
+            numSpan.appendChild(sub);
+        }
+        numSpan.className = 'p-num';
+        numSpan.id = `p-step-${idx}`; 
+        els.pat.appendChild(numSpan);
+        if (idx < patterns[k].length - 1) {
+          const sep = document.createElement('span');
+          sep.textContent = '-';
+          sep.className = 'p-sep';
+          els.pat.appendChild(sep);
         }
       });
     }
 
     function start(k) {
-      if (!prepareData(k)) return;
+      if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
+      initAudio(); 
+      renderPattern(k);
+      els.menu.style.opacity = '0'; 
+      setTimeout(()=>els.menu.style.display='none', 400);
       
-      // MÚSICA: Iniciar
-      if(state.music) { ambientAudio.currentTime = 0; ambientAudio.play().catch(()=>{}); }
-
-      initAudio(); renderPatternBadge(k);
-      els.menu.style.opacity = '0'; setTimeout(()=>els.menu.style.display='none', 400);
-      
-      // Reset UI
-      if(state.quotesEnabled) { els.qt.style.opacity = '1'; els.qt.textContent = "Inhala..."; }
+      // V1.2.0: Reset states
+      // Queremos que empiece ENCENDIDO por defecto
+      state.quotesEnabled = true;
+      const btn = document.getElementById('quoteToggleBtn');
+      btn.classList.add('active'); // Botón iluminado
+      els.qt.style.opacity = '1';  // Frase visible
+      els.qt.textContent = "Sigue el ritmo, respira, nada más."; // Frase inicial
       
       setTimeout(() => {
-        initCanvas(); state.run = true; state.paused = false;
+        initCanvas(); 
+        state.run = true; 
+        state.paused = false;
         state.startAudioTime = audioCtx ? audioCtx.currentTime : 0;
         nextNoteTime = state.startAudioTime;
-        currentBeatIndex = 0; state.cyc = 0; 
-        if(audioCtx) scheduler(); requestAnimationFrame(draw);
+        currentBeatIndex = 0; 
+        state.cyc = 0; 
+        if(audioCtx) scheduler(); 
+        requestAnimationFrame(draw);
       }, 100);
     }
 
     function stop() {
-      // MÚSICA: Pausar
-      ambientAudio.pause();
-
       state.run = false; clearTimeout(scheduleTimerID);
       els.sph.style.transform = 'scale(0.8)'; els.ph.textContent = "LISTO"; els.ph.style.color = 'var(--accent)';
-      els.modeIcon.classList.remove('visible'); els.cnt.textContent = ""; 
+      els.modeIcon.classList.remove('visible');
+      els.cnt.textContent = ""; els.cyc.textContent = "🔄 0"; els.sph.style.setProperty('--c-phase', '#4CAF50');
       els.menu.style.display = 'flex'; setTimeout(()=>els.menu.style.opacity='1',10);
+      els.pat.innerHTML = ''; 
       els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
-    }
-
-    // --- TOGGLES ---
-    function toggleBtnState(id, isActive) {
-        const btn = document.getElementById(id);
-        if(isActive) btn.classList.add('active'); else btn.classList.remove('active');
     }
 
     function toggleTempo() { 
       const t = [1.0, 1.5, 2.0]; const idx = t.indexOf(state.tempo); const next = t[(idx+1)%t.length];
-      state.tempo = next; 
-      const label = next===1.0?'⚡':(next===1.5?'🐢':'🐌');
-      document.getElementById('tempoBtn').innerText = label;
+      state.tempo = next; document.getElementById('tempoBtn').innerText = `⚡ ${next===1.0?'1x':next===1.5?'Lento':'Zen'}`;
       if(state.run) start(state.pk); 
     }
+    function toggleSound() { state.snd=!state.snd; document.getElementById('soundBtn').textContent=state.snd?"🔊":"🔇"; if(state.run) initAudio(); }
+    function toggleMetronome() { state.met=!state.met; document.getElementById('metronomeBtn').classList.toggle('active'); }
 
-    function toggleSound() { 
-      state.snd=!state.snd; toggleBtnState('soundBtn', state.snd);
-      if(state.snd && state.run) initAudio();
+    function openShareConfig() {
+        let lastP = state.pk;
+        if(lastP && lastP !== 'custom') {
+             els.pillPatternInput.value = lastP;
+        }
+        els.shareConfigOverlay.style.display = 'flex';
+        els.pillPatternInput.focus();
     }
 
-    function toggleMetronome() { 
-      state.met=!state.met; toggleBtnState('metronomeBtn', state.met);
-    }
-
-    function toggleQuotes() {
-        state.quotesEnabled = !state.quotesEnabled; 
-        toggleBtnState('quoteToggleBtn', state.quotesEnabled);
-        els.qt.style.opacity = state.quotesEnabled ? '1' : '0';
-    }
-
-    function toggleMusic() {
-        state.music = !state.music;
-        toggleBtnState('musicBtn', state.music);
-        if(state.music) { if(state.run) ambientAudio.play(); }
-        else { ambientAudio.pause(); }
-    }
-
-    // --- SHARE SYSTEM ---
-    function openCustomModal() { document.getElementById('customOverlay').style.display='flex'; }
-    function openShareConfig() { document.getElementById('shareConfigOverlay').style.display='flex'; }
-    
-    function parsePatternStrFull(str) {
-        const chunks = str.split('-');
-        const defs = [ {t:"INHALA", y:'rise', c:C_INHALE}, {t:"MANTÉN", y:'hold_high', c:C_HOLD}, {t:"EXHALA", y:'fall', c:C_EXHALE}, {t:"SOSTÉN", y:'hold_low', c:C_HOLD} ];
-        return chunks.map((chunk, i) => {
-            let beats = parseInt(chunk.replace(/\D/g,'')) || 4;
-            let mode = chunk.toLowerCase().includes('b') ? 'mouth' : 'nose';
-            let def = defs[i % defs.length];
-            return { ...def, b: beats, m: mode };
-        });
-    }
-
-    function startCustom() {
-        const val = document.getElementById('customPatternInput').value.trim();
-        if(!val) return;
-        patterns['custom'] = parsePatternStrFull(val);
-        document.getElementById('customOverlay').style.display='none';
-        start('custom');
-    }
-    
-    // --- SHARE LINK GENERATOR ---
     async function generateShareLink() {
-       let pString = document.getElementById('customPatternInput').value.trim();
-       if(!pString) pString = "4-7-8b"; // Default si está vacío y viene de ConfigOverlay
-       // Si venimos del shareConfig, usamos ese input si está relleno
-       const pillInput = document.getElementById('pillNameInput').value;
-       
-       const n = document.getElementById('pillNameInput').value.trim() || 'Amigo';
-       const m = document.getElementById('pillMessageInput').value.trim() || 'Respira conmigo...';
-       
-       // Si el input principal de custom tiene algo, usamos ese patrón. Si no, usamos 4-7-8b por defecto
-       const finalPattern = patterns['custom'] ? document.getElementById('customPatternInput').value : '4-7-8b';
+       let pString = els.pillPatternInput.value.trim();
+       if(!pString) { alert("Falta el patrón."); return; }
+       const testP = parsePatternString(pString);
+       if(testP.length < 2) { alert("Patrón inválido. Ej: 4-7-8b"); return; }
 
-       document.getElementById('shareConfigOverlay').style.display = 'none'; 
-       els.loading.style.display = 'flex'; 
+       const n = els.pillNameInput.value.trim() || 'Amigo';
+       const m = els.pillMessageInput.value.trim() || 'Respira conmigo...';
        
+       els.shareConfigOverlay.style.display = 'none'; 
+       els.load.style.display = 'flex'; 
+
        const baseUrl = location.href.split('?')[0];
-       const longUrl = `${baseUrl}?p=${encodeURIComponent(finalPattern)}&to=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
-       let finalUrl = longUrl;
+       const longUrl = `${baseUrl}?p=${encodeURIComponent(pString)}&to=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
        
+       let finalUrl = longUrl;
        try { 
            const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
            if(response.ok) finalUrl = await response.text(); 
        } catch(e) {}
-       
-       els.loading.style.display = 'none';
-       document.getElementById('shareText').value = `🌿 *Píldora de Respiración*\n${m}\n\nPrueba este ritmo: ${finalPattern}\n${finalUrl}`;
-       document.getElementById('shareModal').style.display = 'flex';
+
+       els.load.style.display = 'none';
+       els.shareText.value = `🌿 *Píldora de Respiración*\n${m}\n\nPrueba este ritmo: ${pString}\n${finalUrl}`;
+       els.shareModal.style.display = 'flex';
     }
 
-    function sendWhatsapp() { window.open(`https://wa.me/?text=${encodeURIComponent(document.getElementById('shareText').value)}`, '_blank'); }
+    function sendWhatsapp() { window.open(`https://wa.me/?text=${encodeURIComponent(els.shareText.value)}`, '_blank'); }
     function copyToClipboard() {
-      const copyText = document.getElementById("shareText");
-      copyText.select(); copyText.setSelectionRange(0, 99999);
-      navigator.clipboard.writeText(copyText.value).then(() => alert("¡Copiado!"));
+      els.shareText.select(); els.shareText.setSelectionRange(0, 99999);
+      try { navigator.clipboard.writeText(els.shareText.value).then(() => alert("¡Copiado!")); } catch(e) { document.execCommand('copy'); alert("¡Copiado!"); }
     }
+    function closePill() { document.getElementById('pillOverlay').style.display='none'; }
 
-    window.closePill = function() { 
-        document.getElementById('pillOverlay').style.display='none'; 
-        // Si hay patrón en URL, arrancar
-        const q = new URLSearchParams(location.search);
-        if(q.get('p')) start(q.get('p'));
-    }
-
-    // --- INIT ---
-    window.addEventListener('resize', initCanvas);
-    initCanvas();
-    els.loading.style.display = 'none';
-
-    // CHECK URL PARAMS
     const q = new URLSearchParams(location.search);
     if(q.get('p')) {
         let pCode = q.get('p'); 
-        const dynamicP = parsePatternStrFull(pCode);
+        const dynamicP = parsePatternString(pCode);
         if(dynamicP.length >= 2) {
            patterns[pCode] = dynamicP; 
            document.getElementById('pillOverlay').style.display = 'flex';
-           const recipient = q.get('to') || 'Ti';
+           const recipient = q.get('to') || q.get('para') || 'Ti';
            document.getElementById('pillRecipient').textContent = `Hola, ${recipient}`;
-           document.getElementById('pillMessage').textContent = `"${q.get('msg') || '...'}"`;
+           document.getElementById('pillMessage').textContent = `"${q.get('msg')}"`;
            els.menu.style.display = 'none'; 
+           window.closePill = () => { document.getElementById('pillOverlay').style.display='none'; start(pCode); };
         }
+    } else {
+       prepareData('4-7-8b'); els.pat.textContent = "4-7-8b"; 
     }
+    
+    window.addEventListener('resize', () => { if(state.run) initCanvas(); });
+    initCanvas();
 
-    // --- "SCRIPT ASESINO" DE SERVICE WORKER ---
-    // Esto desinstalará cualquier versión anterior para solucionar el caché
+    // --- REGISTRO DEL SERVICE WORKER (PWA) ---
+    // Esto es lo que permite que funcione Offline
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            for(let registration of registrations) {
-                console.log("Desinstalando SW antiguo:", registration);
-                registration.unregister();
-            }
-        });
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then((reg) => console.log('Service Worker registrado:', reg.scope))
+          .catch((err) => console.log('Error al registrar SW:', err));
+      });
     }
   </script>
 </body>
