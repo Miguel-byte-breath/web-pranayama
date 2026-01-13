@@ -1279,7 +1279,21 @@ function start(k) {
             if(els.qt) els.qt.style.opacity = '0';
         }
     }
-
+// FUNCIÓN RECUPERADA: TEMPO ⚡
+    function toggleTempo() { 
+      const t = [1.0, 1.5, 2.0]; 
+      const idx = t.indexOf(state.tempo); 
+      const next = t[(idx+1) % t.length];
+      
+      state.tempo = next; 
+      
+      // Actualizamos el texto del botón
+      const label = next === 1.0 ? '1x' : (next === 1.5 ? 'Lento' : 'Zen');
+      document.getElementById('tempoBtn').innerText = `⚡ ${label}`;
+      
+      // Si está corriendo, reiniciamos para aplicar el cambio
+      if(state.run) start(state.pk); 
+    }
     // 3. METRÓNOMO ⚡
     function toggleMetro() {
         state.met = !state.met; 
