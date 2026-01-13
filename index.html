@@ -43,13 +43,14 @@
     }
 
     /* --- 2. LAYOUT & TOP CONTROLS --- */
+    /* AQUÍ ESTÁ LA CLAVE: Mantener position absolute pero ajustar el gap para 5 botones */
     .top-right {
       position: absolute;
       top: 2rem;
       right: 2rem;
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.8rem; /* Reducido ligeramente para que quepan 5 */
       z-index: 10;
     }
 
@@ -278,7 +279,7 @@
 
   <div id="patternDisplay" class="pattern-display">4-7-8</div>
 
-  <div class="top-right">
+ <div class="top-right">
       <button id="quoteToggleBtn" class="icon-btn active" onclick="toggleQuotes()" aria-label="Frases">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
@@ -525,7 +526,7 @@
         }
     }
 
-    // STATE: Añadido music: true
+    // STATE: Añadida la propiedad music: true
     let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true, music: true };
     
     let audioCtx = null;
@@ -999,7 +1000,7 @@
     window.addEventListener('resize', () => { if(state.run) initCanvas(); });
     initCanvas();
 
-    // --- REGISTRO DEL SERVICE WORKER (COMENTADO PARA DEBUGGING) ---
+    // --- REGISTRO DEL SERVICE WORKER (COMENTADO PARA SOLUCIONAR CACHÉ) ---
     // if ('serviceWorker' in navigator) {
     //   window.addEventListener('load', () => {
     //     navigator.serviceWorker.register('./service-worker.js')
