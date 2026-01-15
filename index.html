@@ -700,9 +700,9 @@
       </div>
       <div class="top-right">
         <button class="btn-icon active" id="quoteToggleBtn" onclick="toggleQuotes()">❝</button>
-        
         <button class="btn-text" id="tempoBtn" onclick="toggleTempo()">⚡ 1x</button>
         <button class="btn-icon" id="soundBtn" onclick="toggleSound()">🔇</button>
+        <button class="btn-icon" id="musicBtn" onclick="toggleMusic()">🎶</button>
         <button class="btn-icon" id="metronomeBtn" onclick="toggleMetronome()">⏱️</button>
       </div>
     </div>
@@ -737,7 +737,10 @@
     const C_INHALE = '#4CAF50'; 
     const C_HOLD   = '#FF9800'; 
     const C_EXHALE = '#2196F3'; 
-
+// --- AUDIO AMBIENTAL ---
+const ambientAudio = new Audio('ambient.mp3');
+ambientAudio.loop = true;
+ambientAudio.volume = 0.5;
     let patterns = {
       '4-4-6-2': [
           {t:"INHALA", b:4, y:'rise', c:C_INHALE, m:'nose'},
@@ -808,7 +811,7 @@
     }
 
     // STATE: V1.2.0 Quotes ENABLED by default
-    let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true };
+    let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true, music: true };
     let audioCtx = null;
     let nextNoteTime = 0.0;
     let currentBeatIndex = 0;
@@ -1144,6 +1147,11 @@
 
     function start(k) {
       if (!prepareData(k)) { alert("Error: Patrón no encontrado"); return; }
+      // MÚSICA: Play si el botón está activo
+if(state.music) { 
+    ambientAudio.currentTime = 0; 
+    ambientAudio.play().catch(e => console.log("Audio error:", e)); 
+}
       initAudio(); 
       renderPattern(k);
       els.menu.style.opacity = '0'; 
@@ -1171,6 +1179,7 @@
     }
 
     function stop() {
+      ambientAudio.pause();
       state.run = false; clearTimeout(scheduleTimerID);
       els.sph.style.transform = 'scale(0.8)'; els.ph.textContent = "LISTO"; els.ph.style.color = 'var(--accent)';
       els.modeIcon.classList.remove('visible');
@@ -1187,7 +1196,27 @@
     }
     function toggleSound() { state.snd=!state.snd; document.getElementById('soundBtn').textContent=state.snd?"🔊":"🔇"; if(state.run) initAudio(); }
     function toggleMetronome() { state.met=!state.met; document.getElementById('metronomeBtn').classList.toggle('active'); }
+function toggleMusic() {
+        // Inicializar si no existe
+        if (typeof state.music === 'undefined') state.music = true;
+        
+        state.music = !state.music;
+        
+        // 1. Actualizar visualmente el botón (añadir/quitar clase active)
+        const btn = document.getElementById('musicBtn');
+        if (btn) {
+            if (state.music) btn.classList.add('active');
+            else btn.classList.remove('active');
+        }
 
+        // 2. Actuar sobre el audio
+        if(state.music) {
+            // Si ya está corriendo la respiración, dale play
+            if(state.run) ambientAudio.play().catch(e => console.log(e)); 
+        } else {
+            ambientAudio.pause();
+        }
+    }
     function openShareConfig() {
         let lastP = state.pk;
         if(lastP && lastP !== 'custom') {
@@ -1257,6 +1286,36 @@
         navigator.serviceWorker.register('./service-worker.js')
           .then((reg) => console.log('Service Worker registrado:', reg.scope))
           .catch((err) => console.log('Error al registrar SW:', err));
+      });
+    }
+    // --- REGISTRO DEL SERVICE WORKER (PWA) ---
+    // Este código permite que funcione OFFLINE y actualiza la app automáticamente
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').then(reg => {
+          
+          // Escuchar si hay una nueva versión disponible en el servidor
+          reg.onupdatefound = () => {
+            const installingWorker = reg.installing;
+            installingWorker.onstatechange = () => {
+              if (installingWorker.state === 'installed') {
+                if (navigator.serviceWorker.controller) {
+                  // ¡Nueva actualización detectada! Recargamos para que el usuario la vea
+                  console.log('Nueva versión disponible. Actualizando...');
+                  window.location.reload(); 
+                }
+              }
+            };
+          };
+        });
+      });
+      
+      // Seguridad extra: si el SW cambia, recargamos
+      let refreshing;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        window.location.reload();
+        refreshing = true;
       });
     }
   </script>
