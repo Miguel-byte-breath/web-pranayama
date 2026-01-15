@@ -1288,15 +1288,35 @@ function toggleMusic() {
           .catch((err) => console.log('Error al registrar SW:', err));
       });
     }
-    // ELIMINAR SERVICE WORKER (Modo Desarrollo/Limpieza)
-    // Esto desregistra cualquier SW antiguo para asegurar que ves los cambios
+    // --- REGISTRO DEL SERVICE WORKER (PWA) ---
+    // Este código permite que funcione OFFLINE y actualiza la app automáticamente
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            for(let registration of registrations) {
-                console.log("Limpiando SW antiguo:", registration);
-                registration.unregister();
-            }
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js').then(reg => {
+          
+          // Escuchar si hay una nueva versión disponible en el servidor
+          reg.onupdatefound = () => {
+            const installingWorker = reg.installing;
+            installingWorker.onstatechange = () => {
+              if (installingWorker.state === 'installed') {
+                if (navigator.serviceWorker.controller) {
+                  // ¡Nueva actualización detectada! Recargamos para que el usuario la vea
+                  console.log('Nueva versión disponible. Actualizando...');
+                  window.location.reload(); 
+                }
+              }
+            };
+          };
         });
+      });
+      
+      // Seguridad extra: si el SW cambia, recargamos
+      let refreshing;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        window.location.reload();
+        refreshing = true;
+      });
     }
   </script>
 </body>
