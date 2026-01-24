@@ -7,7 +7,6 @@ const ASSETS_TO_CACHE = [
   './icon-512.png',
   './ambient.mp3'
   // NOTA: NO añadimos aquí el vídeo ni el audio de invierno.
-  // Queremos que la app siga siendo ligera. Esos archivos se cargarán de internet solo si se usan.
 ];
 
 // 1. INSTALACIÓN: Guarda los archivos básicos
