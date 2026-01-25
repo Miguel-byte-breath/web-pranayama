@@ -627,9 +627,10 @@
           </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:15px; margin-bottom: 50px;">
-          <button class="btn-text" style="background:var(--primary); color:white; padding:15px 40px; font-size:1.1rem; border:none;" onclick="startCustom()">Comenzar</button>
-          <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="document.getElementById('customOverlay').style.display='none'">Cancelar</button>
-      </div>
+    <button class="btn-text" style="background:var(--primary); color:white; padding:15px 40px; font-size:1.1rem; border:none;" onclick="startCustom()">Comenzar</button>
+    
+    <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="closeCustomModal()">Cancelar</button>
+</div>
   </div>
 
   <div id="shareConfigOverlay">
@@ -723,19 +724,7 @@
         <h3>✨ Crear Personalizado</h3>
         <p>Define tus tiempos (ej: 4-7-8b)</p>
       </div>
-      <div id="customModal" class="modal" style="display: none;">
-  <div class="modal-content">
-    <h3>✨ Patrón Personalizado</h3>
-    <p>Introduce los segundos para cada fase (ej. 4-7-8)</p>
-    
-    <input type="text" id="customPattern" class="big-input" placeholder="4-7-8" value="4-4-4-4">
-    
-    <div class="modal-btns">
-      <button class="menu-btn" onclick="closeCustomModal()">Cancelar</button>
-      <button class="menu-btn primary" onclick="startCustom()">Iniciar</button>
     </div>
-  </div>
-</div>
       <div class="menu-card" onclick="start('4-4-6-2')">
         <h3>4-4-6-2 • Relax Profundo</h3>
         <p>Baja pulsaciones rápidamente</p>
@@ -964,41 +953,47 @@ ambientAudio.volume = 0.5;
         else { alert("Para instalar: Usa el menú del navegador 'Añadir a inicio'."); }
     }
 
-// =========================================================
-// BLOQUE ÚNICO PARA PATRONES PERSONALIZADOS (REPARADO)
-// =========================================================
+// --- SISTEMA DE PATRÓN PERSONALIZADO UNIFICADO ---
 
 function openCustomModal() {
-    const modal = document.getElementById('customModal');
+    // Abrimos solo el panel de diseño (el más completo)
     const overlay = document.getElementById('customOverlay');
-    if (modal) modal.style.display = 'flex';
-    if (overlay) overlay.style.display = 'flex';
-
-    const input = document.getElementById('customPattern') || document.getElementById('customPatternInput');
-    if (input) {
-        input.value = "4-4-4-4";
-        input.focus();
+    if (overlay) {
+        overlay.style.display = 'flex';
+        // Buscamos el input correcto y le damos el foco
+        const input = document.getElementById('customPatternInput');
+        if (input) {
+            input.value = "4-4-4-4"; // Valor por defecto para ayudar al usuario
+            input.focus();
+        }
     }
 }
 
 function closeCustomModal() {
-    if (document.getElementById('customModal')) document.getElementById('customModal').style.display = 'none';
-    if (document.getElementById('customOverlay')) document.getElementById('customOverlay').style.display = 'none';
+    // Cerramos el panel
+    const overlay = document.getElementById('customOverlay');
+    if (overlay) overlay.style.display = 'none';
 }
 
 function startCustom() {
-    const input = document.getElementById('customPattern') || document.getElementById('customPatternInput');
+    // 1. Leemos del ID correcto de tu HTML (línea 613)
+    const input = document.getElementById('customPatternInput');
     const val = input ? input.value.trim() : "4-4-4-4";
+    
+    // 2. Procesamos el patrón (usa la lógica de la 'b' para la boca)
     const newPattern = parsePatternString(val);
 
     if (!newPattern || newPattern.length < 2) {
-        alert("Introduce un patrón válido (ej: 4-7-8)");
+        alert("Por favor, introduce un patrón válido (ej: 4-7-8)");
         return;
     }
 
+    // 3. Guardamos en el motor de la app
     patterns['custom'] = newPattern;
+    
+    // 4. Cerramos y arrancamos la esfera
     closeCustomModal();
-    start('custom'); // Llama al motor principal
+    start('custom'); 
 }
 
 function parsePatternString(str) {
