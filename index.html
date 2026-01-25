@@ -723,7 +723,19 @@
         <h3>✨ Crear Personalizado</h3>
         <p>Define tus tiempos (ej: 4-7-8b)</p>
       </div>
-      
+      <div id="customModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <h3>✨ Patrón Personalizado</h3>
+    <p>Introduce los segundos para cada fase (ej. 4-7-8)</p>
+    
+    <input type="text" id="customPattern" class="big-input" placeholder="4-7-8" value="4-4-4-4">
+    
+    <div class="modal-btns">
+      <button class="menu-btn" onclick="closeCustomModal()">Cancelar</button>
+      <button class="menu-btn primary" onclick="startCustom()">Iniciar</button>
+    </div>
+  </div>
+</div>
       <div class="menu-card" onclick="start('4-4-6-2')">
         <h3>4-4-6-2 • Relax Profundo</h3>
         <p>Baja pulsaciones rápidamente</p>
@@ -952,11 +964,38 @@ ambientAudio.volume = 0.5;
         else { alert("Para instalar: Usa el menú del navegador 'Añadir a inicio'."); }
     }
 
+   // 1. Abrir el modal
     function openCustomModal() {
-        els.customOverlay.style.display = 'flex';
-        els.customInput.value = ''; els.customInput.focus();
+        document.getElementById('customOverlay').style.display = 'flex';
+        const input = document.getElementById('customPatternInput');
+        if(input) {
+            input.focus();
+        }
     }
 
+    // 2. Procesar e Iniciar (La función que le falta a tu botón "Comenzar")
+    function startCustom() {
+        // Leemos de tu ID real: customPatternInput
+        const input = document.getElementById('customPatternInput');
+        const val = input.value.trim() || "4-4-4-4";
+        
+        // Usamos tu función parsePatternString que ya tienes en la línea 972
+        const newPattern = parsePatternString(val);
+
+        if (newPattern.length < 2) {
+            alert("Por favor, introduce un patrón válido (ej: 4-2-6-0)");
+            return;
+        }
+
+        // Guardamos el patrón en la memoria de la app
+        patterns['custom'] = newPattern;
+
+        // Cerramos el modal
+        document.getElementById('customOverlay').style.display = 'none';
+
+        // ¡Arrancamos la esfera!
+        start('custom');
+    }
     function parsePatternString(str) {
         const chunks = str.split('-');
         const defs = [
@@ -978,7 +1017,9 @@ ambientAudio.volume = 0.5;
         });
         return newPattern;
     }
-
+function closeCustomModal() {
+        els.customOverlay.style.display = 'none';
+    }
     function startCustom() {
         const val = els.customInput.value.trim();
         const newPattern = parsePatternString(val);
