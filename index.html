@@ -964,82 +964,64 @@ ambientAudio.volume = 0.5;
         else { alert("Para instalar: Usa el menú del navegador 'Añadir a inicio'."); }
     }
 
-   // 1. Abrir el modal
-    function openCustomModal() {
-        document.getElementById('customOverlay').style.display = 'flex';
-        const input = document.getElementById('customPatternInput');
-        if(input) {
-            input.focus();
-        }
+// =========================================================
+// BLOQUE ÚNICO PARA PATRONES PERSONALIZADOS (REPARADO)
+// =========================================================
+
+function openCustomModal() {
+    const modal = document.getElementById('customModal');
+    const overlay = document.getElementById('customOverlay');
+    if (modal) modal.style.display = 'flex';
+    if (overlay) overlay.style.display = 'flex';
+
+    const input = document.getElementById('customPattern') || document.getElementById('customPatternInput');
+    if (input) {
+        input.value = "4-4-4-4";
+        input.focus();
     }
+}
 
-    // 2. Procesar e Iniciar (La función que le falta a tu botón "Comenzar")
-    function startCustom() {
-        // Leemos de tu ID real: customPatternInput
-        const input = document.getElementById('customPatternInput');
-        const val = input.value.trim() || "4-4-4-4";
-        
-        // Usamos tu función parsePatternString que ya tienes en la línea 972
-        const newPattern = parsePatternString(val);
-
-        if (newPattern.length < 2) {
-            alert("Por favor, introduce un patrón válido (ej: 4-2-6-0)");
-            return;
-        }
-
-        // Guardamos el patrón en la memoria de la app
-        patterns['custom'] = newPattern;
-
-        // Cerramos el modal
-        document.getElementById('customOverlay').style.display = 'none';
-
-        // ¡Arrancamos la esfera!
-        start('custom');
-    }
-    function parsePatternString(str) {
-        const chunks = str.split('-');
-        const defs = [
-            {t:"INHALA", y:'rise', c:C_INHALE},
-            {t:"MANTÉN", y:'hold_high', c:C_HOLD},
-            {t:"EXHALA", y:'fall', c:C_EXHALE},
-            {t:"SOSTÉN", y:'hold_low', c:C_HOLD},
-            {t:"PAUSA", y:'hold_low', c:C_HOLD}
-        ];
-        let newPattern = [];
-        chunks.forEach((chunk, i) => {
-            let beats = parseInt(chunk.replace(/\D/g,''));
-            if(!isNaN(beats) && beats > 0) {
-                let mode = 'nose';
-                if(chunk.toLowerCase().includes('b')) mode = 'mouth';
-                let defIdx = i % defs.length;
-                newPattern.push({ t: defs[defIdx].t, b: beats, y: defs[defIdx].y, c: defs[defIdx].c, m: mode });
-            }
-        });
-        return newPattern;
-    }
 function closeCustomModal() {
-        els.customOverlay.style.display = 'none';
-    }
-    function startCustom() {
-        // Buscamos el ID real de tu caja de texto: customPatternInput
-        const input = document.getElementById('customPatternInput');
-        const val = input ? input.value.trim() : "4-4-4-4";
-        
-        const newPattern = parsePatternString(val);
+    if (document.getElementById('customModal')) document.getElementById('customModal').style.display = 'none';
+    if (document.getElementById('customOverlay')) document.getElementById('customOverlay').style.display = 'none';
+}
 
-        if (!newPattern || newPattern.length < 2) {
-            alert("Introduce al menos 2 fases válidas.");
-            return;
+function startCustom() {
+    const input = document.getElementById('customPattern') || document.getElementById('customPatternInput');
+    const val = input ? input.value.trim() : "4-4-4-4";
+    const newPattern = parsePatternString(val);
+
+    if (!newPattern || newPattern.length < 2) {
+        alert("Introduce un patrón válido (ej: 4-7-8)");
+        return;
+    }
+
+    patterns['custom'] = newPattern;
+    closeCustomModal();
+    start('custom'); // Llama al motor principal
+}
+
+function parsePatternString(str) {
+    const chunks = str.split('-');
+    const defs = [
+        {t:"INHALA", y:'rise', c:C_INHALE},
+        {t:"MANTÉN", y:'hold_high', c:C_HOLD},
+        {t:"EXHALA", y:'fall', c:C_EXHALE},
+        {t:"SOSTÉN", y:'hold_low', c:C_HOLD},
+        {t:"PAUSA", y:'hold_low', c:C_HOLD}
+    ];
+    let newPattern = [];
+    chunks.forEach((chunk, i) => {
+        let beats = parseInt(chunk.replace(/\D/g,''));
+        if(!isNaN(beats) && beats > 0) {
+            let mode = 'nose';
+            if(chunk.toLowerCase().includes('b')) mode = 'mouth';
+            let defIdx = i % defs.length;
+            newPattern.push({ t: defs[defIdx].t, b: beats, y: defs[defIdx].y, c: defs[defIdx].c, m: mode });
         }
-
-        patterns['custom'] = newPattern;
-        
-        // Cerramos el modal usando su ID real
-        document.getElementById('customOverlay').style.display = 'none';
-        
-        // ¡Arrancamos!
-        start('custom');
-    }
+    });
+    return newPattern;
+}
 
     function initAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
