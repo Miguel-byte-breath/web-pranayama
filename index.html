@@ -1366,7 +1366,10 @@ function toggleMusic() {
         const input = document.getElementById('soundscapeInput');
         if(input) input.focus();
     }
-
+function parsePatternStrFull(str) {
+        if (!str) return [4, 4, 4, 4];
+        return str.split('-').map(n => Number(n.trim()));
+    }
     function startSoundscape() {
         const val = document.getElementById('soundscapeInput').value.trim() || "2-2-4"; 
         const customP = parsePatternStrFull(val); 
