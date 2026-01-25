@@ -1378,19 +1378,29 @@ function toggleMusic() {
         const ov = document.getElementById('videoOverlay');
         const winterMusic = document.getElementById('winterAudio');
         
-        // Mostrar Vídeo
+        // 1. Preparar el vídeo
         vid.style.display = 'block';
-        setTimeout(() => {
+        
+        // --- FIX PARA PC ---
+        vid.muted = true; // Aseguramos silencio
+        vid.load();       // Obligamos a recargar el fichero
+        // -------------------
+
+        // 2. Intentar reproducir (CON CHIVATO DE ERROR)
+        vid.play().then(() => {
+            // Si funciona:
             vid.style.opacity = '1';
             ov.style.opacity = '1';
-            vid.play().catch(e => console.log("Video error:", e));
-        }, 50);
+        }).catch(error => {
+            // Si falla: ¡AVISO EN PANTALLA!
+            alert("⚠️ EL VÍDEO NO ARRANCA POR ESTO:\n" + error.message);
+        });
 
-        // Audio
+        // 3. Audio y ambiente
         ambientAudio.pause(); 
         if(state.music) {
             winterMusic.currentTime = 0;
-            winterMusic.play().catch(e => console.log("Music error:", e));
+            winterMusic.play().catch(e => console.log("Error música:", e));
         }
 
         document.body.classList.add('immersive');
