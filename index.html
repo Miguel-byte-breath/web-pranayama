@@ -1021,11 +1021,23 @@ function closeCustomModal() {
         els.customOverlay.style.display = 'none';
     }
     function startCustom() {
-        const val = els.customInput.value.trim();
+        // Buscamos el ID real de tu caja de texto: customPatternInput
+        const input = document.getElementById('customPatternInput');
+        const val = input ? input.value.trim() : "4-4-4-4";
+        
         const newPattern = parsePatternString(val);
-        if (newPattern.length < 2) { alert("Introduce al menos 2 fases válidas."); return; }
+
+        if (!newPattern || newPattern.length < 2) {
+            alert("Introduce al menos 2 fases válidas.");
+            return;
+        }
+
         patterns['custom'] = newPattern;
-        els.customOverlay.style.display = 'none';
+        
+        // Cerramos el modal usando su ID real
+        document.getElementById('customOverlay').style.display = 'none';
+        
+        // ¡Arrancamos!
         start('custom');
     }
 
