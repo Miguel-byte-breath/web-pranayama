@@ -8,7 +8,7 @@
   <link rel="manifest" href="manifest.json" />
 <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="theme-color" content="#eefcfd">
-  <meta name="description" content="Una aplicación minimalista para respirar, relajarse y leer.">
+  <meta name="deion" content="Una aplicación minimalista para respirar, relajarse y leer.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -553,6 +553,13 @@
   </style>
 </head>
 <body>
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      alert("🔥 ERROR CRÍTICO DETECTADO 🔥\n\n" + 
+            "Mensaje: " + message + "\n" +
+            "Línea: " + lineno);
+    };
+  </script>
 <video id="bgVideo" loop playsinline muted poster="https://cdn.pixabay.com/photo/2017/02/12/12/42/snow-2059637_1280.jpg">
       <source src="./winter.mp4" type="video/mp4">
   </video>
