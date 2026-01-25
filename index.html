@@ -1287,7 +1287,92 @@ function toggleMusic() {
           .then((reg) => console.log('Service Worker registrado:', reg.scope))
           .catch((err) => console.log('Error al registrar SW:', err));
       });
+    }// ==========================================
+    // ❄️ MODULO PAISAJE DE INVIERNO (AÑADIDO)
+    // ==========================================
+
+    function openSoundscapeConfig() {
+        document.getElementById('soundscapeOverlay').style.display = 'flex';
     }
+
+    function startSoundscape() {
+        // 1. Leemos el ritmo que ha escrito el usuario (ej: 4-4-4-4)
+        const input = document.getElementById('soundscapeInput');
+        let pattern = input.value.trim();
+        if (!pattern) pattern = "4-4-4-4"; // Ritmo por defecto si está vacío
+
+        // 2. Cerramos el modal de configuración
+        document.getElementById('soundscapeOverlay').style.display = 'none';
+
+        // 3. Iniciamos la respiración normal con ese ritmo
+        start(pattern);
+
+        // 4. Activamos el MODO INMERSIVO (Vídeo + Música)
+        enableImmersiveMode();
+    }
+
+    // --- FUNCIÓN ACTIVAR MODO INMERSIVO (VERSIÓN PC) ---
+    function enableImmersiveMode() {
+        const vid = document.getElementById('bgVideo');
+        const ov = document.getElementById('videoOverlay');
+        const winterMusic = document.getElementById('winterAudio');
+        
+        // 1. Mostrar el vídeo
+        vid.style.display = 'block';
+        
+        // 2. TRUCO DE ORO PARA PC: Forzar recarga
+        // Esto obliga al navegador a despertar al archivo de vídeo
+        vid.muted = true;  
+        vid.load();        
+        
+        // 3. Intentar reproducir (CON AVISO SI FALLA)
+        const playPromise = vid.play();
+
+        if (playPromise !== undefined) {
+            playPromise.then(_ => {
+                // Si funciona:
+                vid.style.opacity = '1';
+                ov.style.opacity = '1';
+                console.log("¡Vídeo arrancado con éxito!");
+            })
+            .catch(error => {
+                // Si falla:
+                alert("❌ ERROR AL REPRODUCIR VÍDEO:\n" + error.message + "\n\nRevisa que el archivo 'winter.mp4' esté bien escrito en el HTML.");
+            });
+        }
+
+        // 4. Música de fondo
+        ambientAudio.pause(); 
+        if(state.music) {
+            winterMusic.currentTime = 0;
+            winterMusic.play().catch(e => console.log("Error música:", e));
+        }
+
+        document.body.classList.add('immersive');
+    }
+
+    function disableImmersiveMode() {
+        const vid = document.getElementById('bgVideo');
+        const ov = document.getElementById('videoOverlay');
+        const winterMusic = document.getElementById('winterAudio');
+
+        // Ocultar vídeo suavemente
+        vid.style.opacity = '0';
+        ov.style.opacity = '0';
+        setTimeout(() => {
+            vid.style.display = 'none';
+            vid.pause();
+        }, 1000);
+
+        // Parar música invierno
+        winterMusic.pause();
+        
+        // Quitar clase del body
+        document.body.classList.remove('immersive');
+    }
+
+    // ==========================================
+    
     // --- REGISTRO DEL SERVICE WORKER (PWA) ---
     // Este código permite que funcione OFFLINE y actualiza la app automáticamente
     if ('serviceWorker' in navigator) {
