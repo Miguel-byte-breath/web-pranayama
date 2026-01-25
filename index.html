@@ -8,7 +8,7 @@
   <link rel="manifest" href="manifest.json" />
 <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="theme-color" content="#eefcfd">
-  <meta name="deion" content="Una aplicación minimalista para respirar, relajarse y leer.">
+  <meta name="description" content="Una aplicación minimalista para respirar, relajarse y leer.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -509,65 +509,12 @@
       .sphere { width: 65%; height: 65%; }
       .bottom-viz { height: 70px; width: 80%; }
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 800px; gap:25px; }
-      #customOverlay, #shareConfigOverlay, /* --- MODO INMERSIVO --- */
-    #bgVideo {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        object-fit: cover; z-index: -2;
-        opacity: 0; transition: opacity 1.5s ease;
-        display: none;
-        background: #cfd8dc; /* Fondo de seguridad */
+      #customOverlay, #shareConfigOverlay, #guideOverlay { padding-top: 5vh; justify-content: center; }
     }
-    
-    #videoOverlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.3); z-index: -1; 
-        opacity: 0; transition: opacity 1.5s ease;
-        pointer-events: none;
-    }
-
-    /* Ocultamos interfaz normal en modo inmersivo */
-    body.immersive .top-bar, 
-    body.immersive .bottom-viz, 
-    body.immersive .quote, 
-    body.immersive .mode-indicator,
-    body.immersive .global-info-btn,
-    body.immersive .navidad-lights { 
-        display: none !important; 
-    }
-    
-    /* Textos blancos para leerse sobre el vídeo */
-    body.immersive .phase-text { color: #fff !important; text-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-    body.immersive .p-num { color: rgba(255,255,255,0.7); }
-    body.immersive .p-num.active { color: #fff; text-shadow: 0 0 15px #fff; transform: scale(1.5); }
-    body.immersive .p-sep { color: rgba(255,255,255,0.4); }
-
-    /* Estilo del modal */
-    #soundscapeOverlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(255,255,255,0.95); z-index: 160;
-        display: none; flex-direction: column; align-items: center; padding-top: 15vh;
-        backdrop-filter: blur(10px);
-    }guideOverlay { padding-top: 5vh; justify-content: center; }
-    }
-    
   </style>
 </head>
 <body>
-  <script>
-    window.onerror = function(message, source, lineno, colno, error) {
-      alert("🔥 ERROR CRÍTICO DETECTADO 🔥\n\n" + 
-            "Mensaje: " + message + "\n" +
-            "Línea: " + lineno);
-    };
-  </script>
-<video id="bgVideo" loop playsinline muted poster="https://cdn.pixabay.com/photo/2017/02/12/12/42/snow-2059637_1280.jpg">
-      <source src="./winter.mp4" type="video/mp4">
-  </video>
-  <div id="videoOverlay"></div>
 
-  <audio id="winterAudio" loop>
-      <source src="winter_audio.mp3" type="audio/mpeg">
-  </audio>
   <div id="loadingOverlay">
     <div class="spinner"></div>
     <div style="font-family:'Manrope'; color:#546e7a; font-weight:600;">Preparando...</div>
@@ -627,10 +574,9 @@
           </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:15px; margin-bottom: 50px;">
-    <button class="btn-text" style="background:var(--primary); color:white; padding:15px 40px; font-size:1.1rem; border:none;" onclick="startCustom()">Comenzar</button>
-    
-    <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="closeCustomModal()">Cancelar</button>
-</div>
+          <button class="btn-text" style="background:var(--primary); color:white; padding:15px 40px; font-size:1.1rem; border:none;" onclick="startCustom()">Comenzar</button>
+          <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="document.getElementById('customOverlay').style.display='none'">Cancelar</button>
+      </div>
   </div>
 
   <div id="shareConfigOverlay">
@@ -702,11 +648,6 @@
     </div>
 
     <div class="menu-grid">
-      <div class="menu-card" style="border: 2px solid #b2ebf2; background: linear-gradient(135deg, #f0faff 0%, #e0f7fa 100%);" onclick="openSoundscapeConfig()">
-        <h3 style="color:#006064">🏔️ Paisaje de Invierno</h3>
-        <p>Experiencia inmersiva. Se recomienda uso de auriculares.</p>
-      </div>
-      
       <div class="substack-card" onclick="const el = document.getElementById('substackOverlay'); el.style.visibility='visible'; el.style.opacity='1'; el.style.pointerEvents='auto';">
           <div class="substack-icon">
               <svg viewBox="0 0 24 24" fill="#FF6719" width="20" height="20">
@@ -724,7 +665,7 @@
         <h3>✨ Crear Personalizado</h3>
         <p>Define tus tiempos (ej: 4-7-8b)</p>
       </div>
-    </div>
+      
       <div class="menu-card" onclick="start('4-4-6-2')">
         <h3>4-4-6-2 • Relax Profundo</h3>
         <p>Baja pulsaciones rápidamente</p>
@@ -790,23 +731,7 @@
       <canvas id="breathGraph"></canvas>
     </div>
   </div>
-<div id="soundscapeOverlay">
-      <div class="overlay-title">🏔️ Invierno</div>
-      <div class="overlay-subtitle">Elige tu ritmo (Ej: 2-2-4)</div>
-      
-     <div class="custom-input-container">
-    <input type="text" id="soundscapeInput" class="big-input" placeholder="4-4-4-4" value="4-4-4-4" autocomplete="off">
-</div>>
-      
-      <p style="font-size: 0.8rem; color: #78909c; margin-top: 15px;">
-          Requiere conexión a internet para vídeo y música.
-      </p>
 
-      <div class="overlay-btn-group">
-          <button class="action-btn" onclick="startSoundscape()">❄️ Iniciar</button>
-          <button class="action-btn" style="background:transparent; border:1px solid #ccc; color:#666;" onclick="document.getElementById('soundscapeOverlay').style.display='none'">Volver</button>
-      </div>
-  </div>
   <script>
     // --- VARIABLES Y CONFIGURACIÓN ---
     const C_INHALE = '#4CAF50'; 
@@ -953,70 +878,41 @@ ambientAudio.volume = 0.5;
         else { alert("Para instalar: Usa el menú del navegador 'Añadir a inicio'."); }
     }
 
-// --- SISTEMA DE PATRÓN PERSONALIZADO UNIFICADO ---
-
-function openCustomModal() {
-    // Abrimos solo el panel de diseño (el más completo)
-    const overlay = document.getElementById('customOverlay');
-    if (overlay) {
-        overlay.style.display = 'flex';
-        // Buscamos el input correcto y le damos el foco
-        const input = document.getElementById('customPatternInput');
-        if (input) {
-            input.value = "4-4-4-4"; // Valor por defecto para ayudar al usuario
-            input.focus();
-        }
-    }
-}
-
-function closeCustomModal() {
-    // Cerramos el panel
-    const overlay = document.getElementById('customOverlay');
-    if (overlay) overlay.style.display = 'none';
-}
-
-function startCustom() {
-    // 1. Leemos del ID correcto de tu HTML (línea 613)
-    const input = document.getElementById('customPatternInput');
-    const val = input ? input.value.trim() : "4-4-4-4";
-    
-    // 2. Procesamos el patrón (usa la lógica de la 'b' para la boca)
-    const newPattern = parsePatternString(val);
-
-    if (!newPattern || newPattern.length < 2) {
-        alert("Por favor, introduce un patrón válido (ej: 4-7-8)");
-        return;
+    function openCustomModal() {
+        els.customOverlay.style.display = 'flex';
+        els.customInput.value = ''; els.customInput.focus();
     }
 
-    // 3. Guardamos en el motor de la app
-    patterns['custom'] = newPattern;
-    
-    // 4. Cerramos y arrancamos la esfera
-    closeCustomModal();
-    start('custom'); 
-}
+    function parsePatternString(str) {
+        const chunks = str.split('-');
+        const defs = [
+            {t:"INHALA", y:'rise', c:C_INHALE},
+            {t:"MANTÉN", y:'hold_high', c:C_HOLD},
+            {t:"EXHALA", y:'fall', c:C_EXHALE},
+            {t:"SOSTÉN", y:'hold_low', c:C_HOLD},
+            {t:"PAUSA", y:'hold_low', c:C_HOLD}
+        ];
+        let newPattern = [];
+        chunks.forEach((chunk, i) => {
+            let beats = parseInt(chunk.replace(/\D/g,''));
+            if(!isNaN(beats) && beats > 0) {
+                let mode = 'nose';
+                if(chunk.toLowerCase().includes('b')) mode = 'mouth';
+                let defIdx = i % defs.length;
+                newPattern.push({ t: defs[defIdx].t, b: beats, y: defs[defIdx].y, c: defs[defIdx].c, m: mode });
+            }
+        });
+        return newPattern;
+    }
 
-function parsePatternString(str) {
-    const chunks = str.split('-');
-    const defs = [
-        {t:"INHALA", y:'rise', c:C_INHALE},
-        {t:"MANTÉN", y:'hold_high', c:C_HOLD},
-        {t:"EXHALA", y:'fall', c:C_EXHALE},
-        {t:"SOSTÉN", y:'hold_low', c:C_HOLD},
-        {t:"PAUSA", y:'hold_low', c:C_HOLD}
-    ];
-    let newPattern = [];
-    chunks.forEach((chunk, i) => {
-        let beats = parseInt(chunk.replace(/\D/g,''));
-        if(!isNaN(beats) && beats > 0) {
-            let mode = 'nose';
-            if(chunk.toLowerCase().includes('b')) mode = 'mouth';
-            let defIdx = i % defs.length;
-            newPattern.push({ t: defs[defIdx].t, b: beats, y: defs[defIdx].y, c: defs[defIdx].c, m: mode });
-        }
-    });
-    return newPattern;
-}
+    function startCustom() {
+        const val = els.customInput.value.trim();
+        const newPattern = parsePatternString(val);
+        if (newPattern.length < 2) { alert("Introduce al menos 2 fases válidas."); return; }
+        patterns['custom'] = newPattern;
+        els.customOverlay.style.display = 'none';
+        start('custom');
+    }
 
     function initAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1282,16 +1178,8 @@ if(state.music) {
       }, 100);
     }
 
-   function stop() {
-      ambientAudio.pause(); // Pausa el audio normal
-      
-      // --- NUEVO: Apagar modo invierno (Vídeo y Música) ---
-      // Verificamos si la función existe antes de llamarla para evitar errores
-      if (typeof disableImmersiveMode === 'function') {
-          disableImmersiveMode();
-      }
-      // ----------------------------------------------------
-
+    function stop() {
+      ambientAudio.pause();
       state.run = false; clearTimeout(scheduleTimerID);
       els.sph.style.transform = 'scale(0.8)'; els.ph.textContent = "LISTO"; els.ph.style.color = 'var(--accent)';
       els.modeIcon.classList.remove('visible');
@@ -1390,75 +1278,7 @@ function toggleMusic() {
     
     window.addEventListener('resize', () => { if(state.run) initCanvas(); });
     initCanvas();
-// --- LÓGICA PAISAJE SONORO ---
-    function openSoundscapeConfig() {
-        document.getElementById('soundscapeOverlay').style.display = 'flex';
-        const input = document.getElementById('soundscapeInput');
-        if(input) input.focus();
-    }
-function parsePatternStrFull(str) {
-        if (!str) return [4, 4, 4, 4];
-        return str.split('-').map(n => Number(n.trim()));
-    }
-    function startSoundscape() {
-        const val = document.getElementById('soundscapeInput').value.trim() || "2-2-4"; 
-        const customP = parsePatternStrFull(val); 
-        
-        if (customP.length < 2) { alert("Patrón inválido."); return; }
 
-        patterns['immersive'] = customP;
-        document.getElementById('soundscapeOverlay').style.display = 'none';
-
-        enableImmersiveMode();
-        start('immersive');
-    }
-
-    function enableImmersiveMode() {
-        const vid = document.getElementById('bgVideo');
-        const ov = document.getElementById('videoOverlay');
-        const winterMusic = document.getElementById('winterAudio');
-        
-        // 1. Preparar el vídeo
-        vid.style.display = 'block';
-        
-        // --- FIX PARA PC ---
-        vid.muted = true; // Aseguramos silencio
-        vid.load();       // Obligamos a recargar el fichero
-        // -------------------
-
-        // 2. Intentar reproducir (CON CHIVATO DE ERROR)
-        vid.play().then(() => {
-            // Si funciona:
-            vid.style.opacity = '1';
-            ov.style.opacity = '1';
-        }).catch(error => {
-            // Si falla: ¡AVISO EN PANTALLA!
-            alert("⚠️ EL VÍDEO NO ARRANCA POR ESTO:\n" + error.message);
-        });
-
-        // 3. Audio y ambiente
-        ambientAudio.pause(); 
-        if(state.music) {
-            winterMusic.currentTime = 0;
-            winterMusic.play().catch(e => console.log("Error música:", e));
-        }
-
-        document.body.classList.add('immersive');
-    }
-
-    function disableImmersiveMode() {
-        const vid = document.getElementById('bgVideo');
-        const ov = document.getElementById('videoOverlay');
-        const winterMusic = document.getElementById('winterAudio');
-        
-        vid.style.opacity = '0';
-        ov.style.opacity = '0';
-        setTimeout(() => { vid.style.display = 'none'; vid.pause(); }, 1000);
-
-        winterMusic.pause();
-        winterMusic.currentTime = 0;
-        document.body.classList.remove('immersive');
-    }
     // --- REGISTRO DEL SERVICE WORKER (PWA) ---
     // Esto es lo que permite que funcione Offline
     if ('serviceWorker' in navigator) {
