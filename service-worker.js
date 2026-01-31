@@ -1,4 +1,4 @@
-const CACHE_NAME = 'respira-v4-offline'; // <--- HEMOS SUBIDO A V4
+const CACHE_NAME = 'respira-v12-offline'; // <--- HEMOS SUBIDO A V4
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -47,4 +47,12 @@ self.addEventListener('fetch', (e) => {
       return response || fetch(e.request);
     })
   );
+
 });
+
+
+
+
+
+
+
