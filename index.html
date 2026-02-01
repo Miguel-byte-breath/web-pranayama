@@ -532,41 +532,38 @@
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 800px; gap:25px; }
       #customOverlay, #shareConfigOverlay, #guideOverlay { padding-top: 5vh; justify-content: center; }
     }
-/* --- ADORNOS ORGÁNICOS (ALTA VISIBILIDAD) --- */
+/* --- ADORNOS ORGÁNICOS (REVISIÓN FINAL) --- */
     .organic-shape {
       position: fixed;
+      width: 500px; /* Damos tamaño al contenedor */
+      height: 500px;
       border-radius: 50%;
-      /* Bajamos el desenfoque para que la mancha no se disipe del todo */
-      filter: blur(40px); 
+      /* Bajamos el blur de 60px a 30px para que el color sea denso */
+      filter: blur(30px); 
       z-index: 0;
-      /* Opacidad sólida para asegurar que se vea */
-      opacity: 1; 
+      opacity: 0.8; /* Casi opaco */
       pointer-events: none;
       animation: floatOrganic 20s infinite alternate ease-in-out;
     }
 
     .shape-1 {
-      width: 450px;
-      height: 450px;
-      /* Un cian más profundo para que destaque sobre el fondo claro */
-      background: #4dd0e1; 
-      top: -150px;
-      right: -150px;
+      /* Azul intenso en lugar de pastel */
+      background: #00acc1; 
+      top: -100px;
+      right: -100px;
     }
 
     .shape-2 {
-      width: 550px;
-      height: 550px;
-      /* Un ámbar/oro real para que haga contraste */
-      background: #ffca28; 
-      bottom: -200px;
-      left: -200px;
+      /* Oro/Naranja intenso */
+      background: #fbc02d; 
+      bottom: -150px;
+      left: -150px;
       animation-delay: -5s;
     }
 
     @keyframes floatOrganic {
       from { transform: translate(0, 0) rotate(0deg); }
-      to { transform: translate(80px, 150px) rotate(40deg); }
+      to { transform: translate(100px, 100px) rotate(40deg); }
     }
   </style>
 </head>
