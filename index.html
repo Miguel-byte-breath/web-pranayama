@@ -525,33 +525,26 @@
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 800px; gap:25px; }
       #customOverlay, #shareConfigOverlay, #guideOverlay { padding-top: 5vh; justify-content: center; }
     }
-    /* --- ADORNOS ORGÁNICOS --- */
+   /* --- ADORNOS ORGÁNICOS (CORREGIDO) --- */
     .organic-shape {
       position: fixed;
       border-radius: 50%;
-      filter: blur(80px);
-      z-index: -1;
-      opacity: 0.3;
+      filter: blur(60px); /* Un poco menos de blur para que se noten más */
+      
+      /* CAMBIO CLAVE: Dejamos de esconderlas */
+      z-index: 0; 
+      
+      opacity: 0.6; /* Sube la opacidad para verlas bien */
+      pointer-events: none; /* IMPORTANTE: Para que puedas hacer clic a través de ellas */
+      mix-blend-mode: multiply; /* Opcional: hace que los colores se mezclen bonito */
       animation: floatOrganic 20s infinite alternate ease-in-out;
     }
-    .shape-1 {
-      width: 400px;
-      height: 400px;
-      background: var(--organic-blue);
-      top: -100px;
-      right: -100px;
-    }
-    .shape-2 {
-      width: 500px;
-      height: 500px;
-      background: var(--organic-gold);
-      bottom: -150px;
-      left: -150px;
-      animation-delay: -5s;
-    }
-    @keyframes floatOrganic {
-      from { transform: translate(0, 0) rotate(0deg); }
-      to { transform: translate(60px, 120px) rotate(30deg); }
+
+    /* --- ASEGURAR QUE EL CONTENIDO ESTÁ ENCIMA --- */
+    /* Añade esto para que las fichas no queden tapadas por las manchas */
+    .header, .main-menu, .card, .menu-btn {
+        position: relative;
+        z-index: 10; 
     }
   </style>
 </head>
