@@ -61,15 +61,22 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* --- 2. LAYOUT GENERAL --- */
+    /* --- 2. LAYOUT GENERAL (CORREGIDO) --- */
     .app-layout {
       flex: 1; display: flex; flex-direction: column; 
       width: 100%; height: 100%;
+      
+      /* --- CAMBIO CRÍTICO --- */
+      /* Elevamos toda la app al piso 2 para que NADA la tape */
+      position: relative;
+      z-index: 2;
     }
 
     .top-bar {
       flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
-      padding: 15px 25px; z-index: 50; height: 70px;
+      padding: 15px 25px; 
+      z-index: 50; /* Esto se mantiene encima del resto de la app */
+      height: 70px;
     }
     .top-left, .top-right { pointer-events: auto; display: flex; gap: 12px; align-items: center; }
 
