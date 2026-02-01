@@ -532,35 +532,39 @@
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 800px; gap:25px; }
       #customOverlay, #shareConfigOverlay, #guideOverlay { padding-top: 5vh; justify-content: center; }
     }
-/* --- ADORNOS ORGÁNICOS (FINAL Y LIMPIO) --- */
+/* --- ADORNOS ORGÁNICOS (MODO VISIBLE) --- */
     .organic-shape {
       position: fixed;
       border-radius: 50%;
-      filter: blur(60px); /* El desenfoque suave */
-      z-index: 0; /* Al fondo, detrás de todo */
-      opacity: 0.6; /* Transparencia elegante (puedes subir a 0.8 si quieres más color) */
+      /* Bajamos el blur a la mitad para que la mancha sea más sólida */
+      filter: blur(40px); 
+      z-index: 0;
+      /* Opacidad al 100% para descartar transparencias fantasma */
+      opacity: 1; 
       pointer-events: none;
       animation: floatOrganic 20s infinite alternate ease-in-out;
     }
 
     .shape-1 {
-      width: 400px; 
+      width: 400px;
       height: 400px;
-      background: var(--organic-blue, #80deea); /* Azul suave */
-      top: -100px; 
+      /* CAMBIO: Usamos un azul profundo en lugar de cian pastel */
+      background: #00bcd4; 
+      top: -100px;
       right: -100px;
     }
 
     .shape-2 {
-      width: 500px; 
+      width: 500px;
       height: 500px;
-      background: var(--organic-gold, #fff9c4); /* Dorado suave */
-      bottom: -150px; 
+      /* CAMBIO: Usamos oro intenso en lugar de amarillo pálido */
+      background: #ffb300; 
+      bottom: -150px;
       left: -150px;
       animation-delay: -5s;
     }
-
-    /* ESTO TAMBIÉN FALTABA: LA DEFINICIÓN DEL MOVIMIENTO */
+    
+    /* Mantenemos la animación igual */
     @keyframes floatOrganic {
       from { transform: translate(0, 0) rotate(0deg); }
       to { transform: translate(60px, 120px) rotate(30deg); }
