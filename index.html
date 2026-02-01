@@ -532,28 +532,41 @@
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 800px; gap:25px; }
       #customOverlay, #shareConfigOverlay, #guideOverlay { padding-top: 5vh; justify-content: center; }
     }
-   /* --- ADORNOS ORGÁNICOS (VERSION SEGURA) --- */
+ /* --- ADORNOS ORGÁNICOS (BLOQUE COMPLETO) --- */
     .organic-shape {
       position: fixed;
       border-radius: 50%;
-      filter: blur(60px); 
-      
-      /* CAMBIO 1: Z-index positivo para asegurar que se ve sobre el body */
-      z-index: 1; 
-      
-      /* CAMBIO 2: Sin mix-blend-mode para evitar que desaparezca */
-      /* mix-blend-mode: multiply;  <-- COMENTADO POR SEGURIDAD */
-      
-      opacity: 0.8; /* Más opacidad para que sea evidente */
-      pointer-events: none; 
+      filter: blur(60px);
+      z-index: 0; /* Detrás de la app */
+      opacity: 0.8;
+      pointer-events: none;
+      /* Referencia a la animación que definimos abajo */
       animation: floatOrganic 20s infinite alternate ease-in-out;
     }
 
-    /* --- ASEGURAR QUE EL CONTENIDO ESTÁ MUY POR ENCIMA --- */
-    /* Subimos a 20 para que pase por encima de las formas (que están en 1) */
-    .header, .main-menu, .card, .menu-btn, #version-display {
-        position: relative;
-        z-index: 20; 
+    /* ESTO ES LO QUE FALTABA: TAMAÑOS Y COLORES */
+    .shape-1 {
+      width: 400px;
+      height: 400px;
+      /* Usamos colores fijos por seguridad, si fallan las variables */
+      background: var(--organic-blue, #80deea);
+      top: -100px;
+      right: -100px;
+    }
+
+    .shape-2 {
+      width: 500px;
+      height: 500px;
+      background: var(--organic-gold, #fff9c4);
+      bottom: -150px;
+      left: -150px;
+      animation-delay: -5s;
+    }
+
+    /* ESTO TAMBIÉN FALTABA: LA DEFINICIÓN DEL MOVIMIENTO */
+    @keyframes floatOrganic {
+      from { transform: translate(0, 0) rotate(0deg); }
+      to { transform: translate(60px, 120px) rotate(30deg); }
     }
   </style>
 </head>
