@@ -26,7 +26,10 @@
       --primary: #4CAF50; 
       --accent: #00838f;
       --substack-orange: #FF6719;
-      
+      --organic-blue: #80deea;
+      --organic-gold: #fff9c4;
+      --bg-zen: #e0f2f1;
+      --c-inhale: #81c784;
       --c-inhale: #4CAF50; 
       --c-hold: #FF9800;   
       --c-exhale: #2196F3; 
@@ -35,16 +38,27 @@
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     
     body {
-      background-color: var(--dune-light);
-      background-image: 
-        radial-gradient(at 0% 0%, hsla(190,40%,96%,1) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, hsla(195,50%,90%,1) 0px, transparent 50%),
-        radial-gradient(at 50% 100%, hsla(185,60%,88%,1) 0px, transparent 50%);
-      background-attachment: fixed;
-      color: var(--text-main); 
+      margin: 0;
+      padding: 0;
       font-family: 'Manrope', sans-serif;
-      height: 100dvh; width: 100vw; overflow: hidden; 
-      display: flex; flex-direction: column;
+      color: var(--text-main);
+      height: 100dvh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      
+      /* Fondo animado orgánico */
+      background: linear-gradient(135deg, #e0f2f1 0%, #b2ebf2 50%, #e1f5fe 100%);
+      background-size: 400% 400%;
+      animation: organicGradient 15s ease infinite;
+    }
+
+    /* Animación del fondo */
+    @keyframes organicGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     /* --- 2. LAYOUT GENERAL --- */
@@ -511,10 +525,39 @@
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 800px; gap:25px; }
       #customOverlay, #shareConfigOverlay, #guideOverlay { padding-top: 5vh; justify-content: center; }
     }
+    /* --- ADORNOS ORGÁNICOS --- */
+    .organic-shape {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: -1;
+      opacity: 0.3;
+      animation: floatOrganic 20s infinite alternate ease-in-out;
+    }
+    .shape-1 {
+      width: 400px;
+      height: 400px;
+      background: var(--organic-blue);
+      top: -100px;
+      right: -100px;
+    }
+    .shape-2 {
+      width: 500px;
+      height: 500px;
+      background: var(--organic-gold);
+      bottom: -150px;
+      left: -150px;
+      animation-delay: -5s;
+    }
+    @keyframes floatOrganic {
+      from { transform: translate(0, 0) rotate(0deg); }
+      to { transform: translate(60px, 120px) rotate(30deg); }
+    }
   </style>
 </head>
 <body>
-
+<div class="organic-shape shape-1"></div>
+<div class="organic-shape shape-2"></div>
   <div id="loadingOverlay">
     <div class="spinner"></div>
     <div style="font-family:'Manrope'; color:#546e7a; font-weight:600;">Preparando...</div>
