@@ -1,4 +1,4 @@
-const CACHE_NAME = 'respira-v14-offline'; //
+const CACHE_NAME = 'respira-v15-offline'; //
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -49,6 +49,7 @@ self.addEventListener('fetch', (e) => {
   );
 
 });
+
 
 
 
