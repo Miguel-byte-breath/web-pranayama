@@ -532,33 +532,30 @@
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 800px; gap:25px; }
       #customOverlay, #shareConfigOverlay, #guideOverlay { padding-top: 5vh; justify-content: center; }
     }
- /* --- ADORNOS ORGÁNICOS (BLOQUE COMPLETO) --- */
+/* --- ADORNOS ORGÁNICOS (FINAL Y LIMPIO) --- */
     .organic-shape {
       position: fixed;
       border-radius: 50%;
-      filter: blur(60px);
-      z-index: 0; /* Detrás de la app */
-      opacity: 0.8;
+      filter: blur(60px); /* El desenfoque suave */
+      z-index: 0; /* Al fondo, detrás de todo */
+      opacity: 0.6; /* Transparencia elegante (puedes subir a 0.8 si quieres más color) */
       pointer-events: none;
-      /* Referencia a la animación que definimos abajo */
       animation: floatOrganic 20s infinite alternate ease-in-out;
     }
 
-    /* ESTO ES LO QUE FALTABA: TAMAÑOS Y COLORES */
     .shape-1 {
-      width: 400px;
+      width: 400px; 
       height: 400px;
-      /* Usamos colores fijos por seguridad, si fallan las variables */
-      background: var(--organic-blue, #80deea);
-      top: -100px;
+      background: var(--organic-blue, #80deea); /* Azul suave */
+      top: -100px; 
       right: -100px;
     }
 
     .shape-2 {
-      width: 500px;
+      width: 500px; 
       height: 500px;
-      background: var(--organic-gold, #fff9c4);
-      bottom: -150px;
+      background: var(--organic-gold, #fff9c4); /* Dorado suave */
+      bottom: -150px; 
       left: -150px;
       animation-delay: -5s;
     }
@@ -568,13 +565,6 @@
       from { transform: translate(0, 0) rotate(0deg); }
       to { transform: translate(60px, 120px) rotate(30deg); }
     }
-    /* --- DEBUG BORDE ROJO (BORRAR LUEGO) --- */
-.organic-shape, .shape-1, .shape-2 {
-    border: 5px solid red !important;
-    background: red !important;
-    z-index: 9999 !important; /* Lo ponemos encima de TODO a la fuerza */
-    opacity: 1 !important;
-}
   </style>
 </head>
 <body>
