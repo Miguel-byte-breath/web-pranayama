@@ -532,42 +532,41 @@
       .menu-grid { grid-template-columns: 1fr 1fr; max-width: 800px; gap:25px; }
       #customOverlay, #shareConfigOverlay, #guideOverlay { padding-top: 5vh; justify-content: center; }
     }
-/* --- ADORNOS ORGÁNICOS (MODO VISIBLE) --- */
+/* --- ADORNOS ORGÁNICOS (ALTA VISIBILIDAD) --- */
     .organic-shape {
       position: fixed;
       border-radius: 50%;
-      /* Bajamos el blur a la mitad para que la mancha sea más sólida */
+      /* Bajamos el desenfoque para que la mancha no se disipe del todo */
       filter: blur(40px); 
       z-index: 0;
-      /* Opacidad al 100% para descartar transparencias fantasma */
+      /* Opacidad sólida para asegurar que se vea */
       opacity: 1; 
       pointer-events: none;
       animation: floatOrganic 20s infinite alternate ease-in-out;
     }
 
     .shape-1 {
-      width: 400px;
-      height: 400px;
-      /* CAMBIO: Usamos un azul profundo en lugar de cian pastel */
-      background: #00bcd4; 
-      top: -100px;
-      right: -100px;
+      width: 450px;
+      height: 450px;
+      /* Un cian más profundo para que destaque sobre el fondo claro */
+      background: #4dd0e1; 
+      top: -150px;
+      right: -150px;
     }
 
     .shape-2 {
-      width: 500px;
-      height: 500px;
-      /* CAMBIO: Usamos oro intenso en lugar de amarillo pálido */
-      background: #ffb300; 
-      bottom: -150px;
-      left: -150px;
+      width: 550px;
+      height: 550px;
+      /* Un ámbar/oro real para que haga contraste */
+      background: #ffca28; 
+      bottom: -200px;
+      left: -200px;
       animation-delay: -5s;
     }
-    
-    /* Mantenemos la animación igual */
+
     @keyframes floatOrganic {
       from { transform: translate(0, 0) rotate(0deg); }
-      to { transform: translate(60px, 120px) rotate(30deg); }
+      to { transform: translate(80px, 150px) rotate(40deg); }
     }
   </style>
 </head>
