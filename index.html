@@ -101,7 +101,7 @@
     .btn-icon:hover { background: rgba(255,255,255,0.9); transform: translateY(-2px); }
     .btn-icon:active { transform: scale(0.95); }
     
-    /* V1.2.0: Estado ACTIVO para botones toggle (Metrónomo y Frases) */
+    /* V1.4.0: Estado ACTIVO para botones toggle (Metrónomo y Frases) */
     .btn-icon.active { 
         background: var(--accent); 
         color: white; 
@@ -170,7 +170,7 @@
       line-height: 1.6;
       z-index: 30;
       margin-top: 10px; 
-      /* V1.2.0: Altura mínima para evitar saltos y transición suave */
+      /* V1.4.0: Altura mínima para evitar saltos y transición suave */
       min-height: 2em; 
       transition: opacity 0.6s ease;
     }
@@ -666,8 +666,7 @@
   </div>
 
 
-
-<!-- WINTER PAISAJE OVERLAY -->
+<!-- WINTER OVERLAY -->
 <div id="winterOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.98); z-index: 150; display: none; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 15vh; overflow-y: auto; backdrop-filter: blur(15px); text-align: center;">
   <h2 class="overlay-title">❄️ Paisaje Invernal</h2>
   <p class="overlay-subtitle">Introduce 4 tiempos<br>Añade 'b' para boca (ej: 4b)</p>
@@ -768,7 +767,7 @@
       <div class="menu-card" onclick="start('5-5')">
         <h3>5-5 • Coherencia</h3>
         <p>Equilibrio total (In 5, Ex 5)</p>
-      <div class="menu-card" onclick="startWinterPaisaje()">
+      <div class="menu-card" onclick="openWinterModal()">
   <h3>Paisaje Invernal</h3>
   <p>Nieve + música ambiente</p>
 </div>
@@ -802,7 +801,7 @@
       </div>
     </div>
 <div style="position: fixed; bottom: 10px; right: 15px; font-size: 0.65rem; color: #90a4ae; opacity: 0.5; z-index: 9999; pointer-events: none; font-family: 'Manrope', sans-serif;">
-        Ref: <span id="app-version-display">V1.2.0</span>
+        Ref: <span id="app-version-display">V1.4.0</span>
     </div>
     <div class="stage-container">
       <div class="panel-side">
@@ -912,7 +911,7 @@ let isWinterMode = false;  // Flag para modo paisaje
         }
     }
 
-    // STATE: V1.2.0 Quotes ENABLED by default
+    // STATE: V1.4.0 Quotes ENABLED by default
     let state = { pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true, music: true };
     let audioCtx = null;
     let nextNoteTime = 0.0;
@@ -1029,51 +1028,11 @@ function startWinterPaisaje() {
     winterAudio.play().catch(e => console.log(e));
   }
 
-  function openWinterModal() {
-    document.getElementById('winterOverlay').style.display = 'flex';
-    const winterInput = document.getElementById('winterPatternInput');
-    winterInput.value = '4-4-6-2'; // Patrón sugerido
-    winterInput.focus();
+  // Winter input formatter
+  const winterInput = document.getElementById('winterPatternInput');
+  if (winterInput) {
+    winterInput.addEventListener('input', (e) => formatPatternInput(e.target));
   }
-
-  function startWinterPaisaje() {
-    const winterInput = document.getElementById('winterPatternInput');
-    const val = winterInput.value.trim();
-
-    // Validar patrón
-    const newPattern = parsePatternString(val);
-    if (newPattern.length < 2) {
-      alert('Introduce al menos 2 fases válidas.');
-      return;
-    }
-
-    // Guardar patrón temporal
-    patterns['winter'] = newPattern;
-
-    // Cerrar modal
-    document.getElementById('winterOverlay').style.display = 'none';
-
-    // Activar modo invernal
-    isWinterMode = true;
-
-    // Ocultar formas orgánicas
-    document.querySelectorAll('.organic-shape').forEach(s => s.style.opacity = '0');
-
-    // Activar vídeo
-    const winterVideo = document.getElementById('winterVideo');
-    winterVideo.style.display = 'block';
-    winterVideo.play().catch(e => console.log('Video error:', e));
-
-    // Audio winter (si música ON)
-    if (state.music) {
-      ambientAudio.pause();
-      winterAudio.play().catch(e => console.log(e));
-    }
-
-    // Ejecutar patrón
-    start('winter');
-  }
-
   // Ejecuta patrón default (usa 4-4-6-2 como relax)
   start('4-4-6-2');
   // Oculta menú como siempre
@@ -1163,7 +1122,7 @@ function startWinterPaisaje() {
         }
     }
 
-    // --- V1.2.0: LOGICA TOGGLE FRASES ---
+    // --- V1.4.0: LOGICA TOGGLE FRASES ---
     function toggleQuotes() {
         state.quotesEnabled = !state.quotesEnabled;
         const btn = document.getElementById('quoteToggleBtn');
@@ -1324,7 +1283,7 @@ if(state.music) {
       els.menu.style.opacity = '0'; 
       setTimeout(()=>els.menu.style.display='none', 400);
       
-      // V1.2.0: Reset states
+      // V1.4.0: Reset states
       // Queremos que empiece ENCENDIDO por defecto
       state.quotesEnabled = true;
       const btn = document.getElementById('quoteToggleBtn');
