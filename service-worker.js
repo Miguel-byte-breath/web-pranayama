@@ -1,4 +1,4 @@
-const CACHE_NAME = 'respira-v1.3.0-winter'; // ← Nueva versión
+const CACHE_NAME = 'respira-v1.3.0-winter-2'; // ← Nueva versión
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -49,6 +49,9 @@ self.addEventListener('fetch', (e) => {
   );
 
 });
+
+
+
 
 
 

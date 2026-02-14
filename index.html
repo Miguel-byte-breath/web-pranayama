@@ -237,21 +237,27 @@
             cursor: pointer;
         }
 
-        .sphere {
+       .sphere {
             width: 100%;
             height: 100%;
             border-radius: 50%;
             background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), var(--c-phase));
-            box-shadow:
+            box-shadow: 
                 0 20px 70px var(--c-phase),
                 inset 0 0 20px rgba(255,255,255,0.5);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
+            
+            /* Esto mejora el rendimiento pero NO anima el movimiento */
             will-change: transform, background;
-            transform: scale(0.8);
-            transition: background 0.5s ease, box-shadow 0.5s ease;
+            transform: scale(0.8); 
+            
+            /* --- CORRECCIÓN CRÍTICA --- */
+            /* SOLO animamos el color y la sombra. */
+            /* ELIMINAMOS 'transform' de aquí para que el JS tenga el control total */
+            transition: background 0.1s linear, box-shadow 0.1s linear;
         }
 
         .counter-big {
@@ -1538,11 +1544,15 @@
         els.cyc.textContent = cycleCountVisual;
         const timeInCycle = (elapsed % totalCycleDur);
         const p = state.data.find(x => timeInCycle >= x.start && timeInCycle < x.end);
+        
         if(p) {
+            // Actualizar textos y colores si cambian
             if(els.ph.textContent !== p.t) {
                 els.ph.textContent = p.t;
                 els.ph.style.color = p.c;
             }
+            
+            // Iconos
             const isHold = (p.y === 'holdhigh' || p.y === 'holdlow');
             if(isHold) {
                 els.modeIcon.textContent = '⏸';
@@ -1555,6 +1565,8 @@
                 els.modeIcon.classList.add('visible');
             }
             els.sph.style.setProperty('--c-phase', p.c);
+            
+            // Indicador de pasos (puntos abajo)
             const currentPhaseIdx = state.data.indexOf(p);
             state.data.forEach((_, idx) => {
                 const el = document.getElementById(`p-step-${idx}`);
@@ -1563,21 +1575,31 @@
                     else el.classList.remove('active');
                 }
             });
+            
+            // Contador numérico
             const timeInPhase = timeInCycle - p.start;
             let currentBeat = Math.floor(timeInPhase / state.tempo) + 1;
             currentBeat = Math.min(currentBeat, p.b);
             els.cnt.textContent = currentBeat;
+            
+            // --- CORRECCIÓN MATEMÁTICA ---
             const progress = timeInPhase / p.dur;
-            const ease = (-Math.cos(Math.PI * progress) - 1) / 2;
+            // Esta fórmula va suavemente de 0 a 1 (sin negativos)
+            const ease = (1 - Math.cos(Math.PI * progress)) / 2;
+            
             let maxScale = 1.45;
             if(window.innerWidth < 400) maxScale = 1.35;
             let rawScale = 1;
+            
             if(p.y === 'rise') rawScale = 0.8 + (maxScale - 0.8) * ease;
             else if(p.y === 'fall') rawScale = maxScale - (maxScale - 0.8) * ease;
             else if(p.y === 'holdhigh') rawScale = maxScale;
             else rawScale = 0.8;
+            
             els.sph.style.transform = `scale(${rawScale})`;
         }
+        
+        // --- DIBUJADO DE CANVAS (Línea de tiempo) ---
         const w = els.cvs.width / (window.devicePixelRatio||1);
         const h = els.cvs.height / (window.devicePixelRatio||1);
         els.ctx.clearRect(0, 0, w, h);
