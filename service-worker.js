@@ -1,108 +1,54 @@
-// SERVICE WORKER v1.4.0
-// Gestión de caché para PWA Respira con soporte Winter
-
-const CACHE_NAME = 'respira-v1.4.0 v1';
-
-// Archivos esenciales (se cachean en instalación)
-const ESSENTIAL_ASSETS = [
+const CACHE_NAME = 'respira-v1.3.0-winter'; // ← Nueva versión
+const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
   './ambient.mp3'
+  // NOTA: NO añadimos aquí el vídeo ni el audio de invierno.
 ];
 
-// Archivos opcionales grandes (se cachean bajo demanda)
-const OPTIONAL_ASSETS = [
-  './winter.mp4',
-  './winter_audio.mp3'
-];
-
-// 1. INSTALACIÓN: Cachea archivos esenciales
+// 1. INSTALACIÓN: Guarda los archivos básicos
 self.addEventListener('install', (e) => {
-  console.log('[SW v1.4.0] Instalando...');
+  console.log('[Service Worker] Instalando nueva versión...');
   
-  // Fuerza instalación inmediata
-  self.skipWaiting();
+  // FUERZA A INSTALARSE YA (Sin esperar en la cola)
+  self.skipWaiting(); 
 
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Cacheando archivos esenciales');
-      return cache.addAll(ESSENTIAL_ASSETS);
+      return cache.addAll(ASSETS_TO_CACHE);
     })
   );
 });
 
-// 2. ACTIVACIÓN: Limpia cachés antiguas y toma control
+// 2. ACTIVACIÓN: Limpia cachés antiguas y toma el control
 self.addEventListener('activate', (e) => {
-  console.log('[SW v1.4.0] Activando...');
-  
   e.waitUntil(
     caches.keys().then((keyList) => {
-      return Promise.all(
-        keyList.map((key) => {
-          if (key !== CACHE_NAME) {
-            console.log('[SW] Borrando caché antigua:', key);
-            return caches.delete(key);
-          }
-        })
-      );
+      return Promise.all(keyList.map((key) => {
+        if (key !== CACHE_NAME) {
+          console.log('[Service Worker] Borrando caché vieja:', key);
+          return caches.delete(key);
+        }
+      }));
     }).then(() => {
-      console.log('[SW] Tomando control de la página');
+      // FUERZA A TOMAR EL CONTROL DE LA PÁGINA YA
       return self.clients.claim();
     })
   );
 });
 
-// 3. FETCH: Estrategia Network First con Cache Fallback
+// 3. INTERCEPTOR: ¿Tienes internet? Pide fuera. ¿No? Sirve de la caché.
 self.addEventListener('fetch', (e) => {
-  const url = new URL(e.request.url);
-  
-  // Solo cachear recursos de nuestro dominio
-  if (url.origin !== location.origin) {
-    return;
-  }
-
   e.respondWith(
-    fetch(e.request)
-      .then((response) => {
-        // Si la respuesta es válida, cachearla
-        if (response && response.status === 200) {
-          const responseClone = response.clone();
-          
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(e.request, responseClone);
-          });
-        }
-        return response;
-      })
-      .catch(() => {
-        // Si falla la red, intentar servir desde caché
-        return caches.match(e.request).then((cachedResponse) => {
-          if (cachedResponse) {
-            console.log('[SW] Sirviendo desde caché:', e.request.url);
-            return cachedResponse;
-          }
-          
-          // Si no está en caché y es HTML, devolver index
-          if (e.request.headers.get('accept') && e.request.headers.get('accept').includes('text/html')) {
-            return caches.match('./index.html');
-          }
-        });
-      })
+    caches.match(e.request).then((response) => {
+      return response || fetch(e.request);
+    })
   );
+
 });
-
-// 4. MENSAJE: Permite forzar actualización desde la app
-self.addEventListener('message', (e) => {
-  if (e.data && e.data.type === 'SKIP_WAITING') {
-    console.log('[SW] Forzando actualización inmediata');
-    self.skipWaiting();
-  }
-});
-
-
 
 
 
