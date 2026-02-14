@@ -736,6 +736,11 @@
       <div class="menu-card" onclick="start('5-5')">
         <h3>5-5 • Coherencia</h3>
         <p>Equilibrio total (In 5, Ex 5)</p>
+      <div class="menu-card" onclick="startWinterPaisaje()">
+  <h3>Paisaje Invernal</h3>
+  <p>Nieve + música ambiente</p>
+</div>
+
       </div>
     </div>
   </div>
@@ -748,6 +753,9 @@
   </div>
 
   <div class="app-layout">
+    <video id="winterVideo" muted loop playsinline preload="auto" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-1;">
+  <source src="winter.mp4" type="video/mp4">
+</video>
     <div class="top-bar">
       <div class="top-left">
         <button class="btn-text" onclick="stop()">❮ Menú</button>
@@ -798,6 +806,11 @@
 const ambientAudio = new Audio('ambient.mp3');
 ambientAudio.loop = true;
 ambientAudio.volume = 0.5;
+const winterAudio = new Audio('winter_audio.mp3');
+winterAudio.loop = true;
+winterAudio.volume = 0.5;
+const winterVideo = document.getElementById('winterVideo');
+let isWinterMode = false;  // Flag para modo paisaje
     let patterns = {
       '4-4-6-2': [
           {t:"INHALA", b:4, y:'rise', c:C_INHALE, m:'nose'},
@@ -970,6 +983,25 @@ ambientAudio.volume = 0.5;
         els.customOverlay.style.display = 'none';
         start('custom');
     }
+    
+function startWinterPaisaje() {
+  isWinterMode = true;
+  // Oculta orgánicos
+  document.querySelectorAll('.organic-shape').forEach(s => s.style.opacity = '0');
+  // Activa vídeo
+  winterVideo.style.display = 'block';
+  winterVideo.play().catch(e => console.log('Vídeo error'));
+  // Audio winter si music on
+  if (state.music) {
+    ambientAudio.pause();
+    winterAudio.play().catch(e => console.log(e));
+  }
+  // Ejecuta patrón default (usa 4-4-6-2 como relax)
+  start('4-4-6-2');
+  // Oculta menú como siempre
+  els.menu.style.opacity = '0';
+  setTimeout(() => els.menu.style.display = 'none', 400);
+}
 
     function initAudio() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1236,15 +1268,29 @@ if(state.music) {
     }
 
     function stop() {
-      ambientAudio.pause();
-      state.run = false; clearTimeout(scheduleTimerID);
-      els.sph.style.transform = 'scale(0.8)'; els.ph.textContent = "LISTO"; els.ph.style.color = 'var(--accent)';
-      els.modeIcon.classList.remove('visible');
-      els.cnt.textContent = ""; els.cyc.textContent = "🔄 0"; els.sph.style.setProperty('--c-phase', '#4CAF50');
-      els.menu.style.display = 'flex'; setTimeout(()=>els.menu.style.opacity='1',10);
-      els.pat.innerHTML = ''; 
-      els.ctx.clearRect(0,0,els.cvs.width,els.cvs.height);
-    }
+  if (isWinterMode) {
+    winterVideo.pause();
+    winterVideo.style.display = 'none';
+    winterAudio.pause();
+    document.querySelectorAll('.organic-shape').forEach(s => s.style.opacity = '0.8');
+    isWinterMode = false;
+  } else {
+    ambientAudio.pause();
+  }
+  state.run = false;
+  clearTimeout(scheduleTimerID);
+  els.sph.style.transform = 'scale(0.8)';
+  els.ph.textContent = 'LISTO';
+  els.ph.style.color = 'var(--accent)';
+  els.modeIcon.classList.remove('visible');
+  els.cnt.textContent = '';
+  els.cyc.textContent = '0';
+  els.sph.style.setProperty('--c-phase', '#4CAF50');
+  els.menu.style.display = 'flex';
+  setTimeout(() => els.menu.style.opacity = '1', 10);
+  els.pat.innerHTML = '';
+  els.ctx.clearRect(0, 0, els.cvs.width, els.cvs.height);
+}
 
     function toggleTempo() { 
       const t = [1.0, 1.5, 2.0]; const idx = t.indexOf(state.tempo); const next = t[(idx+1)%t.length];
@@ -1266,14 +1312,23 @@ function toggleMusic() {
             else btn.classList.remove('active');
         }
 
-        // 2. Actuar sobre el audio
-        if(state.music) {
-            // Si ya está corriendo la respiración, dale play
-            if(state.run) ambientAudio.play().catch(e => console.log(e)); 
+                // 2. Actuar sobre el audio SEGÚN MODO
+        if (isWinterMode) {
+            // LÓGICA WINTER
+            if(state.music) {
+                winterAudio.play().catch(e => console.log('Winter audio error', e)); 
+            } else {
+                winterAudio.pause();
+            }
         } else {
-            ambientAudio.pause();
+            // LÓGICA ORIGINAL AMBIENT
+            if(state.music) {
+                if(state.run) ambientAudio.play().catch(e => console.log(e)); 
+            } else {
+                ambientAudio.pause();
+            }
         }
-    }
+
     function openShareConfig() {
         let lastP = state.pk;
         if(lastP && lastP !== 'custom') {
