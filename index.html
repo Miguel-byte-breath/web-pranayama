@@ -1024,6 +1024,14 @@
 
 <div class="organic-shape shape-1"></div>
 <div class="organic-shape shape-2"></div>
+<div class="organic-shape shape-2"></div>
+
+<!-- VIDEO WINTER BACKGROUND -->
+<video id="winterVideo" muted loop playsinline preload="auto" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:1;">
+    <source src="winter.mp4" type="video/mp4">
+</video>
+
+<div id="loadingOverlay">
 
 <div id="loadingOverlay">
     <div class="spinner"></div>
@@ -1064,6 +1072,35 @@
         Volver al Menú
     </button>
 </div>
+<!-- WINTER PAISAJE OVERLAY -->
+<div id="winterOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.98); z-index: 150; display: none; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 15vh; overflow-y: auto; backdrop-filter: blur(15px); text-align: center;">
+    <h2 class="overlay-title">❄️ Paisaje Invernal</h2>
+    <p class="overlay-subtitle">Introduce 4 tiempos<br>Añade "b" para boca (ej: "4b")</p>
+    <div class="custom-input-container">
+        <input type="text" id="winterPatternInput" class="big-input" placeholder="4-4-6-2" maxlength="10" value="">
+        <div class="info-bubble" onclick="toggleTooltip(this)">?
+            <div class="info-tooltip">
+                <span class="close-tooltip" onclick="event.stopPropagation(); this.parentElement.classList.remove('visible');">&times;</span>
+                <strong>Escribe los segundos de cada fase.</strong> El sistema pone los guiones.<br><br>
+                <span style="color:var(--c-inhale);">1. Inhala — Verde</span><br>
+                <span style="color:var(--c-hold);">2. Mantén — Naranja</span><br>
+                <span style="color:var(--c-exhale);">3. Exhala — Azul</span><br>
+                <span style="color:var(--c-hold);">4. Sostén — Naranja</span><br><br>
+                <hr style="border:0; border-top:1px solid rgba(255,255,255,0.2); margin:10px 0;">
+                <strong>Opciones Extra</strong><br>
+                • Añade <strong>"b"</strong> para boca (ej: "8b").<br>
+                • Usa <strong>"0"</strong> para saltar una fase.
+            </div>
+        </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:15px; margin-bottom: 50px;">
+        <button class="btn-text" style="background:var(--primary); color:white; padding:15px 40px; font-size:1.1rem; border:none;" onclick="startWinterPaisaje()">Comenzar</button>
+        <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="document.getElementById('winterOverlay').style.display='none'">Cancelar</button>
+    </div>
+</div>
+
+<!-- CUSTOM OVERLAY -->
+<div id="customOverlay">
 
 <!-- CUSTOM OVERLAY -->
 <div id="customOverlay">
@@ -1172,6 +1209,10 @@
             <h3>🎨 Crear Personalizado</h3>
             <p>Define tus tiempos (ej: 4-7-8b)</p>
         </div>
+          <div class="menu-card" onclick="openWinterModal()">
+            <h3>❄️ Paisaje Invernal</h3>
+            <p>Nieve + música ambiente</p>
+        </div>
         <div class="menu-card" onclick="start('4-4-6-2')">
             <h3>4-4-6-2 • Relax Profundo</h3>
             <p>Baja pulsaciones rápidamente</p>
@@ -1249,7 +1290,11 @@
     const ambientAudio = new Audio('ambient.mp3');
     ambientAudio.loop = true;
     ambientAudio.volume = 0.5;
+    const winterAudio = new Audio('winter_audio.mp3');
+    winterAudio.loop = true;
+    winterAudio.volume = 0.5;
 
+    let isWinterMode = false; // Flag para modo paisaje
     let patterns = {
         '4-4-6-2': [
             {t:'INHALA', b:4, y:'rise', c:C_INHALE, m:'nose'},
@@ -1347,7 +1392,12 @@
     if(els.pillPatternInput) {
         els.pillPatternInput.addEventListener('input', e => formatPatternInput(e.target));
     }
-
+    // Winter input format
+    const winterInput = document.getElementById('winterPatternInput');
+    if(winterInput) {
+        winterInput.addEventListener('input', e => formatPatternInput(e.target));
+    }
+    
     window.toggleTooltip = function(el) {
         const tip = el.querySelector('.info-tooltip');
         if(tip) tip.classList.toggle('visible');
@@ -1411,7 +1461,52 @@
         els.customOverlay.style.display = 'none';
         start('custom');
     }
+    
+ function openWinterModal() {
+        document.getElementById('winterOverlay').style.display = 'flex';
+        const winterInput = document.getElementById('winterPatternInput');
+        winterInput.value = '4-4-6-2'; // Patrón sugerido
+        winterInput.focus();
+    }
 
+    function startWinterPaisaje() {
+        const winterInput = document.getElementById('winterPatternInput');
+        const val = winterInput.value.trim();
+        
+        // Validar patrón
+        const newPattern = parsePatternString(val);
+        if(newPattern.length < 2) {
+            alert('Introduce al menos 2 fases válidas.');
+            return;
+        }
+        
+        // Guardar patrón temporal
+        patterns['winter'] = newPattern;
+        
+        // Cerrar modal
+        document.getElementById('winterOverlay').style.display = 'none';
+        
+        // Activar modo invernal
+        isWinterMode = true;
+        
+        // Ocultar formas orgánicas
+        document.querySelectorAll('.organic-shape').forEach(s => s.style.opacity = '0');
+        
+        // Activar vídeo
+        const winterVideo = document.getElementById('winterVideo');
+        winterVideo.style.display = 'block';
+        winterVideo.play().catch(e => console.log('Video error:', e));
+        
+        // Audio winter (si música ON)
+        if(state.music) {
+            ambientAudio.pause();
+            winterAudio.play().catch(e => console.log(e));
+        }
+        
+        // Ejecutar patrón
+        start('winter');
+    }
+    
     function initAudio() {
         if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if(audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
@@ -1705,8 +1800,19 @@
         }, 100);
     }
 
-    function stop() {
-        ambientAudio.pause();
+        function stop() {
+        // Limpia modo winter
+        if(isWinterMode) {
+            const winterVideo = document.getElementById('winterVideo');
+            winterVideo.pause();
+            winterVideo.style.display = 'none';
+            winterAudio.pause();
+            document.querySelectorAll('.organic-shape').forEach(s => s.style.opacity = '0.15');
+            isWinterMode = false;
+        } else {
+            ambientAudio.pause();
+        }
+        
         state.run = false;
         clearTimeout(scheduleTimerID);
         els.sph.style.transform = 'scale(0.8)';
@@ -1742,25 +1848,26 @@
         document.getElementById('metronomeBtn').classList.toggle('active');
     }
 
-    function toggleMusic() {
-        // Inicializar si no existe
+       function toggleMusic() {
         if (typeof state.music === 'undefined') state.music = true;
-        
         state.music = !state.music;
         
-        // 1. Actualizar visualmente el botón (añadir/quitar clase active)
         const btn = document.getElementById('musicBtn');
         if (btn) {
             if (state.music) btn.classList.add('active');
             else btn.classList.remove('active');
         }
         
-        // 2. Actuar sobre el audio
-        if(state.music) {
-            // Si ya está corriendo la respiración, dale play
-            if(state.run) ambientAudio.play().catch(e => console.log(e)); 
+        // Actuar sobre el audio SEGÚN MODO
+        if(isWinterMode) {
+            if(state.music) winterAudio.play().catch(e => console.log(e));
+            else winterAudio.pause();
         } else {
-            ambientAudio.pause();
+            if(state.music) {
+                if(state.run) ambientAudio.play().catch(e => console.log(e));
+            } else {
+                ambientAudio.pause();
+            }
         }
     }
 
