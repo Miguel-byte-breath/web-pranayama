@@ -1015,29 +1015,39 @@ let isWinterMode = false;  // Flag para modo paisaje
         start('custom');
     }
     
+function openWinterModal() {
+  document.getElementById('winterOverlay').style.display = 'flex';
+  const winterInput = document.getElementById('winterPatternInput');
+  winterInput.value = '4-4-6-2';
+  winterInput.focus();
+}
+
 function startWinterPaisaje() {
+  const winterInput = document.getElementById('winterPatternInput');
+  const val = winterInput.value.trim();
+  
+  const newPattern = parsePatternString(val);
+  if (newPattern.length < 2) {
+    alert('Introduce al menos 2 fases válidas.');
+    return;
+  }
+  
+  patterns['winter'] = newPattern;
+  document.getElementById('winterOverlay').style.display = 'none';
+  
   isWinterMode = true;
-  // Oculta orgánicos
   document.querySelectorAll('.organic-shape').forEach(s => s.style.opacity = '0');
-  // Activa vídeo
+  
+  const winterVideo = document.getElementById('winterVideo');
   winterVideo.style.display = 'block';
-  winterVideo.play().catch(e => console.log('Vídeo error'));
-  // Audio winter si music on
+  winterVideo.play().catch(e => console.log('Video error:', e));
+  
   if (state.music) {
     ambientAudio.pause();
     winterAudio.play().catch(e => console.log(e));
   }
-
-  // Winter input formatter
-  const winterInput = document.getElementById('winterPatternInput');
-  if (winterInput) {
-    winterInput.addEventListener('input', (e) => formatPatternInput(e.target));
-  }
-  // Ejecuta patrón default (usa 4-4-6-2 como relax)
-  start('4-4-6-2');
-  // Oculta menú como siempre
-  els.menu.style.opacity = '0';
-  setTimeout(() => els.menu.style.display = 'none', 400);
+  
+  start('winter');
 }
 
     function initAudio() {
