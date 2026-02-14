@@ -1,7 +1,7 @@
 // SERVICE WORKER v1.4.0
 // Gestión de caché para PWA Respira con soporte Winter
 
-const CACHE_NAME = 'respira-v1.4.0';
+const CACHE_NAME = 'respira-v1.4.0 v1';
 
 // Archivos esenciales (se cachean en instalación)
 const ESSENTIAL_ASSETS = [
@@ -101,6 +101,7 @@ self.addEventListener('message', (e) => {
     self.skipWaiting();
   }
 });
+
 
 
 
