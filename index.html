@@ -39,7 +39,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        body {
+                body {
             margin: 0;
             padding: 0;
             font-family: 'Manrope', sans-serif;
@@ -49,11 +49,12 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            /* Fondo animado orgánico */
-            background: linear-gradient(135deg, #e0f2f1 0%, #b2ebf2 50%, #e1f5fe 100%);
-            background-size: 400% 400%;
-            animation: organicGradient 15s ease infinite;
+            /* Fondo ZEN sutil - tonos pastel suaves */
+            background: linear-gradient(135deg, #f5f9f9 0%, #e8f4f5 50%, #f0f7f8 100%);
+            background-size: 200% 200%;
+            animation: organicGradient 20s ease infinite;
         }
+
 
         /* Animación del fondo */
         @keyframes organicGradient {
@@ -982,40 +983,41 @@
         }
 
         /* --- ADORNOS ORGÁNICOS REVISIÓN FINAL --- */
-        .organic-shape {
+                .organic-shape {
             position: fixed;
-            width: 500px; /* Damos tamaño al contenedor */
-            height: 500px;
+            width: 600px;
+            height: 600px;
             border-radius: 50%;
-            /* Bajamos el blur de 60px a 30px para que el color sea denso */
-            filter: blur(30px);
+            filter: blur(80px); /* Blur más difuso */
             z-index: 0;
-            opacity: 0.8; /* Casi opaco */
+            opacity: 0.15; /* MUY sutil */
             pointer-events: none;
-            animation: floatOrganic 20s infinite alternate ease-in-out;
+            animation: floatOrganic 25s infinite alternate ease-in-out;
         }
 
-        .shape-1 { /* Azul intenso en lugar de pastel */
-            background: #00acc1;
-            top: -100px;
-            right: -100px;
+        .shape-1 { /* Azul aguamarina suave */
+            background: #b2dfdb;
+            top: -150px;
+            right: -150px;
         }
 
-        .shape-2 { /* Oro/Naranja intenso */
-            background: #fbc02d;
-            bottom: -150px;
+        .shape-2 { /* Verde menta suave */
+            background: #c8e6c9;
+            bottom: -200px;
             left: -150px;
-            animation-delay: -5s;
+            animation-delay: -8s;
         }
 
-        @keyframes floatOrganic {
+
+               @keyframes floatOrganic {
             from {
                 transform: translate(0, 0) rotate(0deg);
             }
             to {
-                transform: translate(100px, 100px) rotate(40deg);
+                transform: translate(60px, 60px) rotate(20deg);
             }
         }
+
     </style>
 </head>
 <body>
