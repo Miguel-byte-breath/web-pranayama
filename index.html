@@ -1171,17 +1171,7 @@
     </div>
     <button class="btn-text" style="margin-top:30px; background:transparent; border:none;" onclick="document.getElementById('shareModal').style.display='none'">Cerrar</button>
 </div>
-<div id="soundscapeSettings" class="overlay" style="display:none;">
-    <h2 class="overlay-title">Diseña tu Paisaje</h2>
-    <p class="overlay-subtitle">Introduce 4 tiempos (ej: 4-2-6-2)<br>Añade "b" para boca (ej: "8b")</p>
-    <div class="custom-input-container">
-        <input type="text" id="psPatternInput" class="big-input" placeholder="4-4-4-4" maxlength="10">
-    </div>
-    <div style="display:flex; flex-direction:column; gap:15px; margin-bottom: 50px;">
-        <button class="btn-text" style="background:var(--accent); color:white; padding:15px 40px;" onclick="startImmersiveSoundscape()">Comenzar</button>
-        <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="closeSoundscapeSettings()">Cancelar</button>
-    </div>
-</div>
+
 <!-- MENU SELECCION -->
 <div id="selectionMenu">
     <div class="navidad-lights">
@@ -1222,7 +1212,7 @@
             <h3>🎨 Crear Personalizado</h3>
             <p>Define tus tiempos (ej: 4-7-8b)</p>
         </div>
-        <div class="menu-card" onclick="openSoundscapeSettings()">
+        <div class="menu-card" onclick="startWinterMode()">
           <h3>❄️ Paisaje sonoro</h3>
           <p>modo inmersivo</p>
       </div>
@@ -1782,24 +1772,19 @@
     }
 
     function stop() {
-        // 1. Limpieza de Multimedia (Evitamos duplicar const)
-        const vid = document.getElementById('bgVideo');
-        const aud = document.getElementById('winterAudio');
-        
-        if (vid) { vid.pause(); }
-        if (aud) { aud.pause(); aud.currentTime = 0; }
-        
-        // Quitamos la estética de invierno
+        // --- LIMPIEZA MODO INVIERNO (NUEVO) ---
+        // Quitamos la clase para que vuelvan los colores
         document.querySelector('.app-layout').classList.remove('winter-mode');
         
-        // Parar audio ambiente general si existe
-        if (typeof ambientAudio !== 'undefined') ambientAudio.pause();
-
-        // 2. Parada del Motor de Respiración
+        // Apagamos vídeo y audio de invierno
+        const vid = document.getElementById('bgVideo');
+        const aud = document.getElementById('winterAudio');
+        if(vid) vid.pause();
+        if(aud) { aud.pause(); aud.currentTime = 0; }
+        // --------------------------------------
+        ambientAudio.pause();
         state.run = false;
         clearTimeout(scheduleTimerID);
-
-        // 3. Reset de Interfaz (Usando tus objetos 'els')
         els.sph.style.transform = 'scale(0.8)';
         els.ph.textContent = 'LISTO';
         els.ph.style.color = 'var(--accent)';
@@ -1807,15 +1792,12 @@
         els.cnt.textContent = '';
         els.cyc.textContent = '0';
         els.sph.style.setProperty('--c-phase', '#4CAF50');
-
-        // 4. Volver al Menú
         els.menu.style.display = 'flex';
         setTimeout(() => els.menu.style.opacity = '1', 10);
-        
-        // 5. Limpieza de Gráficos
         els.pat.innerHTML = '';
-        if (els.ctx) els.ctx.clearRect(0, 0, els.cvs.width, els.cvs.height);
+        els.ctx.clearRect(0, 0, els.cvs.width, els.cvs.height);
     }
+
     function toggleTempo() {
         const t = [1.0, 1.5, 2.0];
         const idx = t.indexOf(state.tempo);
@@ -1933,49 +1915,39 @@
             }
         }
     });
-    // --- LÓGICA ROBUSTA PAISAJE SONORO ---
-    function openSoundscapeSettings() {
-        document.getElementById('soundscapeSettings').style.display = 'flex';
-        document.getElementById('psPatternInput').focus();
-    }
+    // --- FUNCIÓN MODO INVIERNO (VERSIÓN LIMPIA) ---
+    function startWinterMode() {
+        // 1. Arrancar motor (patrón correcto)
+        start('4-7-8b'); 
 
-    function closeSoundscapeSettings() {
-        document.getElementById('soundscapeSettings').style.display = 'none';
-    }
+        // 2. TEXTO ESFERA: VACÍO (Limpieza total)
+        setTimeout(() => {
+            const label = document.getElementById('patternDisplay');
+            
+            // Al dejarlo vacío, la esfera queda minimalista
+            if(label) label.innerHTML = ''; 
+            
+            // Texto blanco puro (para que el contador y 'INHALA' resalten)
+            document.documentElement.style.setProperty('--c-phase', '#ffffff');
+        }, 50);
 
-   function startImmersiveSoundscape() {
-        // 1. Obtener el ritmo
-        const ritmo = document.getElementById('psPatternInput').value.trim() || "4-4-4-4";
-        
-        // 2. ARRANCAR EL MOTOR PRIMERO
-        // Esto ejecutará stop() internamente ANTES de poner el vídeo
-        start(ritmo);
-
-        // 3. OCULTAR MENÚS
-        closeSoundscapeSettings();
-        document.getElementById('selectionMenu').style.display = 'none';
-
-        // 4. ACTIVAR MULTIMEDIA (Después de la limpieza del motor)
+        // 3. Activar Multimedia
         document.querySelector('.app-layout').classList.add('winter-mode');
+        
         const vid = document.getElementById('bgVideo');
         const aud = document.getElementById('winterAudio');
         
-        if(vid) { 
-            vid.src = "cielo.mp4"; 
-            vid.play().catch(e => console.log("Video listo")); 
+        if(vid) vid.play().catch(e => console.log("Error vídeo:", e));
+        
+        if(typeof ambientAudio !== 'undefined' && ambientAudio && !ambientAudio.paused) {
+            ambientAudio.pause();
         }
-        if(aud) { 
-            aud.src = "clavier_1.mp3"; 
-            aud.volume = 0.5; 
-            aud.play().catch(e => console.log("Audio listo")); 
+        
+        if(aud) {
+            aud.currentTime = 0;
+            aud.volume = 0.5;
+            aud.play().catch(e => console.log("Error audio:", e));
         }
-
-        // 5. ESTÉTICA DE LA ESFERA
-        setTimeout(() => {
-            const disp = document.getElementById('patternDisplay');
-            if(disp) disp.innerHTML = '';
-            document.documentElement.style.setProperty('--c-phase', '#ffffff');
-        }, 100);
     }
 </script>
     
