@@ -1782,53 +1782,40 @@
     }
 
     function stop() {
-        // 1. LIMPIEZA MULTIMEDIA (Paisaje Sonoro / Invierno)
-        // Agrupamos todo en un solo bloque para evitar errores de redifinicón
+        // 1. Limpieza de Multimedia (Evitamos duplicar const)
         const vid = document.getElementById('bgVideo');
         const aud = document.getElementById('winterAudio');
         
-        if (vid) {
-            vid.pause();
-            vid.currentTime = 0; // Opcional: resetea el vídeo al inicio
-        }
+        if (vid) { vid.pause(); }
+        if (aud) { aud.pause(); aud.currentTime = 0; }
         
-        if (aud) {
-            aud.pause();
-            aud.currentTime = 0; // Resetea el audio para la próxima vez
-        }
-
-        // Quitamos la clase de estética de invierno
+        // Quitamos la estética de invierno
         document.querySelector('.app-layout').classList.remove('winter-mode');
         
-        // Paramos el audio ambiente general si existe
-        if (typeof ambientAudio !== 'undefined' && ambientAudio) {
-            ambientAudio.pause();
-        }
+        // Parar audio ambiente general si existe
+        if (typeof ambientAudio !== 'undefined') ambientAudio.pause();
 
-        // 2. PARADA DEL MOTOR DE RESPIRACIÓN
+        // 2. Parada del Motor de Respiración
         state.run = false;
-        clearTimeout(scheduleTimerID); // Detiene el temporizador de fases
+        clearTimeout(scheduleTimerID);
 
-        // 3. RESET DE LA INTERFAZ (Esfera y Textos)
+        // 3. Reset de Interfaz (Usando tus objetos 'els')
         els.sph.style.transform = 'scale(0.8)';
         els.ph.textContent = 'LISTO';
         els.ph.style.color = 'var(--accent)';
         els.modeIcon.classList.remove('visible');
         els.cnt.textContent = '';
         els.cyc.textContent = '0';
-        els.sph.style.setProperty('--c-phase', '#4CAF50'); // Color base (verde)
+        els.sph.style.setProperty('--c-phase', '#4CAF50');
 
-        // 4. VOLVER AL MENÚ
+        // 4. Volver al Menú
         els.menu.style.display = 'flex';
         setTimeout(() => els.menu.style.opacity = '1', 10);
         
-        // 5. LIMPIEZA DE GRÁFICOS
-        els.pat.innerHTML = ''; // Borra el patrón visual de la esfera
-        if (els.ctx && els.cvs) {
-            els.ctx.clearRect(0, 0, els.cvs.width, els.cvs.height); // Limpia la línea de abajo
-        }
+        // 5. Limpieza de Gráficos
+        els.pat.innerHTML = '';
+        if (els.ctx) els.ctx.clearRect(0, 0, els.cvs.width, els.cvs.height);
     }
-
     function toggleTempo() {
         const t = [1.0, 1.5, 2.0];
         const idx = t.indexOf(state.tempo);
@@ -1957,14 +1944,18 @@
     }
 
    function startImmersiveSoundscape() {
-        // 1. Capturamos el ritmo que el usuario escribió
+        // 1. Obtener el ritmo
         const ritmo = document.getElementById('psPatternInput').value.trim() || "4-4-4-4";
         
-        // 2. Cerramos el panel de configuración y el menú principal
+        // 2. ARRANCAR EL MOTOR PRIMERO
+        // Esto ejecutará stop() internamente ANTES de poner el vídeo
+        start(ritmo);
+
+        // 3. OCULTAR MENÚS
         closeSoundscapeSettings();
         document.getElementById('selectionMenu').style.display = 'none';
 
-        // 3. Activamos Multimedia (Tus nuevos archivos)
+        // 4. ACTIVAR MULTIMEDIA (Después de la limpieza del motor)
         document.querySelector('.app-layout').classList.add('winter-mode');
         const vid = document.getElementById('bgVideo');
         const aud = document.getElementById('winterAudio');
@@ -1979,13 +1970,7 @@
             aud.play().catch(e => console.log("Audio listo")); 
         }
 
-        // 4. EL PASO MAESTRO: Llamada directa al motor
-        // Tu función start(p) en la línea 1504 ya sabe procesar strings con guiones.
-        // Al pasarle directamente el ritmo (ej: "4-4-6-2"), ella sola activará 
-        // la esfera, el canvas inferior y el contador sin necesidad de parches.
-        start(ritmo);
-
-        // 5. Limpieza estética para modo inmersivo
+        // 5. ESTÉTICA DE LA ESFERA
         setTimeout(() => {
             const disp = document.getElementById('patternDisplay');
             if(disp) disp.innerHTML = '';
