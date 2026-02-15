@@ -1940,57 +1940,49 @@
     }
 
    function startImmersiveSoundscape() {
-        // 1. Capturar valores del panel
+        // 1. Capturar valores
         const inH = parseInt(document.getElementById('psIn').value) || 4;
         const h1 = parseInt(document.getElementById('psH1').value) || 0;
         const outH = parseInt(document.getElementById('psOut').value) || 6;
         const h2 = parseInt(document.getElementById('psH2').value) || 0;
 
-        // 2. IMPORTANTE: Resetear y configurar el patrón
-        // Esto limpia cualquier ejercicio previo y prepara el nuevo
-        if (typeof stop === 'function') stop(); 
-        
+        // 2. Parar cualquier proceso previo
+        if (typeof stop === 'function') stop();
+
+        // 3. Configuración del motor de respiración
         currentPattern = [inH, h1, outH, h2];
-        
-        // 3. Forzar el estado del motor (El "Freno de mano")
         state.run = true;
         state.phaseIndex = 0;
         state.startTime = Date.now();
         state.isPaused = false;
+        state.cycleCount = 0;
 
-        // 4. UI: Esconder menús y mostrar layout
+        // 4. UI: Mostrar todo lo necesario
         closeSoundscapeSettings();
         document.getElementById('selectionMenu').style.display = 'none';
         
         const layout = document.querySelector('.app-layout');
         layout.classList.add('winter-mode');
-        layout.style.opacity = '1';
-        layout.style.visibility = 'visible';
-
-        // 5. Multimedia (Cielo y Piano)
+        layout.style.display = 'flex'; // Forzamos que el layout sea visible
+        
+        // --- ASEGURAR LÍNEA DE RESPIRACIÓN ---
+        const viz = document.querySelector('.bottom-viz');
+        if(viz) viz.style.display = 'block'; // Forzamos visibilidad de la línea
+        
+        // 5. Multimedia
         const vid = document.getElementById('bgVideo');
         const aud = document.getElementById('winterAudio');
-        
-        if(vid) {
-            vid.src = "cielo.mp4";
-            vid.play().catch(e => console.log("Video play error"));
-        }
-        if(aud) {
-            aud.src = "clavier_1.mp3";
-            aud.volume = 0.5;
-            aud.play().catch(e => console.log("Audio play error"));
-        }
+        if(vid) { vid.src = "cielo.mp4"; vid.play(); }
+        if(aud) { aud.src = "clavier_1.mp3"; aud.volume = 0.5; aud.play(); }
 
-        // 6. Limpieza estética de la esfera
+        // 6. Limpieza de esfera
         const label = document.getElementById('patternDisplay');
         if(label) label.innerHTML = ''; 
         document.documentElement.style.setProperty('--c-phase', '#ffffff');
 
-        // 7. EL ARRANQUE: Llamar al ciclo de animación
-        // Esto activa la esfera y el gráfico inferior
-        if (typeof update === 'function') {
-            requestAnimationFrame(update);
-        }
+        // 7. ARRANQUE MAESTRO (Aquí se activa la línea y el movimiento)
+        initCanvas(); // Prepara el dibujo de la línea abajo
+        requestAnimationFrame(update); // Inicia el movimiento de la esfera y la línea
     }
 </script>
     
