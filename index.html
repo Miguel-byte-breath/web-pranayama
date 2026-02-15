@@ -1915,18 +1915,18 @@
             }
         }
     });
-    // --- FUNCIÓN ACTIVAR MODO INVIERNO (CORREGIDA) ---
+    // --- FUNCIÓN ACTIVAR MODO INVIERNO (FINAL) ---
     function startWinterMode() {
-        // 1. CORRECCIÓN CRÍTICA: Usamos el ID real del patrón ('4-7-8')
-        // Si usas 'relax' (que no existe), el código explota y deja el vídeo colgado.
-        start('4-7-8'); 
+        // 1. Arrancamos el patrón correcto (con la 'b')
+        start('4-7-8b'); 
 
-        // 2. Sobrescribimos el texto para que diga "INVIERNO"
-        // Damos 50ms para asegurar que sobrescribe al texto por defecto del patrón
+        // 2. CAMBIO DE TEXTO: Ahora pone "PAISAJE SONORO"
         setTimeout(() => {
             const label = document.getElementById('patternDisplay');
-            if(label) label.innerHTML = '<span style="font-size:1.4rem; font-weight:800">❄️ INVIERNO</span>';
-            // Forzamos texto blanco
+            // He ajustado el tamaño (1.0rem) para que el texto largo quepa bien
+            if(label) label.innerHTML = '<span style="font-size:1.0rem; font-weight:800; letter-spacing: 1px;">PAISAJE SONORO</span>';
+            
+            // Texto blanco puro
             document.documentElement.style.setProperty('--c-phase', '#ffffff');
         }, 50);
 
@@ -1939,7 +1939,7 @@
         // Reproducir vídeo
         if(vid) vid.play().catch(e => console.log("Error vídeo:", e));
         
-        // Pausar ruido ambiente normal si suena
+        // Pausar ruido ambiente si suena
         if(typeof ambientAudio !== 'undefined' && ambientAudio && !ambientAudio.paused) {
             ambientAudio.pause();
         }
