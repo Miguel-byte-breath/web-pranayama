@@ -1940,27 +1940,26 @@
     }
 
    function startImmersiveSoundscape() {
-        // 1. Capturar los segundos
+        // 1. Capturar valores del panel
         const inH = parseInt(document.getElementById('psIn').value) || 4;
         const h1 = parseInt(document.getElementById('psH1').value) || 0;
         const outH = parseInt(document.getElementById('psOut').value) || 6;
         const h2 = parseInt(document.getElementById('psH2').value) || 0;
 
-        // 2. Inyectar el patrón directamente
-        currentPattern = [inH, h1, outH, h2];
-        
-        // 3. Limpiar y cerrar menús
-        closeSoundscapeSettings();
-        document.getElementById('selectionMenu').style.display = 'none';
-
-        // 4. ACTIVADOR QUIRÚRGICO:
-        // En lugar de llamar a una función que da error, disparamos el motor directamente
-        resetExercise(); // Limpia cualquier estado previo
+        // 2. RESET Y MOTOR (Arrancamos el coche manualmente)
+        stop(); // Limpiamos cualquier ejercicio anterior
+        currentPattern = [inH, h1, outH, h2]; // Metemos el ritmo
         state.run = true;
         state.startTime = Date.now();
-        
-        // 5. Activar Multimedia
+        state.phaseIndex = 0;
+        state.cycleCount = 0;
+
+        // 3. UI (Escondemos todo y mostramos el paisaje)
+        closeSoundscapeSettings();
+        document.getElementById('selectionMenu').style.display = 'none';
         document.querySelector('.app-layout').classList.add('winter-mode');
+
+        // 4. MULTIMEDIA (Cielo y Piano)
         const vid = document.getElementById('bgVideo');
         const aud = document.getElementById('winterAudio');
         
@@ -1970,19 +1969,17 @@
         }
         if(aud) {
             aud.src = "clavier_1.mp3";
-            aud.currentTime = 0;
             aud.volume = 0.5;
             aud.play().catch(e => console.log("Audio listo"));
         }
 
-        // 6. Estética de la esfera
-        setTimeout(() => {
-            const label = document.getElementById('patternDisplay');
-            if(label) label.innerHTML = ''; 
-            document.documentElement.style.setProperty('--c-phase', '#ffffff');
-        }, 50);
-        
-        requestAnimationFrame(update); // Inicia el ciclo visual
+        // 5. LIMPIEZA DE ESFERA
+        const label = document.getElementById('patternDisplay');
+        if(label) label.innerHTML = ''; 
+        document.documentElement.style.setProperty('--c-phase', '#ffffff');
+
+        // 6. ¡DALE GAS! (Lanzamos la animación)
+        update(); 
     }
 </script>
     
