@@ -1915,36 +1915,41 @@
             }
         }
     });
-    // --- FUNCIÓN ACTIVAR MODO INVIERNO ---
+    // --- FUNCIÓN ACTIVAR MODO INVIERNO (CORREGIDA) ---
     function startWinterMode() {
-        // 1. Activamos la clase visual (hace aparecer el vídeo y oculta colores)
+        // 1. CORRECCIÓN CRÍTICA: Usamos el ID real del patrón ('4-7-8')
+        // Si usas 'relax' (que no existe), el código explota y deja el vídeo colgado.
+        start('4-7-8'); 
+
+        // 2. Sobrescribimos el texto para que diga "INVIERNO"
+        // Damos 50ms para asegurar que sobrescribe al texto por defecto del patrón
+        setTimeout(() => {
+            const label = document.getElementById('patternDisplay');
+            if(label) label.innerHTML = '<span style="font-size:1.4rem; font-weight:800">❄️ INVIERNO</span>';
+            // Forzamos texto blanco
+            document.documentElement.style.setProperty('--c-phase', '#ffffff');
+        }, 50);
+
+        // 3. Activamos el vídeo y audio
         document.querySelector('.app-layout').classList.add('winter-mode');
         
-        // 2. Gestión de Elementos Multimedia
         const vid = document.getElementById('bgVideo');
         const aud = document.getElementById('winterAudio');
         
-        // Reproducir Vídeo
-        if(vid) {
-            vid.play().catch(e => console.log("Error al reproducir vídeo:", e));
-        }
+        // Reproducir vídeo
+        if(vid) vid.play().catch(e => console.log("Error vídeo:", e));
         
-        // 3. Gestión de Audio
-        // Si estaba sonando el "ruido blanco" normal, lo pausamos
+        // Pausar ruido ambiente normal si suena
         if(typeof ambientAudio !== 'undefined' && ambientAudio && !ambientAudio.paused) {
             ambientAudio.pause();
         }
         
-        // Reproducir el audio de invierno
+        // Reproducir audio invierno
         if(aud) {
             aud.currentTime = 0;
-            aud.volume = 0.5; // Volumen agradable
-            aud.play().catch(e => console.log("Error al reproducir audio:", e));
+            aud.volume = 0.5;
+            aud.play().catch(e => console.log("Error audio:", e));
         }
-
-        // 4. Iniciar la respiración
-        // Usamos el patrón '4-7-8' (relax) que ya tienes definido
-        start('relax');
     }
 </script>
     
