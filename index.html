@@ -1173,7 +1173,7 @@
 </div>
 <div id="soundscapeSettings" class="overlay" style="display:none;">
     <h2 class="overlay-title">Diseña tu Paisaje</h2>
-    <p class="overlay-subtitle">Define tu ritmo para este entorno</p>
+    <p class="overlay-subtitle">Introduce 4 tiempos (ej: 4-2-6-2)<br>Añade "b" para boca (ej: "8b")</p>
     <div class="custom-input-container">
         <input type="text" id="psPatternInput" class="big-input" placeholder="4-4-4-4" maxlength="10">
     </div>
@@ -1782,30 +1782,51 @@
     }
 
     function stop() {
-        // --- LIMPIEZA MODO INVIERNO (NUEVO) ---
-        // Quitamos la clase para que vuelvan los colores
-        document.querySelector('.app-layout').classList.remove('winter-mode');
-        
-        // Apagamos vídeo y audio de invierno
+        // 1. LIMPIEZA MULTIMEDIA (Paisaje Sonoro / Invierno)
+        // Agrupamos todo en un solo bloque para evitar errores de redifinicón
         const vid = document.getElementById('bgVideo');
         const aud = document.getElementById('winterAudio');
-        if(vid) vid.pause();
-        if(aud) { aud.pause(); aud.currentTime = 0; }
-        // --------------------------------------
-        ambientAudio.pause();
+        
+        if (vid) {
+            vid.pause();
+            vid.currentTime = 0; // Opcional: resetea el vídeo al inicio
+        }
+        
+        if (aud) {
+            aud.pause();
+            aud.currentTime = 0; // Resetea el audio para la próxima vez
+        }
+
+        // Quitamos la clase de estética de invierno
+        document.querySelector('.app-layout').classList.remove('winter-mode');
+        
+        // Paramos el audio ambiente general si existe
+        if (typeof ambientAudio !== 'undefined' && ambientAudio) {
+            ambientAudio.pause();
+        }
+
+        // 2. PARADA DEL MOTOR DE RESPIRACIÓN
         state.run = false;
-        clearTimeout(scheduleTimerID);
+        clearTimeout(scheduleTimerID); // Detiene el temporizador de fases
+
+        // 3. RESET DE LA INTERFAZ (Esfera y Textos)
         els.sph.style.transform = 'scale(0.8)';
         els.ph.textContent = 'LISTO';
         els.ph.style.color = 'var(--accent)';
         els.modeIcon.classList.remove('visible');
         els.cnt.textContent = '';
         els.cyc.textContent = '0';
-        els.sph.style.setProperty('--c-phase', '#4CAF50');
+        els.sph.style.setProperty('--c-phase', '#4CAF50'); // Color base (verde)
+
+        // 4. VOLVER AL MENÚ
         els.menu.style.display = 'flex';
         setTimeout(() => els.menu.style.opacity = '1', 10);
-        els.pat.innerHTML = '';
-        els.ctx.clearRect(0, 0, els.cvs.width, els.cvs.height);
+        
+        // 5. LIMPIEZA DE GRÁFICOS
+        els.pat.innerHTML = ''; // Borra el patrón visual de la esfera
+        if (els.ctx && els.cvs) {
+            els.ctx.clearRect(0, 0, els.cvs.width, els.cvs.height); // Limpia la línea de abajo
+        }
     }
 
     function toggleTempo() {
@@ -1935,31 +1956,39 @@
         document.getElementById('soundscapeSettings').style.display = 'none';
     }
 
-    function startImmersiveSoundscape() {
-        const val = document.getElementById('psPatternInput').value.trim() || "4-4-4-4";
+   function startImmersiveSoundscape() {
+        // 1. Capturamos el ritmo que el usuario escribió
+        const ritmo = document.getElementById('psPatternInput').value.trim() || "4-4-4-4";
         
-        // 1. Clonamos el valor al input "oficial" de personalizados
-        // Esto es quirúrgico: permite que el motor original 'start' funcione sin tocar una sola línea de su lógica
-        document.getElementById('customPatternInput').value = val;
-
-        // 2. Cerramos este panel
+        // 2. Cerramos el panel de configuración y el menú principal
         closeSoundscapeSettings();
+        document.getElementById('selectionMenu').style.display = 'none';
 
-        // 3. Activamos el modo visual/audio
+        // 3. Activamos Multimedia (Tus nuevos archivos)
         document.querySelector('.app-layout').classList.add('winter-mode');
         const vid = document.getElementById('bgVideo');
         const aud = document.getElementById('winterAudio');
-        if(vid) { vid.src = "cielo.mp4"; vid.play(); }
-        if(aud) { aud.src = "clavier_1.mp3"; aud.volume = 0.5; aud.play(); }
+        
+        if(vid) { 
+            vid.src = "cielo.mp4"; 
+            vid.play().catch(e => console.log("Video listo")); 
+        }
+        if(aud) { 
+            aud.src = "clavier_1.mp3"; 
+            aud.volume = 0.5; 
+            aud.play().catch(e => console.log("Audio listo")); 
+        }
 
-        // 4. LLAMADA MAESTRA: Usamos el motor original
-        // Al llamar a start('custom'), el código ya sabe inicializar el canvas, 
-        // la esfera, los textos y el gráfico inferior. ¡Problema resuelto!
-        start('custom');
+        // 4. EL PASO MAESTRO: Llamada directa al motor
+        // Tu función start(p) en la línea 1504 ya sabe procesar strings con guiones.
+        // Al pasarle directamente el ritmo (ej: "4-4-6-2"), ella sola activará 
+        // la esfera, el canvas inferior y el contador sin necesidad de parches.
+        start(ritmo);
 
-        // Limpieza extra para el modo inmersivo
+        // 5. Limpieza estética para modo inmersivo
         setTimeout(() => {
-            if(document.getElementById('patternDisplay')) document.getElementById('patternDisplay').innerHTML = '';
+            const disp = document.getElementById('patternDisplay');
+            if(disp) disp.innerHTML = '';
             document.documentElement.style.setProperty('--c-phase', '#ffffff');
         }, 100);
     }
