@@ -1023,7 +1023,41 @@
                 transform: translate(60px, 60px) rotate(20deg);
             }
         }
+/* --- NUEVO: ESTILOS MODO INVIERNO --- */
+    /* 1. El vídeo de fondo (invisible por defecto) */
+    .video-background {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        object-fit: cover; /* Cubre toda la pantalla sin deformarse */
+        z-index: -1; /* Se queda al fondo */
+        opacity: 0; /* Invisible */
+        transition: opacity 1.5s ease; /* Transición muy suave */
+        pointer-events: none; /* Los clicks lo atraviesan */
+    }
 
+    /* 2. Cuando se activa la clase .winter-mode... */
+    .app-layout.winter-mode .video-background {
+        opacity: 1; /* ...aparece el vídeo */
+    }
+    
+    .app-layout.winter-mode .organic-shape {
+        opacity: 0 !important; /* ...y desaparecen las formas de colores */
+    }
+
+    /* 3. Ajuste de lectura: Texto blanco con sombra para que destaque sobre la nieve */
+    .app-layout.winter-mode .phase-text,
+    .app-layout.winter-mode .counter-big,
+    .app-layout.winter-mode .sphere-label {
+        color: #ffffff !important;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    }
+    
+    /* Pequeño detalle: oscurecer un poco la barra superior para que se vean los iconos blancos */
+    .app-layout.winter-mode .top-bar button {
+        color: white;
+        text-shadow: 0 1px 5px rgba(0,0,0,0.5);
+    }
     </style>
 </head>
 <body>
@@ -1178,6 +1212,10 @@
             <h3>🎨 Crear Personalizado</h3>
             <p>Define tus tiempos (ej: 4-7-8b)</p>
         </div>
+        <div class="menu-card" onclick="startWinterMode()">
+          <h3>❄️ Invierno</h3>
+          <p>Paisaje sonoro inmersivo</p>
+      </div>
         <div class="menu-card" onclick="start('4-4-6-2')">
             <h3>4-4-6-2 • Relax Profundo</h3>
             <p>Baja pulsaciones rápidamente</p>
@@ -1207,6 +1245,12 @@
 
 <!-- APP LAYOUT -->
 <div class="app-layout">
+    <video id="bgVideo" class="video-background" loop playsinline muted>
+        <source src="./winter.mp4" type="video/mp4">
+    </video>
+    <audio id="winterAudio" loop preload="auto">
+        <source src="./winter_audio.mp3" type="audio/mpeg">
+    </audio>
     <div class="top-bar">
         <div class="top-left">
             <button class="btn-text" onclick="stop()">← Menú</button>
@@ -1728,6 +1772,16 @@
     }
 
     function stop() {
+        // --- LIMPIEZA MODO INVIERNO (NUEVO) ---
+        // Quitamos la clase para que vuelvan los colores
+        document.querySelector('.app-layout').classList.remove('winter-mode');
+        
+        // Apagamos vídeo y audio de invierno
+        const vid = document.getElementById('bgVideo');
+        const aud = document.getElementById('winterAudio');
+        if(vid) vid.pause();
+        if(aud) { aud.pause(); aud.currentTime = 0; }
+        // --------------------------------------
         ambientAudio.pause();
         state.run = false;
         clearTimeout(scheduleTimerID);
@@ -1861,7 +1915,38 @@
             }
         }
     });
-</script>
+    // --- FUNCIÓN ACTIVAR MODO INVIERNO ---
+    function startWinterMode() {
+        // 1. Activamos la clase visual (hace aparecer el vídeo y oculta colores)
+        document.querySelector('.app-layout').classList.add('winter-mode');
+        
+        // 2. Gestión de Elementos Multimedia
+        const vid = document.getElementById('bgVideo');
+        const aud = document.getElementById('winterAudio');
+        
+        // Reproducir Vídeo
+        if(vid) {
+            vid.play().catch(e => console.log("Error al reproducir vídeo:", e));
+        }
+        
+        // 3. Gestión de Audio
+        // Si estaba sonando el "ruido blanco" normal, lo pausamos
+        if(typeof ambientAudio !== 'undefined' && ambientAudio && !ambientAudio.paused) {
+            ambientAudio.pause();
+        }
+        
+        // Reproducir el audio de invierno
+        if(aud) {
+            aud.currentTime = 0;
+            aud.volume = 0.5; // Volumen agradable
+            aud.play().catch(e => console.log("Error al reproducir audio:", e));
+        }
 
+        // 4. Iniciar la respiración
+        // Usamos el patrón '4-7-8' (relax) que ya tienes definido
+        start('relax');
+    }
+</script>
+    
 </body>
 </html>
