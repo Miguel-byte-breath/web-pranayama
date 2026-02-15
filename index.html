@@ -1213,8 +1213,8 @@
             <p>Define tus tiempos (ej: 4-7-8b)</p>
         </div>
         <div class="menu-card" onclick="startWinterMode()">
-          <h3>❄️ Invierno</h3>
-          <p>Paisaje sonoro inmersivo</p>
+          <h3>❄️ Paisaje sonoro</h3>
+          <p>modo inmersivo</p>
       </div>
         <div class="menu-card" onclick="start('4-4-6-2')">
             <h3>4-4-6-2 • Relax Profundo</h3>
@@ -1915,36 +1915,34 @@
             }
         }
     });
-    // --- FUNCIÓN ACTIVAR MODO INVIERNO (FINAL) ---
+    // --- FUNCIÓN MODO INVIERNO (VERSIÓN LIMPIA) ---
     function startWinterMode() {
-        // 1. Arrancamos el patrón correcto (con la 'b')
+        // 1. Arrancar motor (patrón correcto)
         start('4-7-8b'); 
 
-        // 2. CAMBIO DE TEXTO: Ahora pone "PAISAJE SONORO"
+        // 2. TEXTO ESFERA: VACÍO (Limpieza total)
         setTimeout(() => {
             const label = document.getElementById('patternDisplay');
-            // He ajustado el tamaño (1.0rem) para que el texto largo quepa bien
-            if(label) label.innerHTML = '<span style="font-size:1.0rem; font-weight:800; letter-spacing: 1px;">PAISAJE SONORO</span>';
             
-            // Texto blanco puro
+            // Al dejarlo vacío, la esfera queda minimalista
+            if(label) label.innerHTML = ''; 
+            
+            // Texto blanco puro (para que el contador y 'INHALA' resalten)
             document.documentElement.style.setProperty('--c-phase', '#ffffff');
         }, 50);
 
-        // 3. Activamos el vídeo y audio
+        // 3. Activar Multimedia
         document.querySelector('.app-layout').classList.add('winter-mode');
         
         const vid = document.getElementById('bgVideo');
         const aud = document.getElementById('winterAudio');
         
-        // Reproducir vídeo
         if(vid) vid.play().catch(e => console.log("Error vídeo:", e));
         
-        // Pausar ruido ambiente si suena
         if(typeof ambientAudio !== 'undefined' && ambientAudio && !ambientAudio.paused) {
             ambientAudio.pause();
         }
         
-        // Reproducir audio invierno
         if(aud) {
             aud.currentTime = 0;
             aud.volume = 0.5;
