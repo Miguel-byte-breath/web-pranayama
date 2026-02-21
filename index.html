@@ -128,7 +128,7 @@
             transform: scale(0.95);
         }
 
-        /* V1.2.0 Estado ACTIVO para botones toggle Metronomo y Frases */
+        /* V1.3.0 Estado ACTIVO para botones toggle Metronomo y Frases */
         .btn-icon.active {
             background: var(--accent);
             color: white;
@@ -222,7 +222,7 @@
             line-height: 1.6;
             z-index: 30;
             margin-top: 10px;
-            /* V1.2.0 Altura mínima para evitar saltos y transición suave */
+            /* V1.3.0 Altura mínima para evitar saltos y transición suave */
             min-height: 2em;
             transition: opacity 0.6s ease;
         }
@@ -1212,7 +1212,7 @@
             <h3>🎨 Crear Personalizado</h3>
             <p>Define tus tiempos (ej: 4-7-8b)</p>
         </div>
-        <div class="menu-card" onclick="startWinterMode()">
+        <div class="menu-card" onclick="openSoundscapeSettings()">
           <h3>❄️ Paisaje sonoro</h3>
           <p>modo inmersivo</p>
       </div>
@@ -1242,7 +1242,30 @@
     <p id="pillMessage" style="font-size:1.4rem; font-family:'Cinzel'; color:#37474f; margin-bottom:50px; max-width:600px;"></p>
     <button class="btn-text" style="background:var(--primary); color:white; padding:16px 50px;" onclick="closePill()">Comenzar</button>
 </div>
+// --- FUNCIONES DE CONTROL PAISAJE SONORO ---
+function openSoundscapeSettings() {
+    const overlay = document.getElementById('psOverlay');
+    if(overlay) {
+        overlay.style.display = 'flex';
+        const input = document.getElementById('psPatternInput');
+        if(input) input.focus();
+    }
+}
 
+function closeSoundscapeSettings() {
+    const overlay = document.getElementById('psOverlay');
+    if(overlay) overlay.style.display = 'none';
+}
+
+// Listener para que los guiones se pongan solos al escribir
+document.addEventListener('DOMContentLoaded', () => {
+    const psInp = document.getElementById('psPatternInput');
+    if(psInp) {
+        psInp.addEventListener('input', (e) => {
+            formatPattern(e.target);
+        });
+    }
+});
 <!-- APP LAYOUT -->
 <div class="app-layout">
     <video id="bgVideo" class="video-background" loop playsinline muted>
@@ -1265,7 +1288,7 @@
         </div>
     </div>
     <div style="position: fixed; bottom: 10px; right: 15px; font-size: 0.65rem; color: #90a4ae; opacity: 0.5; z-index: 9999; pointer-events: none; font-family: 'Manrope', sans-serif;">
-        Ref <span id="app-version-display">V1.2.0</span>
+        Ref <span id="app-version-display">V1.3.0</span>
     </div>
     <div class="stage-container">
         <div class="panel-side">
@@ -1341,7 +1364,7 @@
         }
     }
 
-    // STATE V1.2.0 Quotes ENABLED by default
+    // STATE V1.3.0 Quotes ENABLED by default
     let state = {pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true, music: true};
 
     let audioCtx = null;
@@ -1559,7 +1582,7 @@
         }
     }
 
-    // --- V1.2.0 LOGICA TOGGLE FRASES ---
+    // --- V1.3.0 LOGICA TOGGLE FRASES ---
     function toggleQuotes() {
         state.quotesEnabled = !state.quotesEnabled;
         const btn = document.getElementById('quoteToggleBtn');
@@ -1751,7 +1774,7 @@
         els.menu.style.opacity = '0';
         setTimeout(() => els.menu.style.display='none', 400);
 
-        // V1.2.0 Reset states: Queremos que empiece ENCENDIDO por defecto
+        // V1.3.0 Reset states: Queremos que empiece ENCENDIDO por defecto
         state.quotesEnabled = true;
         const btn = document.getElementById('quoteToggleBtn');
         btn.classList.add('active'); // Botón iluminado
@@ -1826,15 +1849,15 @@
         els.musicIcon.textContent = 'volume_up';
         if (typeof ambientAudio !== 'undefined' && ambientAudio) ambientAudio.play();
         
-        // Si estamos en el modo paisaje (winter-mode), activamos su audio
+        // Si el paisaje está activo, reanudamos su audio
         if (document.querySelector('.app-layout').classList.contains('winter-mode') && audPaisaje) {
-            audPaisaje.play().catch(e => console.log("Error al activar audio paisaje"));
+            audPaisaje.play();
         }
     } else {
         els.musicIcon.textContent = 'volume_off';
         if (typeof ambientAudio !== 'undefined' && ambientAudio) ambientAudio.pause();
         
-        // Pausamos el audio del paisaje si el usuario silencia la app
+        // Si el usuario silencia, pausamos el piano del paisaje
         if (audPaisaje) audPaisaje.pause();
     }
 }
