@@ -1819,26 +1819,25 @@
     }
 
     function toggleMusic() {
-        // Inicializar si no existe
-        if (typeof state.music === 'undefined') state.music = true;
+    state.music = !state.music;
+    const audPaisaje = document.getElementById('winterAudio');
+
+    if (state.music) {
+        els.musicIcon.textContent = 'volume_up';
+        if (typeof ambientAudio !== 'undefined' && ambientAudio) ambientAudio.play();
         
-        state.music = !state.music;
-        
-        // 1. Actualizar visualmente el botón (añadir/quitar clase active)
-        const btn = document.getElementById('musicBtn');
-        if (btn) {
-            if (state.music) btn.classList.add('active');
-            else btn.classList.remove('active');
+        // Si estamos en el modo paisaje (winter-mode), activamos su audio
+        if (document.querySelector('.app-layout').classList.contains('winter-mode') && audPaisaje) {
+            audPaisaje.play().catch(e => console.log("Error al activar audio paisaje"));
         }
+    } else {
+        els.musicIcon.textContent = 'volume_off';
+        if (typeof ambientAudio !== 'undefined' && ambientAudio) ambientAudio.pause();
         
-        // 2. Actuar sobre el audio
-        if(state.music) {
-            // Si ya está corriendo la respiración, dale play
-            if(state.run) ambientAudio.play().catch(e => console.log(e)); 
-        } else {
-            ambientAudio.pause();
-        }
+        // Pausamos el audio del paisaje si el usuario silencia la app
+        if (audPaisaje) audPaisaje.pause();
     }
+}
 
     function openShareConfig() {
         let lastP = state.pk;
@@ -1917,38 +1916,43 @@
     });
     // --- FUNCIÓN MODO INVIERNO (VERSIÓN LIMPIA) ---
     function startWinterMode() {
-        // 1. Arrancar motor (patrón correcto)
-        start('4-7-8b'); 
+    // 1. Recogemos el ritmo que el usuario ha escrito en la pantalla intermedia
+    const ritmo = document.getElementById('psPatternInput').value.trim() || "4-4-4-4";
+    
+    // 2. Sincronizamos con el motor oficial (usando el modo 'custom')
+    els.customInput.value = ritmo;
 
-        // 2. TEXTO ESFERA: VACÍO (Limpieza total)
-        setTimeout(() => {
-            const label = document.getElementById('patternDisplay');
-            
-            // Al dejarlo vacío, la esfera queda minimalista
-            if(label) label.innerHTML = ''; 
-            
-            // Texto blanco puro (para que el contador y 'INHALA' resalten)
-            document.documentElement.style.setProperty('--c-phase', '#ffffff');
-        }, 50);
+    // 3. Cerramos el panel de selección
+    closeSoundscapeSettings();
 
-        // 3. Activar Multimedia
-        document.querySelector('.app-layout').classList.add('winter-mode');
-        
-        const vid = document.getElementById('bgVideo');
-        const aud = document.getElementById('winterAudio');
-        
-        if(vid) vid.play().catch(e => console.log("Error vídeo:", e));
-        
-        if(typeof ambientAudio !== 'undefined' && ambientAudio && !ambientAudio.paused) {
-            ambientAudio.pause();
-        }
-        
-        if(aud) {
-            aud.currentTime = 0;
-            aud.volume = 0.5;
-            aud.play().catch(e => console.log("Error audio:", e));
+    // 4. Lanzamos el motor (Esto hará que la esfera y la línea funcionen solas)
+    start('custom');
+
+    // 5. Activamos Multimedia
+    document.querySelector('.app-layout').classList.add('winter-mode');
+    const vid = document.getElementById('bgVideo');
+    const aud = document.getElementById('winterAudio');
+    
+    if(vid) { 
+        vid.src = "cielo.mp4"; 
+        vid.play().catch(e => console.log("Video listo")); 
+    }
+    
+    if(aud) { 
+        aud.src = "clavier_1.mp3"; 
+        aud.volume = 0.5; 
+        // Solo suena si el botón global de música NO está tachado
+        if (state.music) {
+            aud.play().catch(e => console.log("Piano iniciado"));
         }
     }
+
+    // 6. Ajuste visual (MANTENEMOS los números visibles en la esfera)
+    setTimeout(() => {
+        // He eliminado la línea que ponía el innerHTML a ''
+        document.documentElement.style.setProperty('--c-phase', '#ffffff');
+    }, 150);
+}
 </script>
     
 </body>
