@@ -1968,13 +1968,12 @@ function closeSoundscapeSettings() {
     if(overlay) overlay.style.display = 'none';
 }
 
-// Listener para los guiones automáticos
-const psInp = document.getElementById('psPatternInput');
-if(psInp) {
-    psInp.addEventListener('input', (e) => {
-        formatPattern(e.target);
-    });
-}    
+// Listener para los guiones automáticos del Paisaje Sonoro
+    document.addEventListener('input', (e) => {
+        if (e.target.id === 'psPatternInput') {
+            formatPattern(e.target);
+        }
+    });  
 </script>
     
 </body>
