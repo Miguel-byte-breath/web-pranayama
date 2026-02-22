@@ -1292,7 +1292,7 @@
     <h2 style="font-family: 'Cinzel', serif; font-size: 2rem; color: #37474f; margin-bottom: 10px;">Diseña tu Paisaje</h2>
     <p style="font-family: 'Manrope', sans-serif; color: #78909c; margin-bottom: 30px;">Introduce 4 tiempos (ej: 4-2-6-2)<br>Añade "b" para boca (ej: "8b")</p>
     
-    <input type="text" id="psPatternInput" style="font-size: 2rem; text-align: center; padding: 10px; width: 80%; max-width: 300px; border: 2px solid #e0f7fa; border-radius: 10px; margin-bottom: 40px;" placeholder="4-4-4-4" maxlength="10">
+    <input type="text" id="psPatternInput" oninput="formatPattern(this)" style="font-size: 2rem; text-align: center; padding: 10px; width: 80%; max-width: 300px; border: 2px solid #e0f7fa; border-radius: 10px; margin-bottom: 40px;" placeholder="4-4-4-4" maxlength="10">
     
     <div style="display: flex; flex-direction: column; gap: 15px; width: 80%; max-width: 300px;">
         <button style="background-color: #4CAF50; color: white; padding: 15px; border: none; border-radius: 30px; font-size: 1.2rem; cursor: pointer;" onclick="startWinterMode()">Comenzar</button>
@@ -1926,40 +1926,49 @@
     });
     // --- FUNCIÓN MODO INVIERNO (VERSIÓN LIMPIA) ---
     function startWinterMode() {
-    // 1. Recogemos el ritmo que el usuario ha escrito en la pantalla intermedia
-    const ritmo = document.getElementById('psPatternInput').value.trim() || "4-4-4-4";
+    // 1. Recogemos el ritmo de la ventana nueva
+    const inputCaja = document.getElementById('psPatternInput');
+    let ritmo = inputCaja ? inputCaja.value.trim() : "";
     
-    // 2. Sincronizamos con el motor oficial (usando el modo 'custom')
-    els.customInput.value = ritmo;
+    // Si el usuario le da a comenzar sin escribir nada, le ponemos 4-4-4-4 por defecto
+    if (!ritmo || ritmo === "") {
+        ritmo = "4-4-4-4";
+    }
 
-    // 3. Cerramos el panel de selección
+    // 2. Le inyectamos el ritmo al motor principal de tu app de forma segura
+    if (typeof els !== 'undefined' && els.customInput) {
+        els.customInput.value = ritmo;
+    } else {
+        const fallbackCaja = document.getElementById('customPattern');
+        if(fallbackCaja) fallbackCaja.value = ritmo;
+    }
+
+    // 3. Cerramos el panel blanco
     closeSoundscapeSettings();
 
-    // 4. Lanzamos el motor (Esto hará que la esfera y la línea funcionen solas)
+    // 4. Arrancamos el motor (ahora sí tiene el patrón)
     start('custom');
 
-    // 5. Activamos Multimedia
+    // 5. Activamos el Vídeo y el Piano
     document.querySelector('.app-layout').classList.add('winter-mode');
     const vid = document.getElementById('bgVideo');
     const aud = document.getElementById('winterAudio');
     
     if(vid) { 
         vid.src = "cielo.mp4"; 
-        vid.play().catch(e => console.log("Video listo")); 
+        vid.play().catch(e => console.log("Vídeo silenciado por navegador")); 
     }
     
     if(aud) { 
         aud.src = "clavier_1.mp3"; 
         aud.volume = 0.5; 
-        // Solo suena si el botón global de música NO está tachado
         if (state.music) {
-            aud.play().catch(e => console.log("Piano iniciado"));
+            aud.play().catch(e => console.log("Audio requiere interacción previa"));
         }
     }
 
-    // 6. Ajuste visual (MANTENEMOS los números visibles en la esfera)
+    // 6. Mantenemos el texto de la esfera en blanco
     setTimeout(() => {
-        // He eliminado la línea que ponía el innerHTML a ''
         document.documentElement.style.setProperty('--c-phase', '#ffffff');
     }, 150);
 }
