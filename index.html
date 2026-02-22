@@ -1840,21 +1840,24 @@
     function toggleMusic() {
     state.music = !state.music;
     const audPaisaje = document.getElementById('winterAudio');
+    const enPaisaje = document.querySelector('.app-layout').classList.contains('winter-mode');
 
     if (state.music) {
         els.musicIcon.textContent = 'volume_up';
-        if (typeof ambientAudio !== 'undefined' && ambientAudio) ambientAudio.play();
-        
-        // Si el paisaje está activo, reanudamos su audio
-        if (document.querySelector('.app-layout').classList.contains('winter-mode') && audPaisaje) {
-            audPaisaje.play();
+        if (enPaisaje) {
+            // En Paisaje Sonoro: solo el piano
+            if (audPaisaje) audPaisaje.play().catch(e => console.log(e));
+        } else {
+            // Modo normal: solo el ambient
+            if (typeof ambientAudio !== 'undefined' && ambientAudio) ambientAudio.play();
         }
     } else {
         els.musicIcon.textContent = 'volume_off';
-        if (typeof ambientAudio !== 'undefined' && ambientAudio) ambientAudio.pause();
-        
-        // Si el usuario silencia, pausamos el piano del paisaje
-        if (audPaisaje) audPaisaje.pause();
+        if (enPaisaje) {
+            if (audPaisaje) audPaisaje.pause();
+        } else {
+            if (typeof ambientAudio !== 'undefined' && ambientAudio) ambientAudio.pause();
+        }
     }
 }
 
@@ -1984,11 +1987,16 @@ function startWinterMode() {
     // 3. Cerrar la ventana blanca
     closeSoundscapeSettings();
 
-    // 4. Iniciar el motor nativo
+    // 4. Iniciar el motor nativo y silenciar el ambient (no aplica en modo Paisaje)
     try {
         start('custom');
     } catch (e) {
         console.error("Error al arrancar:", e);
+    }
+    // start() puede haber arrancado ambientAudio — lo paramos de inmediato
+    if (typeof ambientAudio !== 'undefined' && ambientAudio) {
+        ambientAudio.pause();
+        ambientAudio.currentTime = 0;
     }
 
     // 5. Aplicar vídeo y audio de fondo (con candado de seguridad)
