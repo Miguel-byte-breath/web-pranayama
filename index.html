@@ -1924,116 +1924,61 @@
             }
         }
     });
-// --- LÓGICA ROBUSTA PARA EL PAISAJE SONORO ---
-
-function openSoundscapeSettings() {
-    const overlay = document.getElementById('psOverlay');
-    if(overlay) {
-        overlay.style.display = 'flex';
-        const input = document.getElementById('psPatternInput');
-        if(input) {
-            input.value = ''; // Limpia textos anteriores
-            input.focus();
-        }
-    }
-}
-
-function closeSoundscapeSettings() {
-    const overlay = document.getElementById('psOverlay');
-    if(overlay) overlay.style.display = 'none';
-}
-
 function startWinterMode() {
-    // 1. Recogemos el ritmo de la ventana
-    const inputCaja = document.getElementById('psPatternInput');
-    let ritmo = inputCaja ? inputCaja.value.trim() : "";
-    if (!ritmo || ritmo === "") ritmo = "4-4-4-4";
+    // 1. Recogemos el ritmo de la ventana del Paisaje Sonoro
+    const psInput = document.getElementById('psPatternInput');
+    let ritmo = psInput ? psInput.value.trim() : "4-4-4-4";
+    if (ritmo === "") ritmo = "4-4-4-4";
 
-    // 2. Inyectamos en la caja REAL de tu app ('customPattern') para que lo encuentre
-    const cajaPrincipal = document.getElementById('customPattern');
-    if (cajaPrincipal) cajaPrincipal.value = ritmo;
-    
-    if (typeof els !== 'undefined' && els.customInput) {
-        els.customInput.value = ritmo;
+    // 2. LA CLAVE: Inyectamos el ritmo en la caja original de "Crear personalizado"
+    const cajaOriginal = document.getElementById('customInput');
+    if (cajaOriginal) {
+        cajaOriginal.value = ritmo;
     }
 
-    // 3. Cerramos el panel
-    closeSoundscapeSettings();
+    // 3. Cerramos el panel del Paisaje Sonoro
+    const psOverlay = document.getElementById('psOverlay');
+    if (psOverlay) psOverlay.style.display = 'none';
 
-    // 4. Iniciar el motor
-    if (typeof start === 'function') {
+    // 4. ARRANCAMOS IGUAL QUE EL BOTÓN NATIVO
+    // Llamamos directamente a la función original de la app
+    try {
         start('custom');
+    } catch (e) {
+        console.error("Error al iniciar el motor:", e);
     }
 
-    // 5. --- SEGURO DE VIDA ---
-    // Si el patrón es inválido, el motor no arranca (state.run = false). 
-    // Abortamos aquí para que NO suene el audio.
-    if (typeof state !== 'undefined' && state.run === false) {
-        return; 
-    }
-
-    // 6. Encender entorno (vídeo y audio)
-    document.querySelector('.app-layout').classList.add('winter-mode');
-    const vid = document.getElementById('bgVideo');
-    const aud = document.getElementById('winterAudio');
-    
-    if(vid) { 
-        vid.src = "cielo.mp4"; 
-        vid.play().catch(e => console.log(e)); 
-    }
-    
-    if(aud) { 
-        aud.src = "clavier_1.mp3"; 
-        aud.volume = 0.5; 
-        if (typeof state !== 'undefined' && state.music) {
-            aud.play().catch(e => console.log(e));
-        }
-    }
-
+    // 5. Aplicar los efectos del Paisaje Sonoro
+    // Le damos un pequeño margen (500ms) para que la app principal termine de arrancar
     setTimeout(() => {
-        document.documentElement.style.setProperty('--c-phase', '#ffffff');
-    }, 150);
-}
-
-// 7. CONTROLADOR DE EVENTOS (Evita errores de botones y pone guiones solos)
-document.addEventListener('DOMContentLoaded', () => {
-    const btnCancel = document.getElementById('btnPsCancel');
-    if (btnCancel) {
-        btnCancel.addEventListener('click', (e) => {
-            e.preventDefault(); // Evita recargas raras de la página
-            e.stopPropagation();
-            closeSoundscapeSettings();
-        });
-    }
-
-    const btnStart = document.getElementById('btnPsStart');
-    if (btnStart) {
-        btnStart.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            startWinterMode();
-        });
-    }
-
-    // Poner guiones automáticos de forma aislada
-    const psInp = document.getElementById('psPatternInput');
-    if (psInp) {
-        psInp.addEventListener('input', (e) => {
-            let val = e.target.value.replace(/[^0-9b]/g, '');
-            if (val.length > 0) {
-                let formatted = val[0];
-                for (let i = 1; i < val.length; i++) {
-                    if (val[i] === 'b' || val[i-1] === 'b') {
-                        formatted += val[i];
-                    } else {
-                        formatted += '-' + val[i];
-                    }
-                }
-                e.target.value = formatted.substring(0, 10);
+        // Solo si la app ha arrancado con éxito (state.run = true), encendemos el audio y el vídeo
+        if (typeof state !== 'undefined' && state.run === true) {
+            document.querySelector('.app-layout').classList.add('winter-mode');
+            
+            const vid = document.getElementById('bgVideo');
+            const aud = document.getElementById('winterAudio');
+            
+            if(vid) { 
+                vid.src = "cielo.mp4"; 
+                vid.play().catch(e => console.log(e)); 
             }
-        });
-    }
-});
+            
+            if(aud) { 
+                aud.src = "clavier_1.mp3"; 
+                aud.volume = 0.5; 
+                // Respetamos si la música general está activada
+                if (state.music) {
+                    aud.play().catch(e => console.log(e));
+                }
+            }
+
+            // Cambiar el color del texto a blanco para que contraste con el cielo
+            document.documentElement.style.setProperty('--c-phase', '#ffffff');
+        } else {
+            console.log("El motor no arrancó. Cancelando efectos de Paisaje Sonoro.");
+        }
+    }, 500);
+}
 </script>
     
 </body>
