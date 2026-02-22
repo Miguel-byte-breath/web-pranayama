@@ -128,7 +128,7 @@
             transform: scale(0.95);
         }
 
-        /* V1.2.0 Estado ACTIVO para botones toggle Metronomo y Frases */
+        /* V1.3.0 Estado ACTIVO para botones toggle Metronomo y Frases */
         .btn-icon.active {
             background: var(--accent);
             color: white;
@@ -222,7 +222,7 @@
             line-height: 1.6;
             z-index: 30;
             margin-top: 10px;
-            /* V1.2.0 Altura mínima para evitar saltos y transición suave */
+            /* V1.3.0 Altura mínima para evitar saltos y transición suave */
             min-height: 2em;
             transition: opacity 0.6s ease;
         }
@@ -608,7 +608,7 @@
         }
 
         /* --- OVERLAYS --- */
-        #customOverlay, #shareConfigOverlay, #guideOverlay {
+        #customOverlay, #shareConfigOverlay, #guideOverlay, #psOverlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -1023,7 +1023,41 @@
                 transform: translate(60px, 60px) rotate(20deg);
             }
         }
+/* --- NUEVO: ESTILOS MODO INVIERNO --- */
+    /* 1. El vídeo de fondo (invisible por defecto) */
+    .video-background {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        object-fit: cover; /* Cubre toda la pantalla sin deformarse */
+        z-index: -1; /* Se queda al fondo */
+        opacity: 0; /* Invisible */
+        transition: opacity 1.5s ease; /* Transición muy suave */
+        pointer-events: none; /* Los clicks lo atraviesan */
+    }
 
+    /* 2. Cuando se activa la clase .winter-mode... */
+    .app-layout.winter-mode .video-background {
+        opacity: 1; /* ...aparece el vídeo */
+    }
+    
+    .app-layout.winter-mode .organic-shape {
+        opacity: 0 !important; /* ...y desaparecen las formas de colores */
+    }
+
+    /* 3. Ajuste de lectura: Texto blanco con sombra para que destaque sobre la nieve */
+    .app-layout.winter-mode .phase-text,
+    .app-layout.winter-mode .counter-big,
+    .app-layout.winter-mode .sphere-label {
+        color: #ffffff !important;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    }
+    
+    /* Pequeño detalle: oscurecer un poco la barra superior para que se vean los iconos blancos */
+    .app-layout.winter-mode .top-bar button {
+        color: white;
+        text-shadow: 0 1px 5px rgba(0,0,0,0.5);
+    }
     </style>
 </head>
 <body>
@@ -1061,7 +1095,7 @@
     <div class="refugio-card">
         <div class="refugio-title">Regla de los 10.000 Pies ...</div>
         <div class="refugio-author">by Álvaro García</div>
-        <div class="refugio-excerpt">JARDÍN MENTAL </div>
+        <div class="refugio-excerpt">JARDÍN MENTAL</div>
         <a href="https://open.substack.com/pub/jardinmental/p/modo-0-1?r=2vlvha&utm_campaign=post&utm_medium=web" target="_blank" rel="noopener noreferrer" class="refugio-btn">
             📖 Leer en Substack
         </a>
@@ -1170,21 +1204,25 @@
             </div>
             <div class="substack-content">
                 <div class="substack-label">Rincón de Lectura</div>
-                <div class="substack-title">Regla de los 10.000 Pies ...</div>
-                <div class="substack-author">by Álvaro García</div>
+                <div class="substack-title">Regla de los 10000 Pies ...</div>
+                <div class="substack-author">by Álvaro Garcíat</div>
             </div>
         </div>
         <div class="menu-card custom-card" onclick="openCustomModal()">
             <h3>🎨 Crear Personalizado</h3>
             <p>Define tus tiempos (ej: 4-7-8b)</p>
         </div>
+        <div class="menu-card" onclick="openSoundscapeSettings()">
+          <h3>❄️ Paisaje sonoro</h3>
+          <p>modo inmersivo</p>
+      </div>
         <div class="menu-card" onclick="start('4-4-6-2')">
             <h3>4-4-6-2 • Relax Profundo</h3>
             <p>Baja pulsaciones rápidamente</p>
         </div>
         <div class="menu-card" onclick="start('4-7-8b')">
-            <h3>4-7-8 • Para Dormir</h3>
-            <p>Técnica del Dr. Weil (Soplar)</p>
+            <h3>4-7-8b • Relaxing break</h3>
+            <p>Relájate </p>
         </div>
         <div class="menu-card" onclick="start('box')">
             <h3>Cuadrada • Enfoque</h3>
@@ -1207,6 +1245,12 @@
 
 <!-- APP LAYOUT -->
 <div class="app-layout">
+    <video id="bgVideo" class="video-background" loop playsinline muted>
+        <source src="./cielo.mp4" type="video/mp4">
+    </video>
+    <audio id="winterAudio" loop preload="auto">
+        <source src="./clavier_1.mp3" type="audio/mpeg">
+    </audio>
     <div class="top-bar">
         <div class="top-left">
             <button class="btn-text" onclick="stop()">← Menú</button>
@@ -1221,7 +1265,7 @@
         </div>
     </div>
     <div style="position: fixed; bottom: 10px; right: 15px; font-size: 0.65rem; color: #90a4ae; opacity: 0.5; z-index: 9999; pointer-events: none; font-family: 'Manrope', sans-serif;">
-        Ref <span id="app-version-display">V1.2.0</span>
+        Ref <span id="app-version-display">V1.3.0</span>
     </div>
     <div class="stage-container">
         <div class="panel-side">
@@ -1244,7 +1288,17 @@
         <canvas id="breathGraph"></canvas>
     </div>
 </div>
-
+<div id="psOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: white; z-index: 999999; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+    <h2 style="font-family: 'Cinzel', serif; font-size: 2rem; color: #37474f; margin-bottom: 10px;">Diseña tu Paisaje</h2>
+    <p style="font-family: 'Manrope', sans-serif; color: #78909c; margin-bottom: 30px;">Introduce 4 tiempos (ej: 4-2-6-2)<br>Añade "b" para boca (ej: "8b")</p>
+    
+    <input type="text" id="psPatternInput" oninput="formatPsPattern(this)" style="font-size: 2rem; text-align: center; padding: 10px; width: 80%; max-width: 300px; border: 2px solid #e0f7fa; border-radius: 10px; margin-bottom: 40px;" placeholder="4-4-4-4" maxlength="10">
+    
+    <div style="display: flex; flex-direction: column; gap: 15px; width: 80%; max-width: 300px;">
+        <button type="button" onclick="startWinterMode()" style="background-color: #4CAF50; color: white; padding: 15px; border: none; border-radius: 30px; font-size: 1.2rem; cursor: pointer;">Comenzar</button>
+        <button type="button" onclick="closeSoundscapeSettings()" style="background: transparent; color: #78909c; padding: 15px; border: none; font-size: 1rem; cursor: pointer;">Cancelar</button>
+    </div>
+</div>
 <script>
     // --- VARIABLES Y CONFIGURACIÓN ---
     const C_INHALE = '#4CAF50';
@@ -1297,7 +1351,7 @@
         }
     }
 
-    // STATE V1.2.0 Quotes ENABLED by default
+    // STATE V1.3.0 Quotes ENABLED by default
     let state = {pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true, music: true};
 
     let audioCtx = null;
@@ -1405,6 +1459,9 @@
         });
         return newPattern;
     }
+    // Exponer al scope global para que startWinterMode pueda usarla
+    window._parsePatternString = parsePatternString;
+    window._patterns = patterns;
 
     function startCustom() {
         const val = els.customInput.value.trim();
@@ -1515,7 +1572,7 @@
         }
     }
 
-    // --- V1.2.0 LOGICA TOGGLE FRASES ---
+    // --- V1.3.0 LOGICA TOGGLE FRASES ---
     function toggleQuotes() {
         state.quotesEnabled = !state.quotesEnabled;
         const btn = document.getElementById('quoteToggleBtn');
@@ -1707,7 +1764,7 @@
         els.menu.style.opacity = '0';
         setTimeout(() => els.menu.style.display='none', 400);
 
-        // V1.2.0 Reset states: Queremos que empiece ENCENDIDO por defecto
+        // V1.3.0 Reset states: Queremos que empiece ENCENDIDO por defecto
         state.quotesEnabled = true;
         const btn = document.getElementById('quoteToggleBtn');
         btn.classList.add('active'); // Botón iluminado
@@ -1728,6 +1785,16 @@
     }
 
     function stop() {
+        // --- LIMPIEZA MODO INVIERNO (NUEVO) ---
+        // Quitamos la clase para que vuelvan los colores
+        document.querySelector('.app-layout').classList.remove('winter-mode');
+        
+        // Apagamos vídeo y audio de invierno
+        const vid = document.getElementById('bgVideo');
+        const aud = document.getElementById('winterAudio');
+        if(vid) vid.pause();
+        if(aud) { aud.pause(); aud.currentTime = 0; }
+        // --------------------------------------
         ambientAudio.pause();
         state.run = false;
         clearTimeout(scheduleTimerID);
@@ -1765,26 +1832,25 @@
     }
 
     function toggleMusic() {
-        // Inicializar si no existe
-        if (typeof state.music === 'undefined') state.music = true;
+    state.music = !state.music;
+    const audPaisaje = document.getElementById('winterAudio');
+
+    if (state.music) {
+        els.musicIcon.textContent = 'volume_up';
+        if (typeof ambientAudio !== 'undefined' && ambientAudio) ambientAudio.play();
         
-        state.music = !state.music;
-        
-        // 1. Actualizar visualmente el botón (añadir/quitar clase active)
-        const btn = document.getElementById('musicBtn');
-        if (btn) {
-            if (state.music) btn.classList.add('active');
-            else btn.classList.remove('active');
+        // Si el paisaje está activo, reanudamos su audio
+        if (document.querySelector('.app-layout').classList.contains('winter-mode') && audPaisaje) {
+            audPaisaje.play();
         }
+    } else {
+        els.musicIcon.textContent = 'volume_off';
+        if (typeof ambientAudio !== 'undefined' && ambientAudio) ambientAudio.pause();
         
-        // 2. Actuar sobre el audio
-        if(state.music) {
-            // Si ya está corriendo la respiración, dale play
-            if(state.run) ambientAudio.play().catch(e => console.log(e)); 
-        } else {
-            ambientAudio.pause();
-        }
+        // Si el usuario silencia, pausamos el piano del paisaje
+        if (audPaisaje) audPaisaje.pause();
     }
+}
 
     function openShareConfig() {
         let lastP = state.pk;
@@ -1861,7 +1927,85 @@
             }
         }
     });
-</script>
+// --- LÓGICA DEFINITIVA PAISAJE SONORO ---
 
+function openSoundscapeSettings() {
+    const overlay = document.getElementById('psOverlay');
+    if(overlay) {
+        overlay.style.display = 'flex';
+        const input = document.getElementById('psPatternInput');
+        if(input) input.value = ''; // Limpia textos anteriores
+    }
+}
+
+function closeSoundscapeSettings() {
+    const overlay = document.getElementById('psOverlay');
+    if(overlay) overlay.style.display = 'none';
+}
+
+// Función exclusiva para los guiones de esta ventana
+function formatPsPattern(inputCaja) {
+    let val = inputCaja.value.replace(/[^0-9b]/g, '');
+    if (val.length > 0) {
+        let formatted = val[0];
+        for (let i = 1; i < val.length; i++) {
+            if (val[i] === 'b' || val[i-1] === 'b') formatted += val[i];
+            else formatted += '-' + val[i];
+        }
+        inputCaja.value = formatted.substring(0, 10);
+    }
+}
+
+function startWinterMode() {
+    // 1. Recoger el ritmo desde el overlay del Paisaje Sonoro
+    const psInput = document.getElementById('psPatternInput');
+    let ritmo = psInput ? psInput.value.trim() : "4-4-4-4";
+    if (!ritmo) ritmo = "4-4-4-4";
+
+    // 2. SOLUCIÓN DEFINITIVA: construir el array del patrón directamente
+    //    y asignarlo a patterns['custom'], sin pasar por el DOM.
+    if (typeof window._parsePatternString !== 'function' || typeof window._patterns === 'undefined') {
+        alert('Error interno: el motor aún no está listo. Inténtalo de nuevo.');
+        return;
+    }
+    const newPattern = window._parsePatternString(ritmo);
+    if (newPattern.length < 2) {
+        alert('Introduce al menos 2 fases válidas, por ejemplo: 4-4-4-4');
+        return;
+    }
+    window._patterns['custom'] = newPattern;
+
+    // 3. Cerrar la ventana blanca
+    closeSoundscapeSettings();
+
+    // 4. Iniciar el motor nativo
+    try {
+        start('custom');
+    } catch (e) {
+        console.error("Error al arrancar:", e);
+    }
+
+    // 5. Aplicar vídeo y audio de fondo (con candado de seguridad)
+    setTimeout(() => {
+        // Solo suena si tu aplicación principal ha arrancado con éxito
+        if (typeof state !== 'undefined' && state.run === true) {
+            document.querySelector('.app-layout').classList.add('winter-mode');
+            
+            const vid = document.getElementById('bgVideo');
+            if(vid) { vid.src = "cielo.mp4"; vid.play().catch(e=>console.log(e)); }
+            
+            const aud = document.getElementById('winterAudio');
+            if(aud) { 
+                aud.src = "clavier_1.mp3"; 
+                aud.volume = 0.5; 
+                if(state.music) aud.play().catch(e=>console.log(e)); 
+            }
+
+            document.documentElement.style.setProperty('--c-phase', '#ffffff');
+        }
+    }, 500);
+}
+</script>
+    
 </body>
 </html>
