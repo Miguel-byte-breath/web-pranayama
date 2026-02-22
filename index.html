@@ -1924,7 +1924,7 @@
             }
         }
     });
-   // --- LÓGICA ROBUSTA PARA EL PAISAJE SONORO ---
+// --- LÓGICA ROBUSTA PARA EL PAISAJE SONORO ---
 
 function openSoundscapeSettings() {
     const overlay = document.getElementById('psOverlay');
@@ -1932,7 +1932,7 @@ function openSoundscapeSettings() {
         overlay.style.display = 'flex';
         const input = document.getElementById('psPatternInput');
         if(input) {
-            input.value = ''; // Limpia lo que hubieras escrito antes
+            input.value = ''; // Limpia textos anteriores
             input.focus();
         }
     }
@@ -1944,24 +1944,35 @@ function closeSoundscapeSettings() {
 }
 
 function startWinterMode() {
-    // 1. Recogemos el ritmo
+    // 1. Recogemos el ritmo de la ventana
     const inputCaja = document.getElementById('psPatternInput');
     let ritmo = inputCaja ? inputCaja.value.trim() : "";
     if (!ritmo || ritmo === "") ritmo = "4-4-4-4";
 
-    // 2. Inyectamos DIRECTAMENTE en la caja principal de tu app para que lo encuentre
-    const cajaPrincipal = document.getElementById('customInput');
+    // 2. Inyectamos en la caja REAL de tu app ('customPattern') para que lo encuentre
+    const cajaPrincipal = document.getElementById('customPattern');
     if (cajaPrincipal) cajaPrincipal.value = ritmo;
+    
+    if (typeof els !== 'undefined' && els.customInput) {
+        els.customInput.value = ritmo;
+    }
 
-    // 3. Cerramos el panel blanco
+    // 3. Cerramos el panel
     closeSoundscapeSettings();
 
-    // 4. Iniciar motor
+    // 4. Iniciar el motor
     if (typeof start === 'function') {
         start('custom');
     }
 
-    // 5. Encender entorno (vídeo y audio)
+    // 5. --- SEGURO DE VIDA ---
+    // Si el patrón es inválido, el motor no arranca (state.run = false). 
+    // Abortamos aquí para que NO suene el audio.
+    if (typeof state !== 'undefined' && state.run === false) {
+        return; 
+    }
+
+    // 6. Encender entorno (vídeo y audio)
     document.querySelector('.app-layout').classList.add('winter-mode');
     const vid = document.getElementById('bgVideo');
     const aud = document.getElementById('winterAudio');
@@ -1979,25 +1990,22 @@ function startWinterMode() {
         }
     }
 
-    // 6. Texto de fase visible
     setTimeout(() => {
         document.documentElement.style.setProperty('--c-phase', '#ffffff');
     }, 150);
 }
 
-// 7. CONTROLADOR DE EVENTOS (Evita que los botones hagan cosas raras)
+// 7. CONTROLADOR DE EVENTOS (Evita errores de botones y pone guiones solos)
 document.addEventListener('DOMContentLoaded', () => {
-    // Escucha del botón Cancelar
     const btnCancel = document.getElementById('btnPsCancel');
     if (btnCancel) {
         btnCancel.addEventListener('click', (e) => {
-            e.preventDefault(); // Evita recargas de pantalla
+            e.preventDefault(); // Evita recargas raras de la página
             e.stopPropagation();
             closeSoundscapeSettings();
         });
     }
 
-    // Escucha del botón Comenzar
     const btnStart = document.getElementById('btnPsStart');
     if (btnStart) {
         btnStart.addEventListener('click', (e) => {
@@ -2007,25 +2015,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Escucha para poner los guiones de forma automática y autónoma
+    // Poner guiones automáticos de forma aislada
     const psInp = document.getElementById('psPatternInput');
     if (psInp) {
         psInp.addEventListener('input', (e) => {
-            let val = e.target.value.replace(/[^0-9b]/g, ''); // Solo números y letra 'b'
+            let val = e.target.value.replace(/[^0-9b]/g, '');
             if (val.length > 0) {
                 let formatted = val[0];
                 for (let i = 1; i < val.length; i++) {
                     if (val[i] === 'b' || val[i-1] === 'b') {
-                        formatted += val[i]; // No pone guión antes o después de la 'b'
+                        formatted += val[i];
                     } else {
-                        formatted += '-' + val[i]; // Pone guiones entre números
+                        formatted += '-' + val[i];
                     }
                 }
                 e.target.value = formatted.substring(0, 10);
             }
         });
     }
-}); 
+});
 </script>
     
 </body>
