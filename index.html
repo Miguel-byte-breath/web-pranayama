@@ -1459,6 +1459,9 @@
         });
         return newPattern;
     }
+    // Exponer al scope global para que startWinterMode pueda usarla
+    window._parsePatternString = parsePatternString;
+    window._patterns = patterns;
 
     function startCustom() {
         const val = els.customInput.value.trim();
@@ -1954,21 +1957,23 @@ function formatPsPattern(inputCaja) {
 }
 
 function startWinterMode() {
-    // 1. Recoger el ritmo
+    // 1. Recoger el ritmo desde el overlay del Paisaje Sonoro
     const psInput = document.getElementById('psPatternInput');
     let ritmo = psInput ? psInput.value.trim() : "4-4-4-4";
     if (!ritmo) ritmo = "4-4-4-4";
 
-    // 2. LA CLAVE: Inyectarlo en el sistema original (cubrimos ambas opciones posibles de tu app)
-    const caja1 = document.getElementById('customInput');
-    if(caja1) caja1.value = ritmo;
-    
-    const caja2 = document.getElementById('customPattern');
-    if(caja2) caja2.value = ritmo;
-
-    if (typeof els !== 'undefined' && els.customInput) {
-        els.customInput.value = ritmo;
+    // 2. SOLUCIÓN DEFINITIVA: construir el array del patrón directamente
+    //    y asignarlo a patterns['custom'], sin pasar por el DOM.
+    if (typeof window._parsePatternString !== 'function' || typeof window._patterns === 'undefined') {
+        alert('Error interno: el motor aún no está listo. Inténtalo de nuevo.');
+        return;
     }
+    const newPattern = window._parsePatternString(ritmo);
+    if (newPattern.length < 2) {
+        alert('Introduce al menos 2 fases válidas, por ejemplo: 4-4-4-4');
+        return;
+    }
+    window._patterns['custom'] = newPattern;
 
     // 3. Cerrar la ventana blanca
     closeSoundscapeSettings();
