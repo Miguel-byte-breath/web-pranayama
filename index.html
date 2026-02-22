@@ -1292,11 +1292,11 @@
     <h2 style="font-family: 'Cinzel', serif; font-size: 2rem; color: #37474f; margin-bottom: 10px;">Diseña tu Paisaje</h2>
     <p style="font-family: 'Manrope', sans-serif; color: #78909c; margin-bottom: 30px;">Introduce 4 tiempos (ej: 4-2-6-2)<br>Añade "b" para boca (ej: "8b")</p>
     
-    <input type="text" id="psPatternInput" style="font-size: 2rem; text-align: center; padding: 10px; width: 80%; max-width: 300px; border: 2px solid #e0f7fa; border-radius: 10px; margin-bottom: 40px;" placeholder="4-4-4-4" maxlength="10">
+    <input type="text" id="psPatternInput" oninput="formatPsPattern(this)" style="font-size: 2rem; text-align: center; padding: 10px; width: 80%; max-width: 300px; border: 2px solid #e0f7fa; border-radius: 10px; margin-bottom: 40px;" placeholder="4-4-4-4" maxlength="10">
     
     <div style="display: flex; flex-direction: column; gap: 15px; width: 80%; max-width: 300px;">
-        <button type="button" id="btnPsStart" style="background-color: #4CAF50; color: white; padding: 15px; border: none; border-radius: 30px; font-size: 1.2rem; cursor: pointer;">Comenzar</button>
-        <button type="button" id="btnPsCancel" style="background: transparent; color: #78909c; padding: 15px; border: none; font-size: 1rem; cursor: pointer;">Cancelar</button>
+        <button type="button" onclick="startWinterMode()" style="background-color: #4CAF50; color: white; padding: 15px; border: none; border-radius: 30px; font-size: 1.2rem; cursor: pointer;">Comenzar</button>
+        <button type="button" onclick="closeSoundscapeSettings()" style="background: transparent; color: #78909c; padding: 15px; border: none; font-size: 1rem; cursor: pointer;">Cancelar</button>
     </div>
 </div>
 <script>
@@ -1924,58 +1924,79 @@
             }
         }
     });
+// --- LÓGICA DEFINITIVA PAISAJE SONORO ---
+
+function openSoundscapeSettings() {
+    const overlay = document.getElementById('psOverlay');
+    if(overlay) {
+        overlay.style.display = 'flex';
+        const input = document.getElementById('psPatternInput');
+        if(input) input.value = ''; // Limpia textos anteriores
+    }
+}
+
+function closeSoundscapeSettings() {
+    const overlay = document.getElementById('psOverlay');
+    if(overlay) overlay.style.display = 'none';
+}
+
+// Función exclusiva para los guiones de esta ventana
+function formatPsPattern(inputCaja) {
+    let val = inputCaja.value.replace(/[^0-9b]/g, '');
+    if (val.length > 0) {
+        let formatted = val[0];
+        for (let i = 1; i < val.length; i++) {
+            if (val[i] === 'b' || val[i-1] === 'b') formatted += val[i];
+            else formatted += '-' + val[i];
+        }
+        inputCaja.value = formatted.substring(0, 10);
+    }
+}
+
 function startWinterMode() {
-    // 1. Recogemos el ritmo de la ventana del Paisaje Sonoro
+    // 1. Recoger el ritmo
     const psInput = document.getElementById('psPatternInput');
     let ritmo = psInput ? psInput.value.trim() : "4-4-4-4";
-    if (ritmo === "") ritmo = "4-4-4-4";
+    if (!ritmo) ritmo = "4-4-4-4";
 
-    // 2. LA CLAVE: Inyectamos el ritmo en la caja original de "Crear personalizado"
-    const cajaOriginal = document.getElementById('customInput');
-    if (cajaOriginal) {
-        cajaOriginal.value = ritmo;
+    // 2. LA CLAVE: Inyectarlo en el sistema original (cubrimos ambas opciones posibles de tu app)
+    const caja1 = document.getElementById('customInput');
+    if(caja1) caja1.value = ritmo;
+    
+    const caja2 = document.getElementById('customPattern');
+    if(caja2) caja2.value = ritmo;
+
+    if (typeof els !== 'undefined' && els.customInput) {
+        els.customInput.value = ritmo;
     }
 
-    // 3. Cerramos el panel del Paisaje Sonoro
-    const psOverlay = document.getElementById('psOverlay');
-    if (psOverlay) psOverlay.style.display = 'none';
+    // 3. Cerrar la ventana blanca
+    closeSoundscapeSettings();
 
-    // 4. ARRANCAMOS IGUAL QUE EL BOTÓN NATIVO
-    // Llamamos directamente a la función original de la app
+    // 4. Iniciar el motor nativo
     try {
         start('custom');
     } catch (e) {
-        console.error("Error al iniciar el motor:", e);
+        console.error("Error al arrancar:", e);
     }
 
-    // 5. Aplicar los efectos del Paisaje Sonoro
-    // Le damos un pequeño margen (500ms) para que la app principal termine de arrancar
+    // 5. Aplicar vídeo y audio de fondo (con candado de seguridad)
     setTimeout(() => {
-        // Solo si la app ha arrancado con éxito (state.run = true), encendemos el audio y el vídeo
+        // Solo suena si tu aplicación principal ha arrancado con éxito
         if (typeof state !== 'undefined' && state.run === true) {
             document.querySelector('.app-layout').classList.add('winter-mode');
             
             const vid = document.getElementById('bgVideo');
+            if(vid) { vid.src = "cielo.mp4"; vid.play().catch(e=>console.log(e)); }
+            
             const aud = document.getElementById('winterAudio');
-            
-            if(vid) { 
-                vid.src = "cielo.mp4"; 
-                vid.play().catch(e => console.log(e)); 
-            }
-            
             if(aud) { 
                 aud.src = "clavier_1.mp3"; 
                 aud.volume = 0.5; 
-                // Respetamos si la música general está activada
-                if (state.music) {
-                    aud.play().catch(e => console.log(e));
-                }
+                if(state.music) aud.play().catch(e=>console.log(e)); 
             }
 
-            // Cambiar el color del texto a blanco para que contraste con el cielo
             document.documentElement.style.setProperty('--c-phase', '#ffffff');
-        } else {
-            console.log("El motor no arrancó. Cancelando efectos de Paisaje Sonoro.");
         }
     }, 500);
 }
