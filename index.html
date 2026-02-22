@@ -1785,10 +1785,10 @@
     }
 
     function stop() {
-        // --- LIMPIEZA MODO INVIERNO (NUEVO) ---
-        // Quitamos la clase para que vuelvan los colores
+        // --- LIMPIEZA MODO INVIERNO ---
+        const wasWinterMode = document.querySelector('.app-layout').classList.contains('winter-mode');
         document.querySelector('.app-layout').classList.remove('winter-mode');
-        
+
         // Apagamos vídeo y audio de invierno
         const vid = document.getElementById('bgVideo');
         const aud = document.getElementById('winterAudio');
@@ -1805,10 +1805,16 @@
         els.cnt.textContent = '';
         els.cyc.textContent = '0';
         els.sph.style.setProperty('--c-phase', '#4CAF50');
-        els.menu.style.display = 'flex';
-        setTimeout(() => els.menu.style.opacity = '1', 10);
         els.pat.innerHTML = '';
         els.ctx.clearRect(0, 0, els.cvs.width, els.cvs.height);
+
+        // Si veníamos del Paisaje Sonoro, volvemos a su pantalla intermedia
+        if (wasWinterMode) {
+            openSoundscapeSettings();
+        } else {
+            els.menu.style.display = 'flex';
+            setTimeout(() => els.menu.style.opacity = '1', 10);
+        }
     }
 
     function toggleTempo() {
