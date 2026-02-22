@@ -1765,6 +1765,7 @@
         setTimeout(() => els.menu.style.display='none', 400);
 
         // V1.3.0 Reset states: Queremos que empiece ENCENDIDO por defecto
+        state.winterMode = false; // reset al arrancar modo normal
         state.quotesEnabled = true;
         const btn = document.getElementById('quoteToggleBtn');
         btn.classList.add('active'); // Botón iluminado
@@ -1808,6 +1809,8 @@
         els.pat.innerHTML = '';
         els.ctx.clearRect(0, 0, els.cvs.width, els.cvs.height);
 
+        state.winterMode = false;
+
         // Si veníamos del Paisaje Sonoro, volvemos a su pantalla intermedia
         if (wasWinterMode) {
             openSoundscapeSettings();
@@ -1840,11 +1843,10 @@
     function toggleMusic() {
     state.music = !state.music;
     const audPaisaje = document.getElementById('winterAudio');
-    const enPaisaje = document.querySelector('.app-layout').classList.contains('winter-mode');
 
     if (state.music) {
         els.musicIcon.textContent = 'volume_up';
-        if (enPaisaje) {
+        if (state.winterMode) {
             // En Paisaje Sonoro: solo el piano
             if (audPaisaje) audPaisaje.play().catch(e => console.log(e));
         } else {
@@ -1853,7 +1855,7 @@
         }
     } else {
         els.musicIcon.textContent = 'volume_off';
-        if (enPaisaje) {
+        if (state.winterMode) {
             if (audPaisaje) audPaisaje.pause();
         } else {
             if (typeof ambientAudio !== 'undefined' && ambientAudio) ambientAudio.pause();
@@ -1950,6 +1952,11 @@ function openSoundscapeSettings() {
 function closeSoundscapeSettings() {
     const overlay = document.getElementById('psOverlay');
     if(overlay) overlay.style.display = 'none';
+    // Si no hay sesión activa, aseguramos que el menú sea visible
+    if (typeof state !== 'undefined' && !state.run) {
+        const menu = document.getElementById('selectionMenu');
+        if(menu) { menu.style.display = 'flex'; menu.style.opacity = '1'; }
+    }
 }
 
 // Función exclusiva para los guiones de esta ventana
@@ -1999,25 +2006,27 @@ function startWinterMode() {
         ambientAudio.currentTime = 0;
     }
 
-    // 5. Aplicar vídeo y audio de fondo (con candado de seguridad)
+    // 5. Activar modo paisaje y audio
+    // Lo hacemos con un pequeño delay para que el motor esté estable
     setTimeout(() => {
-        // Solo suena si tu aplicación principal ha arrancado con éxito
         if (typeof state !== 'undefined' && state.run === true) {
+            state.winterMode = true;
             document.querySelector('.app-layout').classList.add('winter-mode');
             
             const vid = document.getElementById('bgVideo');
-            if(vid) { vid.src = "cielo.mp4"; vid.play().catch(e=>console.log(e)); }
+            if(vid) { vid.currentTime = 0; vid.play().catch(e=>console.log(e)); }
             
+            // El <audio id="winterAudio"> ya tiene el src fijo en el HTML, no lo reasignamos
             const aud = document.getElementById('winterAudio');
-            if(aud) { 
-                aud.src = "clavier_1.mp3"; 
-                aud.volume = 0.5; 
-                if(state.music) aud.play().catch(e=>console.log(e)); 
+            if(aud) {
+                aud.currentTime = 0;
+                aud.volume = 0.5;
+                if(state.music) aud.play().catch(e=>console.log(e));
             }
 
             document.documentElement.style.setProperty('--c-phase', '#ffffff');
         }
-    }, 500);
+    }, 200);
 }
 </script>
     
