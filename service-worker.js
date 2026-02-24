@@ -1,4 +1,4 @@
-const CACHE_NAME = 'respira-v1.3.0-winter-3'; // ← Nueva versión
+const CACHE_NAME = 'respira-v1.3.0-winter-32'; // ← Nueva versión
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -40,34 +40,31 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// 3. INTERCEPTOR: ¿Tienes internet? Pide fuera. ¿No? Sirve de la caché.
+// 3. INTERCEPTOR: Estrategia mixta
+//    - index.html → red primero (siempre la versión más nueva si hay conexión)
+//    - resto de assets → caché primero (más rápido, cambian menos)
 self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((response) => {
-      return response || fetch(e.request);
-    })
-  );
+  const url = new URL(e.request.url);
+  const isHTML = url.pathname.endsWith('/') || url.pathname.endsWith('.html');
 
+  if (isHTML) {
+    // Red primero: si falla (offline), usamos la caché como respaldo
+    e.respondWith(
+      fetch(e.request)
+        .then((networkResponse) => {
+          // Aprovechamos para actualizar la caché con la versión más reciente
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+          return networkResponse;
+        })
+        .catch(() => caches.match(e.request))
+    );
+  } else {
+    // Caché primero para assets (imágenes, audio, iconos...)
+    e.respondWith(
+      caches.match(e.request).then((response) => {
+        return response || fetch(e.request);
+      })
+    );
+  }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
