@@ -1843,22 +1843,22 @@
     function toggleMusic() {
     state.music = !state.music;
     const audPaisaje = document.getElementById('winterAudio');
+    const musicBtn = document.getElementById('musicBtn');
+
+    // Feedback visual en el botón
+    if (musicBtn) musicBtn.style.opacity = state.music ? '1' : '0.35';
 
     if (state.music) {
-        els.musicIcon.textContent = 'volume_up';
         if (state.winterMode) {
-            // En Paisaje Sonoro: solo el piano
             if (audPaisaje) audPaisaje.play().catch(e => console.log(e));
         } else {
-            // Modo normal: solo el ambient
-            if (typeof ambientAudio !== 'undefined' && ambientAudio) ambientAudio.play();
+            if (typeof ambientAudio !== 'undefined') ambientAudio.play().catch(e => console.log(e));
         }
     } else {
-        els.musicIcon.textContent = 'volume_off';
         if (state.winterMode) {
             if (audPaisaje) audPaisaje.pause();
         } else {
-            if (typeof ambientAudio !== 'undefined' && ambientAudio) ambientAudio.pause();
+            if (typeof ambientAudio !== 'undefined') ambientAudio.pause();
         }
     }
 }
