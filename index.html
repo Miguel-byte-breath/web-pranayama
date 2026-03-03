@@ -340,54 +340,73 @@
             transition: opacity 0.4s ease;
         }
 
-        /* --- LUCES Estacional --- */
-        .navidad-lights {
+        /* --- HOJAS AL VIENTO --- */
+        .leaves-container {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             pointer-events: none;
-            z-index: 120;
+            overflow: hidden;
+            z-index: 1;
         }
 
-        .light {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            animation: breath-light 4s infinite ease-in-out;
+        .leaf {
+            position: absolute;
+            top: -40px;
+            opacity: 0;
+            will-change: transform, opacity;
         }
 
-        .light.red {
-            background: #ff4d4d;
-            box-shadow: 0 0 12px #ff4d4d;
-            animation-delay: 0s;
-        }
+        /* Posiciones horizontales de entrada */
+        .lf1 { left: 8%;   animation: fall1 9s  ease-in-out infinite; animation-delay: 0s;   }
+        .lf2 { left: 22%;  animation: fall2 12s ease-in-out infinite; animation-delay: 2.5s; }
+        .lf3 { left: 41%;  animation: fall3 8s  ease-in-out infinite; animation-delay: 5s;   }
+        .lf4 { left: 60%;  animation: fall4 11s ease-in-out infinite; animation-delay: 1.5s; }
+        .lf5 { left: 75%;  animation: fall5 10s ease-in-out infinite; animation-delay: 3.5s; }
+        .lf6 { left: 88%;  animation: fall6 13s ease-in-out infinite; animation-delay: 7s;   }
 
-        .light.green {
-            background: #2ecc71;
-            box-shadow: 0 0 12px #2ecc71;
-            animation-delay: 1.3s;
+        /* Caída: desde top:-40px hasta ~33vh, con vaivén lateral y giro */
+        @keyframes fall1 {
+            0%   { transform: translate(0px, 0)      rotate(0deg)   scale(1);   opacity: 0;    }
+            8%   { opacity: 0.7; }
+            50%  { transform: translate(28px, 16vh)  rotate(120deg) scale(0.95); opacity: 0.6; }
+            85%  { transform: translate(-10px, 30vh) rotate(210deg) scale(0.9);  opacity: 0.2; }
+            100% { transform: translate(15px, 34vh)  rotate(260deg) scale(0.85); opacity: 0;   }
         }
-
-        .light.blue {
-            background: #4facfe;
-            box-shadow: 0 0 12px #4facfe;
-            animation-delay: 2.6s;
+        @keyframes fall2 {
+            0%   { transform: translate(0px, 0)      rotate(30deg)  scale(1);    opacity: 0;   }
+            8%   { opacity: 0.65; }
+            45%  { transform: translate(-22px, 14vh) rotate(150deg) scale(0.95); opacity: 0.55;}
+            80%  { transform: translate(18px, 28vh)  rotate(230deg) scale(0.9);  opacity: 0.2; }
+            100% { transform: translate(-5px, 34vh)  rotate(280deg) scale(0.85); opacity: 0;   }
         }
-
-        @keyframes breath-light {
-            0%, 100% {
-                opacity: 0.2;
-                transform: scale(0.8);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.15);
-                box-shadow: 0 0 20px currentColor;
-            }
+        @keyframes fall3 {
+            0%   { transform: translate(0px, 0)      rotate(15deg)  scale(1);    opacity: 0;   }
+            10%  { opacity: 0.7; }
+            40%  { transform: translate(35px, 13vh)  rotate(100deg) scale(0.95); opacity: 0.6; }
+            75%  { transform: translate(10px, 27vh)  rotate(190deg) scale(0.9);  opacity: 0.25;}
+            100% { transform: translate(25px, 34vh)  rotate(240deg) scale(0.85); opacity: 0;   }
+        }
+        @keyframes fall4 {
+            0%   { transform: translate(0px, 0)       rotate(-20deg) scale(1);    opacity: 0;   }
+            9%   { opacity: 0.6; }
+            50%  { transform: translate(-30px, 15vh)  rotate(110deg) scale(0.95); opacity: 0.5; }
+            82%  { transform: translate(-8px, 29vh)   rotate(200deg) scale(0.9);  opacity: 0.2; }
+            100% { transform: translate(-20px, 34vh)  rotate(250deg) scale(0.85); opacity: 0;   }
+        }
+        @keyframes fall5 {
+            0%   { transform: translate(0px, 0)      rotate(10deg)  scale(1);    opacity: 0;   }
+            8%   { opacity: 0.65; }
+            45%  { transform: translate(25px, 14vh)  rotate(130deg) scale(0.95); opacity: 0.55;}
+            78%  { transform: translate(-15px, 28vh) rotate(220deg) scale(0.9);  opacity: 0.2; }
+            100% { transform: translate(10px, 34vh)  rotate(270deg) scale(0.85); opacity: 0;   }
+        }
+        @keyframes fall6 {
+            0%   { transform: translate(0px, 0)       rotate(-10deg) scale(1);    opacity: 0;   }
+            10%  { opacity: 0.6; }
+            48%  { transform: translate(-28px, 15vh)  rotate(140deg) scale(0.95); opacity: 0.5; }
+            80%  { transform: translate(12px, 29vh)   rotate(215deg) scale(0.9);  opacity: 0.2; }
+            100% { transform: translate(-5px, 34vh)   rotate(260deg) scale(0.85); opacity: 0;   }
         }
 
         /* --- BOTONES Y TEXTOS --- */
@@ -1197,16 +1216,25 @@
 
 <!-- MENU SELECCION -->
 <div id="selectionMenu">
-    <div class="navidad-lights">
-        <div class="light red"></div>
-        <div class="light green"></div>
-        <div class="light blue"></div>
-        <div class="light red"></div>
-        <div class="light green"></div>
-        <div class="light blue"></div>
-        <div class="light red"></div>
-        <div class="light green"></div>
-        <div class="light blue"></div>
+    <div class="leaves-container">
+        <svg class="leaf lf1" width="14" height="22" viewBox="0 0 14 22">
+            <ellipse cx="7" cy="11" rx="5" ry="10" fill="#5a9e6f" opacity="0.75" transform="rotate(-20 7 11)"/>
+        </svg>
+        <svg class="leaf lf2" width="12" height="20" viewBox="0 0 12 20">
+            <ellipse cx="6" cy="10" rx="4" ry="9" fill="#b5651d" opacity="0.7" transform="rotate(15 6 10)"/>
+        </svg>
+        <svg class="leaf lf3" width="16" height="24" viewBox="0 0 16 24">
+            <ellipse cx="8" cy="12" rx="6" ry="11" fill="#4a7fa5" opacity="0.65" transform="rotate(-10 8 12)"/>
+        </svg>
+        <svg class="leaf lf4" width="12" height="19" viewBox="0 0 12 19">
+            <ellipse cx="6" cy="9" rx="4" ry="8.5" fill="#8b3a62" opacity="0.7" transform="rotate(25 6 9)"/>
+        </svg>
+        <svg class="leaf lf5" width="15" height="22" viewBox="0 0 15 22">
+            <ellipse cx="7.5" cy="11" rx="5" ry="10" fill="#7c6fa0" opacity="0.65" transform="rotate(-15 7.5 11)"/>
+        </svg>
+        <svg class="leaf lf6" width="13" height="21" viewBox="0 0 13 21">
+            <ellipse cx="6.5" cy="10.5" rx="4.5" ry="9.5" fill="#2a9d8f" opacity="0.7" transform="rotate(10 6.5 10.5)"/>
+        </svg>
     </div>
     <button class="global-info-btn" onclick="document.getElementById('guideOverlay').style.display='flex'">i</button>
     <div class="menu-title">ELIGE TU RITMO</div>
