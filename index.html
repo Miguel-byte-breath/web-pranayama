@@ -340,54 +340,51 @@
             transition: opacity 0.4s ease;
         }
 
-        /* --- LUCES Estacional --- */
-        .navidad-lights {
-            position: absolute;
+        /* --- AURORA — banda de luz orgánica superior --- */
+        .aurora-bar {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
+            height: 5px;
+            background: linear-gradient(
+                90deg,
+                #a8edea,
+                #4CAF50,
+                #80deea,
+                #00838f,
+                #b2dfdb,
+                #4CAF50,
+                #a8edea
+            );
+            background-size: 300% 100%;
+            animation: aurora-flow 8s ease-in-out infinite;
             pointer-events: none;
-            z-index: 120;
+            z-index: 9999;
+            opacity: 0.85;
         }
 
-        .light {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            animation: breath-light 4s infinite ease-in-out;
+        /* Difuminado suave hacia abajo */
+        .aurora-bar::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(
+                to bottom,
+                rgba(168, 237, 234, 0.3),
+                transparent
+            );
         }
 
-        .light.red {
-            background: #ff4d4d;
-            box-shadow: 0 0 12px #ff4d4d;
-            animation-delay: 0s;
-        }
-
-        .light.green {
-            background: #2ecc71;
-            box-shadow: 0 0 12px #2ecc71;
-            animation-delay: 1.3s;
-        }
-
-        .light.blue {
-            background: #4facfe;
-            box-shadow: 0 0 12px #4facfe;
-            animation-delay: 2.6s;
-        }
-
-        @keyframes breath-light {
-            0%, 100% {
-                opacity: 0.2;
-                transform: scale(0.8);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.15);
-                box-shadow: 0 0 20px currentColor;
-            }
+        @keyframes aurora-flow {
+            0%   { background-position: 0% 50%;   opacity: 0.7; }
+            25%  { background-position: 50% 50%;  opacity: 0.95; }
+            50%  { background-position: 100% 50%; opacity: 0.75; }
+            75%  { background-position: 50% 50%;  opacity: 1; }
+            100% { background-position: 0% 50%;   opacity: 0.7; }
         }
 
         /* --- BOTONES Y TEXTOS --- */
@@ -1103,8 +1100,7 @@
         <div class="guide-row"><span class="guide-icon" style="color:var(--c-exhale);">●</span><span><strong>Exhala</strong> — Azul</span></div>
         <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
         <div style="font-size:0.9rem; color:#78909c; margin-bottom:10px;">TIP AVANZADO</div>
-        <div class="guide-row"><span class="guide-icon">👃</span><span><strong>Nariz</strong> — Si ves este icono, inhala o exhala por la nariz.</span></div>
-        <div class="guide-row"><span class="guide-icon">💨</span><span><strong>Boca</strong> — Si ves este icono o añades "b", exhala soplando por la boca.</span></div>
+        <div class="guide-row"><span class="guide-icon">💨</span><span><strong>Boca</strong> — Si ves este icono o añades "b", exhala soplando.</span></div>
     </div>
     <div style="margin-top:40px;">
         <button class="btn-text" style="background:transparent; color:var(--accent); border:1px solid var(--accent);" onclick="document.getElementById('guideOverlay').style.display='none'">Entendido</button>
@@ -1197,17 +1193,7 @@
 
 <!-- MENU SELECCION -->
 <div id="selectionMenu">
-    <div class="navidad-lights">
-        <div class="light red"></div>
-        <div class="light green"></div>
-        <div class="light blue"></div>
-        <div class="light red"></div>
-        <div class="light green"></div>
-        <div class="light blue"></div>
-        <div class="light red"></div>
-        <div class="light green"></div>
-        <div class="light blue"></div>
-    </div>
+    <div class="aurora-bar"></div>
     <button class="global-info-btn" onclick="document.getElementById('guideOverlay').style.display='flex'">i</button>
     <div class="menu-title">ELIGE TU RITMO</div>
     <div class="menu-actions">
