@@ -340,51 +340,84 @@
             transition: opacity 0.4s ease;
         }
 
-        /* --- AURORA — banda de luz orgánica superior --- */
-        .aurora-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(
-                90deg,
-                #a8edea,
-                #4CAF50,
-                #80deea,
-                #00838f,
-                #b2dfdb,
-                #4CAF50,
-                #a8edea
-            );
-            background-size: 300% 100%;
-            animation: aurora-flow 8s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.85;
-        }
-
-        /* Difuminado suave hacia abajo */
-        .aurora-bar::after {
-            content: '';
+        /* --- PARTÍCULAS — semillas al viento --- */
+        .particle {
             position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 100%;
-            height: 8px;
-            background: linear-gradient(
-                to bottom,
-                rgba(168, 237, 234, 0.3),
-                transparent
-            );
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
         }
 
-        @keyframes aurora-flow {
-            0%   { background-position: 0% 50%;   opacity: 0.7; }
-            25%  { background-position: 50% 50%;  opacity: 0.95; }
-            50%  { background-position: 100% 50%; opacity: 0.75; }
-            75%  { background-position: 50% 50%;  opacity: 1; }
-            100% { background-position: 0% 50%;   opacity: 0.7; }
+        .p1 {
+            width: 7px; height: 7px;
+            background: radial-gradient(circle, #4CAF50, transparent);
+            top: 15%; left: 10%;
+            animation: drift1 18s ease-in-out infinite;
+        }
+        .p2 {
+            width: 5px; height: 5px;
+            background: radial-gradient(circle, #4facfe, transparent);
+            top: 60%; left: 80%;
+            animation: drift2 22s ease-in-out infinite;
+        }
+        .p3 {
+            width: 9px; height: 9px;
+            background: radial-gradient(circle, #80deea, transparent);
+            top: 40%; left: 50%;
+            animation: drift3 16s ease-in-out infinite;
+        }
+        .p4 {
+            width: 5px; height: 5px;
+            background: radial-gradient(circle, #FF9800, transparent);
+            top: 75%; left: 25%;
+            animation: drift4 20s ease-in-out infinite;
+        }
+        .p5 {
+            width: 6px; height: 6px;
+            background: radial-gradient(circle, #f0f9ff, transparent);
+            top: 20%; left: 70%;
+            animation: drift5 14s ease-in-out infinite;
+        }
+
+        @keyframes drift1 {
+            0%   { transform: translate(0, 0);         opacity: 0; }
+            10%  { opacity: 0.55; }
+            40%  { transform: translate(60px, -80px);  opacity: 0.45; }
+            70%  { transform: translate(30px, -150px); opacity: 0.5; }
+            90%  { opacity: 0.1; }
+            100% { transform: translate(80px, -200px); opacity: 0; }
+        }
+        @keyframes drift2 {
+            0%   { transform: translate(0, 0);          opacity: 0; }
+            10%  { opacity: 0.5; }
+            35%  { transform: translate(-70px, -60px);  opacity: 0.6; }
+            65%  { transform: translate(-40px, -130px); opacity: 0.4; }
+            90%  { opacity: 0.1; }
+            100% { transform: translate(-90px, -190px); opacity: 0; }
+        }
+        @keyframes drift3 {
+            0%   { transform: translate(0, 0);         opacity: 0; }
+            15%  { opacity: 0.4; }
+            45%  { transform: translate(50px, -90px);  opacity: 0.5; }
+            75%  { transform: translate(20px, -160px); opacity: 0.35; }
+            90%  { opacity: 0.1; }
+            100% { transform: translate(60px, -210px); opacity: 0; }
+        }
+        @keyframes drift4 {
+            0%   { transform: translate(0, 0);          opacity: 0; }
+            12%  { opacity: 0.45; }
+            40%  { transform: translate(-50px, -70px);  opacity: 0.55; }
+            70%  { transform: translate(-80px, -140px); opacity: 0.4; }
+            90%  { opacity: 0.1; }
+            100% { transform: translate(-60px, -200px); opacity: 0; }
+        }
+        @keyframes drift5 {
+            0%   { transform: translate(0, 0);         opacity: 0; }
+            10%  { opacity: 0.5; }
+            50%  { transform: translate(40px, -100px); opacity: 0.45; }
+            80%  { transform: translate(70px, -170px); opacity: 0.3; }
+            90%  { opacity: 0.1; }
+            100% { transform: translate(50px, -220px); opacity: 0; }
         }
 
         /* --- BOTONES Y TEXTOS --- */
@@ -1194,7 +1227,11 @@
 
 <!-- MENU SELECCION -->
 <div id="selectionMenu">
-    <div class="aurora-bar"></div>
+    <div class="particle p1"></div>
+    <div class="particle p2"></div>
+    <div class="particle p3"></div>
+    <div class="particle p4"></div>
+    <div class="particle p5"></div>
     <button class="global-info-btn" onclick="document.getElementById('guideOverlay').style.display='flex'">i</button>
     <div class="menu-title">ELIGE TU RITMO</div>
     <div class="menu-actions">
