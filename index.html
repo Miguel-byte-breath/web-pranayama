@@ -627,7 +627,7 @@
         }
 
         /* --- OVERLAYS --- */
-        #customOverlay, #shareConfigOverlay, #guideOverlay, #psOverlay {
+        #customOverlay, #shareConfigOverlay, #guideOverlay, #psOverlay, #reframeOverlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -643,6 +643,112 @@
             overflow-y: auto;
             backdrop-filter: blur(15px);
             text-align: center;
+        }
+
+        /* --- REFRAME OVERLAY --- */
+        .reframe-textarea {
+            width: 100%;
+            max-width: 480px;
+            min-height: 120px;
+            padding: 18px 20px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-main);
+            background: rgba(255,255,255,0.8);
+            border: 1.5px solid rgba(0,131,143,0.25);
+            border-radius: 16px;
+            resize: none;
+            outline: none;
+            line-height: 1.6;
+            transition: border-color 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .reframe-textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .reframe-textarea::placeholder {
+            color: #b0bec5;
+        }
+
+        .reframe-result {
+            width: 100%;
+            max-width: 480px;
+            background: linear-gradient(135deg, rgba(232,245,233,0.9), rgba(224,247,250,0.9));
+            border: 1px solid rgba(0,131,143,0.15);
+            border-radius: 16px;
+            padding: 22px 24px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.05rem;
+            color: var(--text-main);
+            line-height: 1.7;
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .reframe-result.visible {
+            display: block;
+        }
+
+        .reframe-spinner {
+            display: none;
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(0,131,143,0.15);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 10px auto;
+        }
+
+        .reframe-spinner.visible {
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .reframe-label {
+            font-size: 0.75rem;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .reframe-new-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 8px 0;
+            font-family: 'Manrope', sans-serif;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .reframe-new-btn:hover {
+            color: var(--accent);
+        }
+
+        .reframe-error {
+            color: #e57373;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .reframe-error.visible {
+            display: block;
         }
 
         .overlay-title {
@@ -1256,12 +1362,16 @@
             <div class="substack-content">
                 <div class="substack-label">Rincón de Lectura</div>
                 <div class="substack-title">Regla de los 10000 Pies ...</div>
-                <div class="substack-author">by Álvaro Garcíat</div>
+                <div class="substack-author">by Álvaro García</div>
             </div>
         </div>
         <div class="menu-card custom-card" onclick="openCustomModal()">
             <h3>🎨 Crear Personalizado</h3>
             <p>Define tus tiempos (ej: 4-7-8b)</p>
+        </div>
+        <div class="menu-card" onclick="openReframeOverlay()" style="border: 1.5px solid rgba(0,131,143,0.2); background: linear-gradient(135deg, rgba(232,245,233,0.6), rgba(224,247,250,0.6));">
+            <h3 style="color: var(--accent);">✨ Transforma tus Pensamientos</h3>
+            <p>Reencuadra lo que te pesa · IA</p>
         </div>
         <div class="menu-card" onclick="openSoundscapeSettings()">
           <h3>❄️ Paisaje sonoro</h3>
@@ -1339,7 +1449,48 @@
         <canvas id="breathGraph"></canvas>
     </div>
 </div>
-<div id="psOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: white; z-index: 999999; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+<!-- REFRAME OVERLAY -->
+<div id="reframeOverlay">
+    <button onclick="closeReframeOverlay()" style="position:absolute; top:25px; right:25px; background:none; border:none; font-size:2rem; color:#78909c; cursor:pointer; padding:10px; line-height:1; z-index:10;">&times;</button>
+    <h2 class="overlay-title">Transforma tus Pensamientos</h2>
+    <p class="overlay-subtitle">Escribe lo que te pesa — la IA te ofrece una nueva perspectiva</p>
+
+    <div style="width:100%; max-width:480px; display:flex; flex-direction:column; gap:16px; align-items:center;">
+        <textarea
+            id="reframeInput"
+            class="reframe-textarea"
+            placeholder="Escribe aquí tu pensamiento… (ej: «Siento que no soy suficiente»)"
+            maxlength="500"
+        ></textarea>
+
+        <button
+            id="reframeBtn"
+            class="btn-text"
+            onclick="reframeThought()"
+            style="background: var(--accent); color: white; padding: 14px 40px; font-size: 1rem; border: none; width: 100%; max-width: 480px;"
+        >
+            Transformar
+        </button>
+
+        <div class="reframe-spinner" id="reframeSpinner"></div>
+        <div class="reframe-error" id="reframeError">Algo ha ido mal. Comprueba tu conexión e inténtalo de nuevo.</div>
+
+        <div class="reframe-result" id="reframeResult">
+            <div class="reframe-label">✦ Nueva perspectiva</div>
+            <div id="reframeText"></div>
+        </div>
+
+        <button class="reframe-new-btn" id="reframeNewBtn" style="display:none;" onclick="resetReframe()">
+            → Transformar otro pensamiento
+        </button>
+    </div>
+
+    <div style="margin-top:40px;">
+        <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="closeReframeOverlay()">Cerrar</button>
+    </div>
+</div>
+
+<div id="psOverlay"  style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: white; z-index: 999999; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
     <h2 style="font-family: 'Cinzel', serif; font-size: 2rem; color: #37474f; margin-bottom: 10px;">Diseña tu Paisaje</h2>
     <p style="font-family: 'Manrope', sans-serif; color: #78909c; margin-bottom: 30px;">Introduce 4 tiempos (ej: 4-2-6-2)<br>Añade "b" para boca (ej: "8b")</p>
     
@@ -1989,6 +2140,86 @@
             }
         }
     });
+// --- LÓGICA TRANSFORMA TUS PENSAMIENTOS ---
+
+function openReframeOverlay() {
+    const overlay = document.getElementById('reframeOverlay');
+    if (overlay) {
+        overlay.style.display = 'flex';
+        resetReframe();
+        setTimeout(() => document.getElementById('reframeInput').focus(), 100);
+    }
+}
+
+function closeReframeOverlay() {
+    const overlay = document.getElementById('reframeOverlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+function resetReframe() {
+    document.getElementById('reframeInput').value = '';
+    document.getElementById('reframeInput').style.display = 'block';
+    document.getElementById('reframeBtn').style.display = 'block';
+    document.getElementById('reframeBtn').disabled = false;
+    document.getElementById('reframeBtn').textContent = 'Transformar';
+    document.getElementById('reframeSpinner').classList.remove('visible');
+    document.getElementById('reframeResult').classList.remove('visible');
+    document.getElementById('reframeError').classList.remove('visible');
+    document.getElementById('reframeNewBtn').style.display = 'none';
+    document.getElementById('reframeInput').focus();
+}
+
+async function reframeThought() {
+    const input = document.getElementById('reframeInput');
+    const thought = input.value.trim();
+
+    if (!thought) {
+        input.focus();
+        return;
+    }
+
+    const btn      = document.getElementById('reframeBtn');
+    const spinner  = document.getElementById('reframeSpinner');
+    const result   = document.getElementById('reframeResult');
+    const errorEl  = document.getElementById('reframeError');
+    const newBtn   = document.getElementById('reframeNewBtn');
+    const textEl   = document.getElementById('reframeText');
+
+    // Estado: cargando
+    btn.disabled = true;
+    btn.textContent = 'Transformando…';
+    spinner.classList.add('visible');
+    result.classList.remove('visible');
+    errorEl.classList.remove('visible');
+
+    try {
+        const response = await fetch('/api/reframe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ thought })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.error || 'Error desconocido');
+
+        // Mostrar resultado
+        textEl.textContent = data.reframed;
+        result.classList.add('visible');
+        input.style.display = 'none';
+        btn.style.display = 'none';
+        newBtn.style.display = 'block';
+
+    } catch (err) {
+        console.error('Reframe error:', err);
+        errorEl.classList.add('visible');
+        btn.disabled = false;
+        btn.textContent = 'Transformar';
+    } finally {
+        spinner.classList.remove('visible');
+    }
+}
+
 // --- LÓGICA DEFINITIVA PAISAJE SONORO ---
 
 function openSoundscapeSettings() {
