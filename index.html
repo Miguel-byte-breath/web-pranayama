@@ -1646,10 +1646,9 @@
 
 <!-- HAZ FOCO — SELECCIÓN -->
 <div id="focusSelectOverlay">
-    <button onclick="closeFocusSelect()" style="position:absolute;top:25px;right:25px;background:none;border:none;font-size:2rem;color:#78909c;cursor:pointer;padding:10px;line-height:1;z-index:10;">&times;</button>
+    <button onclick="document.getElementById('focusInfoPanel').style.display='flex'" style="position:absolute;top:25px;right:25px;width:34px;height:34px;border-radius:50%;background:rgba(0,131,143,0.1);border:1.5px solid rgba(0,131,143,0.25);color:var(--accent);font-family:'Manrope',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s ease;">i</button>
     <h2 class="overlay-title">Haz Foco 👩‍🚀🍃</h2>
     <p class="overlay-subtitle">Elige tu entorno sonoro — ruido + frecuencia</p>
-    <button onclick="document.getElementById('focusInfoPanel').style.display='flex'" style="position:absolute;top:25px;left:25px;width:34px;height:34px;border-radius:50%;background:rgba(0,131,143,0.1);border:1.5px solid rgba(0,131,143,0.25);color:var(--accent);font-family:'Manrope',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s ease;">i</button>
 
     <!-- Panel informativo Solfeggio -->
     <div id="focusInfoPanel" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.98);backdrop-filter:blur(15px);z-index:300;flex-direction:column;align-items:center;justify-content:flex-start;padding:10vh 24px 40px;overflow-y:auto;text-align:left;">
@@ -1723,7 +1722,7 @@
     </div>
 
     <div style="margin-top:36px;">
-        <button class="btn-text" style="background:transparent;color:#78909c;border:none;" onclick="closeFocusSelect()">Cancelar</button>
+        <button class="btn-text" style="background:transparent;color:var(--accent);border:none;" onclick="closeFocusSelect()">← Menú</button>
     </div>
 </div>
 
