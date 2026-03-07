@@ -2838,10 +2838,16 @@ function setFocusMode(mode) {
     // Aplicar volumen inmediatamente si hay audio activo
     if (focusAudioCtx && focusRunning) {
         const v = document.getElementById('focusVolume').value / 100;
-        if (focusNoiseGain) focusNoiseGain.gain.setTargetAtTime(
-            (mode === 'tone')  ? 0 : v * 0.42, focusAudioCtx.currentTime, 0.3);
-        if (focusToneGain) focusToneGain.gain.setTargetAtTime(
-            (mode === 'noise') ? 0 : v * 0.18, focusAudioCtx.currentTime, 0.3);
+        const now = focusAudioCtx.currentTime;
+        // Cancelar cualquier ramp pendiente antes de cambiar — esto es clave
+        if (focusNoiseGain) {
+            focusNoiseGain.gain.cancelScheduledValues(now);
+            focusNoiseGain.gain.setTargetAtTime((mode === 'tone')  ? 0 : v * 0.42, now, 0.3);
+        }
+        if (focusToneGain) {
+            focusToneGain.gain.cancelScheduledValues(now);
+            focusToneGain.gain.setTargetAtTime((mode === 'noise') ? 0 : v * 0.18, now, 0.3);
+        }
     }
 }
 
