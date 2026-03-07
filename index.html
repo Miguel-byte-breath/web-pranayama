@@ -1205,6 +1205,249 @@
         color: white;
         text-shadow: 0 1px 5px rgba(0,0,0,0.5);
     }
+
+        /* ── HAZ FOCO — OVERLAY SELECCIÓN ── */
+        #focusSelectOverlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(15px);
+            z-index: 150;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 12vh;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .focus-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+            max-width: 460px;
+            margin-top: 30px;
+            padding: 0 5px;
+        }
+
+        .focus-card {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(0,131,143,0.15);
+            border-radius: 18px;
+            padding: 22px 24px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.35s cubic-bezier(0.25,0.8,0.25,1);
+            box-shadow: 0 4px 14px rgba(0,131,143,0.07);
+        }
+
+        .focus-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 10px 28px rgba(0,131,143,0.15);
+        }
+
+        .focus-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .focus-card-dot {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .focus-card h3 {
+            font-family: 'Manrope', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #37474f;
+            margin: 0;
+        }
+
+        .focus-card p {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.88rem;
+            color: #78909c;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .focus-card .focus-freq {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--accent);
+            background: rgba(0,131,143,0.08);
+            border-radius: 20px;
+            padding: 3px 10px;
+            letter-spacing: 0.5px;
+        }
+
+        /* colores por tipo */
+        .focus-card.brown .focus-card-dot { background: #8d6e63; }
+        .focus-card.brown { border-left: 4px solid #8d6e63; }
+        .focus-card.pink  .focus-card-dot { background: #e91e8c; }
+        .focus-card.pink  { border-left: 4px solid #f06292; }
+        .focus-card.green .focus-card-dot { background: #43a047; }
+        .focus-card.green { border-left: 4px solid #66bb6a; }
+
+        /* ── HAZ FOCO — PANTALLA SESIÓN ── */
+        #focusSessionOverlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(160deg, #e8f5e9 0%, #e0f7fa 60%, #f1f8e9 100%);
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .focus-session-type {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .focus-session-name {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            color: #37474f;
+            margin-bottom: 6px;
+        }
+
+        .focus-session-freq {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.9rem;
+            color: #78909c;
+            margin-bottom: 40px;
+        }
+
+        .focus-orb {
+            width: min(52vw, 220px);
+            height: min(52vw, 220px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-bottom: 36px;
+            transition: background 1s ease, box-shadow 1s ease;
+            box-shadow: 0 20px 60px rgba(0,131,143,0.15), inset 0 0 30px rgba(255,255,255,0.5);
+            animation: focusPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes focusPulse {
+            0%, 100% { transform: scale(1);    box-shadow: 0 20px 60px rgba(0,131,143,0.15); }
+            50%       { transform: scale(1.04); box-shadow: 0 28px 80px rgba(0,131,143,0.25); }
+        }
+
+        .focus-timer {
+            font-family: 'Manrope', sans-serif;
+            font-size: 2.6rem;
+            font-weight: 300;
+            color: white;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.15);
+            line-height: 1;
+        }
+
+        .focus-timer-label {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.8);
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .focus-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .focus-btn-main {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 44px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0,131,143,0.3);
+        }
+
+        .focus-btn-main:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(0,131,143,0.4);
+        }
+
+        .focus-btn-stop {
+            background: transparent;
+            color: #78909c;
+            border: 1.5px solid #cfd8dc;
+            border-radius: 50px;
+            padding: 14px 28px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .focus-btn-stop:hover {
+            border-color: #90a4ae;
+            color: #546e7a;
+        }
+
+        .focus-volume {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 28px;
+            opacity: 0.7;
+        }
+
+        .focus-volume input[type=range] {
+            -webkit-appearance: none;
+            width: 140px;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(0,131,143,0.2);
+            outline: none;
+        }
+
+        .focus-volume input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+        }
+
+        .focus-volume-label {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.8rem;
+            color: #78909c;
+        }
     </style>
 </head>
 <body>
@@ -1393,6 +1636,72 @@
             <h3>5-5 • Coherencia</h3>
             <p>Equilibrio total (In 5, Ex 5)</p>
         </div>
+        <div class="menu-card" onclick="openFocusSelect()" style="border: 1.5px solid rgba(0,131,143,0.2); background: linear-gradient(135deg, rgba(232,245,233,0.6), rgba(241,248,233,0.6));">
+            <h3 style="color: var(--accent);">👩‍🚀🍃 Haz Foco</h3>
+            <p>Ruido + frecuencia · concentración profunda</p>
+        </div>
+    </div>
+</div>
+
+
+<!-- HAZ FOCO — SELECCIÓN -->
+<div id="focusSelectOverlay">
+    <button onclick="closeFocusSelect()" style="position:absolute;top:25px;right:25px;background:none;border:none;font-size:2rem;color:#78909c;cursor:pointer;padding:10px;line-height:1;z-index:10;">&times;</button>
+    <h2 class="overlay-title">Haz Foco 👩‍🚀🍃</h2>
+    <p class="overlay-subtitle">Elige tu entorno sonoro — ruido + frecuencia</p>
+
+    <div class="focus-cards">
+        <div class="focus-card brown" onclick="startFocusSession('brown')">
+            <div class="focus-card-header">
+                <div class="focus-card-dot"></div>
+                <h3>🟤 Tierra y Liberación</h3>
+            </div>
+            <p>Ruido marrón grave — como una cascada profunda. Tono sutil de 174 Hz para soltar tensión y entrar en concentración profunda. Ideal para bloquear el entorno y anclar la mente.</p>
+            <span class="focus-freq">Ruido marrón + 174 Hz</span>
+        </div>
+        <div class="focus-card pink" onclick="startFocusSession('pink')">
+            <div class="focus-card-header">
+                <div class="focus-card-dot"></div>
+                <h3>🌸 Claridad</h3>
+            </div>
+            <p>Ruido rosa equilibrado — suave y envolvente. Tono de 528 Hz, el "Mi" del ADN. Para estudiar, leer o trabajar con la mente completamente despejada.</p>
+            <span class="focus-freq">Ruido rosa + 528 Hz</span>
+        </div>
+        <div class="focus-card green" onclick="startFocusSession('green')">
+            <div class="focus-card-header">
+                <div class="focus-card-dot"></div>
+                <h3>🌿 Calma Activa</h3>
+            </div>
+            <p>Ruido verde — variante cálida del rosa, como lluvia suave en un bosque. Tono de 396 Hz para liberar el miedo. Para cuando necesitas serenidad sin adormecerte.</p>
+            <span class="focus-freq">Ruido verde + 396 Hz</span>
+        </div>
+    </div>
+
+    <div style="margin-top:36px;">
+        <button class="btn-text" style="background:transparent;color:#78909c;border:none;" onclick="closeFocusSelect()">Cancelar</button>
+    </div>
+</div>
+
+<!-- HAZ FOCO — SESIÓN -->
+<div id="focusSessionOverlay">
+    <div class="focus-session-type" id="focusSessionType">RUIDO MARRÓN</div>
+    <div class="focus-session-name" id="focusSessionName">Tierra y Liberación</div>
+    <div class="focus-session-freq" id="focusSessionFreq">174 Hz · liberación de tensión</div>
+
+    <div class="focus-orb" id="focusOrb">
+        <div class="focus-timer" id="focusTimer">00:00</div>
+        <div class="focus-timer-label">en curso</div>
+    </div>
+
+    <div class="focus-controls">
+        <button class="focus-btn-main" id="focusMainBtn" onclick="toggleFocusSession()">Iniciar</button>
+        <button class="focus-btn-stop" onclick="stopFocusSession()">Detener</button>
+    </div>
+
+    <div class="focus-volume">
+        <span class="focus-volume-label">🔈</span>
+        <input type="range" id="focusVolume" min="0" max="100" value="70" oninput="setFocusVolume(this.value)">
+        <span class="focus-volume-label">🔊</span>
     </div>
 </div>
 
@@ -2310,6 +2619,221 @@ function startWinterMode() {
         }
     }, 200);
 }
+
+// ══════════════════════════════════════════════
+// HAZ FOCO — LÓGICA COMPLETA
+// ══════════════════════════════════════════════
+
+const FOCUS_CONFIG = {
+    brown: {
+        type: 'RUIDO MARRÓN',
+        name: 'Tierra y Liberación',
+        freq: '174 Hz · liberación de tensión',
+        hz: 174,
+        orbFrom: 'radial-gradient(circle at 35% 35%, #a1887f, #6d4c41)',
+        noiseType: 'brown'
+    },
+    pink: {
+        type: 'RUIDO ROSA',
+        name: 'Claridad',
+        freq: '528 Hz · reparación y claridad',
+        hz: 528,
+        orbFrom: 'radial-gradient(circle at 35% 35%, #f48fb1, #c2185b)',
+        noiseType: 'pink'
+    },
+    green: {
+        type: 'RUIDO VERDE',
+        name: 'Calma Activa',
+        freq: '396 Hz · liberación del miedo',
+        hz: 396,
+        orbFrom: 'radial-gradient(circle at 35% 35%, #a5d6a7, #388e3c)',
+        noiseType: 'green'
+    }
+};
+
+let focusAudioCtx = null;
+let focusAudioNodes = [];
+let focusRunning = false;
+let focusSeconds = 0;
+let focusInterval = null;
+let focusCurrentType = null;
+let focusMasterGain = null;
+
+function openFocusSelect() {
+    document.getElementById('focusSelectOverlay').style.display = 'flex';
+}
+
+function closeFocusSelect() {
+    document.getElementById('focusSelectOverlay').style.display = 'none';
+}
+
+function startFocusSession(type) {
+    focusCurrentType = type;
+    const cfg = FOCUS_CONFIG[type];
+
+    // Actualizar textos
+    document.getElementById('focusSessionType').textContent = cfg.type;
+    document.getElementById('focusSessionName').textContent = cfg.name;
+    document.getElementById('focusSessionFreq').textContent = cfg.freq;
+
+    // Color de la orb
+    document.getElementById('focusOrb').style.background = cfg.orbFrom;
+
+    // Reset estado
+    focusRunning = false;
+    focusSeconds = 0;
+    document.getElementById('focusTimer').textContent = '00:00';
+    document.getElementById('focusMainBtn').textContent = 'Iniciar';
+    document.getElementById('focusVolume').value = 70;
+
+    // Cerrar selección y abrir sesión
+    closeFocusSelect();
+    document.getElementById('focusSessionOverlay').style.display = 'flex';
+}
+
+function toggleFocusSession() {
+    if (!focusRunning) {
+        focusRunning = true;
+        document.getElementById('focusMainBtn').textContent = 'Pausar';
+        startFocusAudio(focusCurrentType);
+        focusInterval = setInterval(() => {
+            focusSeconds++;
+            const m = String(Math.floor(focusSeconds / 60)).padStart(2, '0');
+            const s = String(focusSeconds % 60).padStart(2, '0');
+            document.getElementById('focusTimer').textContent = `${m}:${s}`;
+        }, 1000);
+    } else {
+        focusRunning = false;
+        document.getElementById('focusMainBtn').textContent = 'Continuar';
+        clearInterval(focusInterval);
+        if (focusAudioCtx) focusAudioCtx.suspend().catch(() => {});
+    }
+}
+
+function stopFocusSession() {
+    clearInterval(focusInterval);
+    focusRunning = false;
+    stopFocusAudio();
+    focusSeconds = 0;
+    document.getElementById('focusSessionOverlay').style.display = 'none';
+    // Volver al menú principal
+    const menu = document.getElementById('selectionMenu');
+    if (menu) { menu.style.display = 'flex'; menu.style.opacity = '1'; }
+}
+
+function setFocusVolume(val) {
+    if (focusMasterGain) {
+        focusMasterGain.gain.setTargetAtTime(val / 100 * 0.6, focusAudioCtx.currentTime, 0.1);
+    }
+}
+
+// ── MOTOR DE AUDIO ──────────────────────────────
+
+function startFocusAudio(type) {
+    stopFocusAudio();
+    try {
+        focusAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (focusAudioCtx.state === 'suspended') focusAudioCtx.resume();
+        focusAudioNodes = [];
+        focusMasterGain = focusAudioCtx.createGain();
+        focusMasterGain.gain.setValueAtTime(0, focusAudioCtx.currentTime);
+        focusMasterGain.gain.linearRampToValueAtTime(0.42, focusAudioCtx.currentTime + 3);
+        focusMasterGain.connect(focusAudioCtx.destination);
+
+        if (type === 'brown') createFocusBrownNoise();
+        else if (type === 'pink') createFocusPinkNoise();
+        else if (type === 'green') createFocusGreenNoise();
+
+        // Tono de frecuencia
+        addFocusTone(FOCUS_CONFIG[type].hz);
+    } catch(e) { console.warn('Focus audio error', e); }
+}
+
+function stopFocusAudio() {
+    if (focusAudioCtx) {
+        focusAudioNodes.forEach(n => { try { n.stop?.(); } catch(e) {} });
+        focusAudioCtx.close().catch(() => {});
+        focusAudioCtx = null;
+        focusAudioNodes = [];
+        focusMasterGain = null;
+    }
+}
+
+function createFocusBrownNoise() {
+    const bufferSize = focusAudioCtx.sampleRate * 4;
+    const buffer = focusAudioCtx.createBuffer(1, bufferSize, focusAudioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let lastOut = 0;
+    for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        data[i] = (lastOut + 0.02 * white) / 1.02;
+        lastOut = data[i];
+        data[i] *= 3.5;
+    }
+    const source = focusAudioCtx.createBufferSource();
+    source.buffer = buffer; source.loop = true;
+    const filter = focusAudioCtx.createBiquadFilter();
+    filter.type = 'lowpass'; filter.frequency.value = 600;
+    source.connect(filter); filter.connect(focusMasterGain);
+    source.start();
+    focusAudioNodes.push(source);
+}
+
+function createFocusPinkNoise() {
+    const bufferSize = focusAudioCtx.sampleRate * 4;
+    const buffer = focusAudioCtx.createBuffer(1, bufferSize, focusAudioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for (let i = 0; i < bufferSize; i++) {
+        const w = Math.random() * 2 - 1;
+        b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
+        b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
+        b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
+        data[i] = (b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.11;
+        b6 = w*0.115926;
+    }
+    const source = focusAudioCtx.createBufferSource();
+    source.buffer = buffer; source.loop = true;
+    source.connect(focusMasterGain);
+    source.start();
+    focusAudioNodes.push(source);
+}
+
+function createFocusGreenNoise() {
+    const bufferSize = focusAudioCtx.sampleRate * 4;
+    const buffer = focusAudioCtx.createBuffer(1, bufferSize, focusAudioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for (let i = 0; i < bufferSize; i++) {
+        const w = Math.random() * 2 - 1;
+        b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
+        b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
+        b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
+        data[i] = (b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.11;
+        b6 = w*0.115926;
+    }
+    const source = focusAudioCtx.createBufferSource();
+    source.buffer = buffer; source.loop = true;
+    // Filtro bandpass para el tono "verde" — más cálido que el rosa puro
+    const filter = focusAudioCtx.createBiquadFilter();
+    filter.type = 'bandpass'; filter.frequency.value = 1200; filter.Q.value = 0.8;
+    source.connect(filter); filter.connect(focusMasterGain);
+    source.start();
+    focusAudioNodes.push(source);
+}
+
+function addFocusTone(hz) {
+    const osc = focusAudioCtx.createOscillator();
+    const gain = focusAudioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = hz;
+    gain.gain.setValueAtTime(0, focusAudioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.04, focusAudioCtx.currentTime + 5);
+    osc.connect(gain); gain.connect(focusAudioCtx.destination);
+    osc.start();
+    focusAudioNodes.push(osc, gain);
+}
+
 </script>
     
 </body>
