@@ -1616,6 +1616,10 @@
             <h3 style="color: var(--accent);">✨ Transforma tus Pensamientos</h3>
             <p>Una nueva perspectiva para tu mente · IA</p>
         </div>
+        <div class="menu-card" onclick="openFocusSelect()" style="border: 1.5px solid rgba(0,131,143,0.2); background: linear-gradient(135deg, rgba(232,245,233,0.6), rgba(241,248,233,0.6));">
+            <h3 style="color: var(--accent);">👩‍🚀🍃 Haz Foco</h3>
+            <p>Ruido + frecuencia · concentración profunda</p>
+        </div>
         <div class="menu-card" onclick="openSoundscapeSettings()">
           <h3>❄️ Paisaje sonoro</h3>
           <p>Modo inmersivo</p>
@@ -1642,6 +1646,7 @@
 
 <!-- HAZ FOCO — SELECCIÓN -->
 <div id="focusSelectOverlay">
+    <button onclick="closeFocusSelect()" style="position:absolute;top:25px;left:25px;background:none;border:none;color:var(--accent);font-family:'Manrope',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;padding:6px 10px;">← Menú</button>
     <button onclick="document.getElementById('focusInfoPanel').style.display='flex'" style="position:absolute;top:25px;right:25px;width:34px;height:34px;border-radius:50%;background:rgba(0,131,143,0.1);border:1.5px solid rgba(0,131,143,0.25);color:var(--accent);font-family:'Manrope',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s ease;">i</button>
     <h2 class="overlay-title">Haz Foco 👩‍🚀🍃</h2>
     <p class="overlay-subtitle">Elige tu entorno sonoro — ruido + frecuencia</p>
@@ -1717,9 +1722,7 @@
         </div>
     </div>
 
-    <div style="margin-top:36px;">
-        <button class="btn-text" style="background:transparent;color:var(--accent);border:none;" onclick="closeFocusSelect()">← Menú</button>
-    </div>
+
 </div>
 
 <!-- HAZ FOCO — SESIÓN -->
