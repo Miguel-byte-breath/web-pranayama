@@ -1448,6 +1448,45 @@
             font-size: 0.8rem;
             color: #78909c;
         }
+
+        /* ── HAZ FOCO — SELECTOR DE MODO ── */
+        .focus-mode-selector {
+            display: flex;
+            gap: 6px;
+            background: rgba(0,131,143,0.07);
+            border-radius: 30px;
+            padding: 5px;
+            margin-bottom: 24px;
+        }
+
+        .focus-mode-btn {
+            background: transparent;
+            border: none;
+            border-radius: 24px;
+            padding: 7px 14px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #78909c;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .focus-mode-btn.active {
+            background: white;
+            color: var(--accent);
+            box-shadow: 0 2px 8px rgba(0,131,143,0.15);
+        }
+
+        .focus-174-note {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.78rem;
+            color: #90a4ae;
+            margin-top: -16px;
+            margin-bottom: 20px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -1735,6 +1774,15 @@
         <div class="focus-timer" id="focusTimer">00:00</div>
         <div class="focus-timer-label">en curso</div>
     </div>
+
+    <!-- Selector de modo -->
+    <div class="focus-mode-selector">
+        <button class="focus-mode-btn active" id="modeBtnBoth" onclick="setFocusMode('both')">🌊 Ruido + tono</button>
+        <button class="focus-mode-btn" id="modeBtnNoise" onclick="setFocusMode('noise')">🔈 Solo ruido</button>
+        <button class="focus-mode-btn" id="modeBtnTone" onclick="setFocusMode('tone')">🎵 Solo tono</button>
+    </div>
+
+    <p class="focus-174-note" id="focus174note">👂 174 Hz es muy grave — con auriculares se aprecia mejor</p>
 
     <div class="focus-controls">
         <button class="focus-btn-main" id="focusMainBtn" onclick="toggleFocusSession()">Iniciar</button>
@@ -2701,6 +2749,9 @@ let focusSeconds = 0;
 let focusInterval = null;
 let focusCurrentType = null;
 let focusMasterGain = null;
+let focusToneGain = null;   // ganancia independiente del tono
+let focusNoiseGain = null;  // ganancia independiente del ruido
+let focusMode = 'both';     // 'both' | 'noise' | 'tone'
 
 function openFocusSelect() {
     document.getElementById('focusSelectOverlay').style.display = 'flex';
@@ -2725,9 +2776,15 @@ function startFocusSession(type) {
     // Reset estado
     focusRunning = false;
     focusSeconds = 0;
+    focusMode = 'both';
     document.getElementById('focusTimer').textContent = '00:00';
     document.getElementById('focusMainBtn').textContent = 'Iniciar';
     document.getElementById('focusVolume').value = 70;
+    // Reset selector de modo
+    ['modeBtnBoth','modeBtnNoise','modeBtnTone'].forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById('modeBtnBoth').classList.add('active');
+    // Nota 174 Hz — solo en marrón
+    document.getElementById('focus174note').style.display = (type === 'brown') ? 'block' : 'none';
 
     // Cerrar selección y abrir sesión
     closeFocusSelect();
@@ -2764,8 +2821,27 @@ function stopFocusSession() {
 }
 
 function setFocusVolume(val) {
-    if (focusMasterGain) {
-        focusMasterGain.gain.setTargetAtTime(val / 100 * 0.6, focusAudioCtx.currentTime, 0.1);
+    if (!focusAudioCtx) return;
+    const v = val / 100;
+    if (focusNoiseGain) focusNoiseGain.gain.setTargetAtTime(
+        (focusMode === 'tone') ? 0 : v * 0.42, focusAudioCtx.currentTime, 0.1);
+    if (focusToneGain) focusToneGain.gain.setTargetAtTime(
+        (focusMode === 'noise') ? 0 : v * 0.18, focusAudioCtx.currentTime, 0.1);
+}
+
+function setFocusMode(mode) {
+    focusMode = mode;
+    // Actualizar botones
+    ['modeBtnBoth','modeBtnNoise','modeBtnTone'].forEach(id => document.getElementById(id).classList.remove('active'));
+    const map = { both:'modeBtnBoth', noise:'modeBtnNoise', tone:'modeBtnTone' };
+    document.getElementById(map[mode]).classList.add('active');
+    // Aplicar volumen inmediatamente si hay audio activo
+    if (focusAudioCtx && focusRunning) {
+        const v = document.getElementById('focusVolume').value / 100;
+        if (focusNoiseGain) focusNoiseGain.gain.setTargetAtTime(
+            (mode === 'tone')  ? 0 : v * 0.42, focusAudioCtx.currentTime, 0.3);
+        if (focusToneGain) focusToneGain.gain.setTargetAtTime(
+            (mode === 'noise') ? 0 : v * 0.18, focusAudioCtx.currentTime, 0.3);
     }
 }
 
@@ -2777,16 +2853,27 @@ function startFocusAudio(type) {
         focusAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (focusAudioCtx.state === 'suspended') focusAudioCtx.resume();
         focusAudioNodes = [];
-        focusMasterGain = focusAudioCtx.createGain();
-        focusMasterGain.gain.setValueAtTime(0, focusAudioCtx.currentTime);
-        focusMasterGain.gain.linearRampToValueAtTime(0.42, focusAudioCtx.currentTime + 3);
-        focusMasterGain.connect(focusAudioCtx.destination);
+
+        const v = document.getElementById('focusVolume').value / 100;
+
+        // Ganancia independiente para el ruido
+        focusNoiseGain = focusAudioCtx.createGain();
+        focusNoiseGain.gain.setValueAtTime(0, focusAudioCtx.currentTime);
+        const noiseTarget = (focusMode === 'tone') ? 0 : v * 0.42;
+        focusNoiseGain.gain.linearRampToValueAtTime(noiseTarget, focusAudioCtx.currentTime + 3);
+        focusNoiseGain.connect(focusAudioCtx.destination);
+
+        // Ganancia independiente para el tono
+        focusToneGain = focusAudioCtx.createGain();
+        focusToneGain.gain.setValueAtTime(0, focusAudioCtx.currentTime);
+        const toneTarget = (focusMode === 'noise') ? 0 : v * 0.18;
+        focusToneGain.gain.linearRampToValueAtTime(toneTarget, focusAudioCtx.currentTime + 5);
+        focusToneGain.connect(focusAudioCtx.destination);
 
         if (type === 'brown') createFocusBrownNoise();
         else if (type === 'pink') createFocusPinkNoise();
         else if (type === 'green') createFocusGreenNoise();
 
-        // Tono de frecuencia
         addFocusTone(FOCUS_CONFIG[type].hz);
     } catch(e) { console.warn('Focus audio error', e); }
 }
@@ -2798,6 +2885,8 @@ function stopFocusAudio() {
         focusAudioCtx = null;
         focusAudioNodes = [];
         focusMasterGain = null;
+        focusToneGain = null;
+        focusNoiseGain = null;
     }
 }
 
@@ -2816,7 +2905,7 @@ function createFocusBrownNoise() {
     source.buffer = buffer; source.loop = true;
     const filter = focusAudioCtx.createBiquadFilter();
     filter.type = 'lowpass'; filter.frequency.value = 600;
-    source.connect(filter); filter.connect(focusMasterGain);
+    source.connect(filter); filter.connect(focusNoiseGain);
     source.start();
     focusAudioNodes.push(source);
 }
@@ -2836,7 +2925,7 @@ function createFocusPinkNoise() {
     }
     const source = focusAudioCtx.createBufferSource();
     source.buffer = buffer; source.loop = true;
-    source.connect(focusMasterGain);
+    source.connect(focusNoiseGain);
     source.start();
     focusAudioNodes.push(source);
 }
@@ -2859,21 +2948,18 @@ function createFocusGreenNoise() {
     // Filtro bandpass para el tono "verde" — más cálido que el rosa puro
     const filter = focusAudioCtx.createBiquadFilter();
     filter.type = 'bandpass'; filter.frequency.value = 1200; filter.Q.value = 0.8;
-    source.connect(filter); filter.connect(focusMasterGain);
+    source.connect(filter); filter.connect(focusNoiseGain);
     source.start();
     focusAudioNodes.push(source);
 }
 
 function addFocusTone(hz) {
     const osc = focusAudioCtx.createOscillator();
-    const gain = focusAudioCtx.createGain();
     osc.type = 'sine';
     osc.frequency.value = hz;
-    gain.gain.setValueAtTime(0, focusAudioCtx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.04, focusAudioCtx.currentTime + 5);
-    osc.connect(gain); gain.connect(focusAudioCtx.destination);
+    osc.connect(focusToneGain);
     osc.start();
-    focusAudioNodes.push(osc, gain);
+    focusAudioNodes.push(osc);
 }
 
 </script>
