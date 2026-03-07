@@ -2028,7 +2028,14 @@
         const next = t[(idx+1)%t.length];
         state.tempo = next;
         document.getElementById('tempoBtn').innerText = next===1.0?'1x':next===1.5?'Lento':'Zen';
-        if(state.run) start(state.pk);
+        if(state.run) {
+            start(state.pk);
+            // Si estamos en Paisaje Sonoro, start() habrá arrancado ambientAudio — lo paramos
+            if (state.winterMode && typeof ambientAudio !== 'undefined') {
+                ambientAudio.pause();
+                ambientAudio.currentTime = 0;
+            }
+        }
     }
 
     function toggleSound() {
