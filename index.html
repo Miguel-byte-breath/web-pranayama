@@ -128,7 +128,7 @@
             transform: scale(0.95);
         }
 
-        /* V1.3.0 Estado ACTIVO para botones toggle Metronomo y Frases */
+        /* V1.4.0 Estado ACTIVO para botones toggle Metronomo y Frases */
         .btn-icon.active {
             background: var(--accent);
             color: white;
@@ -222,7 +222,7 @@
             line-height: 1.6;
             z-index: 30;
             margin-top: 10px;
-            /* V1.3.0 Altura mínima para evitar saltos y transición suave */
+            /* V1.4.0 Altura mínima para evitar saltos y transición suave */
             min-height: 2em;
             transition: opacity 0.6s ease;
         }
@@ -1426,7 +1426,7 @@
         </div>
     </div>
     <div style="position: fixed; bottom: 10px; right: 15px; font-size: 0.65rem; color: #90a4ae; opacity: 0.5; z-index: 9999; pointer-events: none; font-family: 'Manrope', sans-serif;">
-        Ref <span id="app-version-display">V1.3.0</span>
+        Ref <span id="app-version-display">V1.4.0</span>
     </div>
     <div class="stage-container">
         <div class="panel-side">
@@ -1553,7 +1553,7 @@
         }
     }
 
-    // STATE V1.3.0 Quotes ENABLED by default
+    // STATE V1.4.0 Quotes ENABLED by default
     let state = {pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true, music: true};
 
     let audioCtx = null;
@@ -1774,7 +1774,7 @@
         }
     }
 
-    // --- V1.3.0 LOGICA TOGGLE FRASES ---
+    // --- V1.4.0 LOGICA TOGGLE FRASES ---
     function toggleQuotes() {
         state.quotesEnabled = !state.quotesEnabled;
         const btn = document.getElementById('quoteToggleBtn');
@@ -1956,8 +1956,8 @@
             alert('Error: Patrón no encontrado');
             return;
         }
-        // MÚSICA: Play si el botón está activo
-        if(state.music) {
+        // MÚSICA: Solo arranca ambient si NO estamos en modo Paisaje Sonoro
+        if(state.music && !state.winterMode) {
             ambientAudio.currentTime = 0;
             ambientAudio.play().catch(e => console.log('Audio error', e));
         }
@@ -1966,8 +1966,8 @@
         els.menu.style.opacity = '0';
         setTimeout(() => els.menu.style.display='none', 400);
 
-        // V1.3.0 Reset states: Queremos que empiece ENCENDIDO por defecto
-        state.winterMode = false; // reset al arrancar modo normal
+        // V1.4.0 Reset states: Queremos que empiece ENCENDIDO por defecto
+        // NOTA: state.winterMode NO se toca aquí — lo gestiona startWinterMode() y stop()
         state.quotesEnabled = true;
         const btn = document.getElementById('quoteToggleBtn');
         btn.classList.add('active'); // Botón iluminado
