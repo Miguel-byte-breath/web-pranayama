@@ -1649,6 +1649,51 @@
     <button onclick="closeFocusSelect()" style="position:absolute;top:25px;right:25px;background:none;border:none;font-size:2rem;color:#78909c;cursor:pointer;padding:10px;line-height:1;z-index:10;">&times;</button>
     <h2 class="overlay-title">Haz Foco 👩‍🚀🍃</h2>
     <p class="overlay-subtitle">Elige tu entorno sonoro — ruido + frecuencia</p>
+    <button onclick="document.getElementById('focusInfoPanel').style.display='flex'" style="position:absolute;top:25px;left:25px;width:34px;height:34px;border-radius:50%;background:rgba(0,131,143,0.1);border:1.5px solid rgba(0,131,143,0.25);color:var(--accent);font-family:'Manrope',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s ease;">i</button>
+
+    <!-- Panel informativo Solfeggio -->
+    <div id="focusInfoPanel" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.98);backdrop-filter:blur(15px);z-index:300;flex-direction:column;align-items:center;justify-content:flex-start;padding:10vh 24px 40px;overflow-y:auto;text-align:left;">
+        <button onclick="document.getElementById('focusInfoPanel').style.display='none'" style="position:absolute;top:25px;right:25px;background:none;border:none;font-size:2rem;color:#78909c;cursor:pointer;padding:10px;line-height:1;">&times;</button>
+        <div style="max-width:520px;width:100%;">
+            <h2 style="font-family:'Cinzel',serif;color:#37474f;font-size:1.4rem;margin-bottom:6px;">¿Cómo funciona?</h2>
+            <p style="color:#78909c;font-size:0.9rem;margin-bottom:28px;font-family:'Manrope',sans-serif;">Ruido + tono simultáneos — dos capas de audio independientes mezcladas</p>
+
+            <div style="background:rgba(0,131,143,0.05);border-radius:14px;padding:20px 22px;margin-bottom:20px;border:1px solid rgba(0,131,143,0.1);">
+                <p style="font-family:'Manrope',sans-serif;font-size:0.92rem;color:#37474f;line-height:1.7;margin:0;">
+                    <strong>1. El ruido</strong> (marrón, rosa o verde) — sonido continuo que cubre todo el espectro de frecuencias, como estática suave. Su función es <em>enmascarar distracciones del entorno</em>.<br><br>
+                    <strong>2. El tono</strong> (174, 528 o 396 Hz) — nota pura y sutil por debajo del ruido. Lo percibes más como una "sensación de fondo" que como una melodía. El volumen está calibrado muy bajo para que no moleste.
+                </p>
+            </div>
+
+            <h3 style="font-family:'Cinzel',serif;color:#37474f;font-size:1.1rem;margin-bottom:12px;">Frecuencias Solfeggio</h3>
+            <p style="font-family:'Manrope',sans-serif;font-size:0.88rem;color:#78909c;line-height:1.6;margin-bottom:16px;">Escala de frecuencias proveniente de himnos gregorianos medievales, redescubierta en los años 90 por el Dr. Joseph Puleo. Cada frecuencia tendría un efecto terapéutico específico:</p>
+
+            <div style="background:rgba(255,255,255,0.8);border-radius:12px;padding:16px 20px;border:1px solid rgba(0,131,143,0.08);margin-bottom:20px;">
+                <table style="width:100%;font-family:'Manrope',sans-serif;font-size:0.86rem;border-collapse:collapse;">
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">174 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Alivio del dolor y la tensión, sensación de seguridad</td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">285 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Regeneración de tejidos</td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">396 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Liberación del miedo y la culpa</td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">417 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Facilitar el cambio</td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">528 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Reparación y transformación — el "Mi" del amor</td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">639 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Conexión y relaciones</td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">741 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Expresión y solución de problemas</td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">852 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Intuición y orden espiritual</td></tr>
+                    <tr><td style="padding:6px 0;color:var(--accent);font-weight:700;">963 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Conexión con la conciencia universal</td></tr>
+                </table>
+            </div>
+
+            <div style="background:linear-gradient(135deg,rgba(232,245,233,0.8),rgba(224,247,250,0.8));border-radius:12px;padding:16px 20px;border:1px solid rgba(0,131,143,0.1);">
+                <p style="font-family:'Manrope',sans-serif;font-size:0.88rem;color:#546e7a;line-height:1.7;margin:0;">
+                    <strong>Honestidad científica:</strong> no hay evidencia clínica sólida que demuestre estos efectos específicos. Lo que sí está demostrado es que el ruido de fondo mejora la concentración y que los tonos puros tienen efectos relajantes sobre el sistema nervioso. La combinación funciona — los mecanismos exactos del Solfeggio son más especulativos.<br><br>
+                    Es un territorio entre la ciencia, la tradición y el bienestar subjetivo. Muchas personas reportan beneficios reales, aunque la neurociencia aún no los explica del todo.
+                </p>
+            </div>
+
+            <div style="margin-top:32px;text-align:center;">
+                <button class="btn-text" onclick="document.getElementById('focusInfoPanel').style.display='none'" style="background:transparent;color:var(--accent);border:1px solid var(--accent);">Entendido</button>
+            </div>
+        </div>
+    </div>
 
     <div class="focus-cards">
         <div class="focus-card brown" onclick="startFocusSession('brown')">
@@ -2716,9 +2761,8 @@ function stopFocusSession() {
     stopFocusAudio();
     focusSeconds = 0;
     document.getElementById('focusSessionOverlay').style.display = 'none';
-    // Volver al menú principal
-    const menu = document.getElementById('selectionMenu');
-    if (menu) { menu.style.display = 'flex'; menu.style.opacity = '1'; }
+    // Volver al overlay intermedio de selección
+    document.getElementById('focusSelectOverlay').style.display = 'flex';
 }
 
 function setFocusVolume(val) {
