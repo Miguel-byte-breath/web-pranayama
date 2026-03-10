@@ -1501,7 +1501,9 @@
             align-items: center;
             justify-content: flex-start;
             overflow-y: auto;
+            overflow-x: hidden;
             text-align: center;
+            scroll-behavior: smooth;
         }
 
         .breathing-hero {
@@ -1544,6 +1546,29 @@
             width: 100%;
             max-width: 460px;
             padding: 0 20px 40px;
+        }
+
+        .breathing-scroll-container {
+            position: relative;
+            width: 100%;
+            max-width: 460px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .breathing-scroll-container::after {
+            content: '';
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(to top, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+            display: block;
+            margin-top: -80px;
+            border-radius: 0 0 18px 18px;
         }
 
         .breathing-card {
@@ -1789,7 +1814,7 @@
             <p>Ruido + frecuencia · concentración profunda</p>
         </div>
         <div class="menu-card" onclick="openFocusnautOverlay()" style="border: 1.5px solid rgba(30,215,96,0.2); background: linear-gradient(135deg, rgba(232,245,233,0.6), rgba(240,255,244,0.6));">
-            <h3 style="color: #1db954;">🧑‍🚀🎧 Focusnaut</h3>
+            <h3 style="color: var(--accent);">🧑‍🚀🎧 Focusnaut</h3>
             <p>Playlists seleccionadas para tu foco · Spotify</p>
         </div>
     </div>
@@ -1805,8 +1830,9 @@
         <h2>Respiración</h2>
         <p>Elige tu patrón · cada respiración es un nuevo comienzo</p>
     </div>
+    <div class="breathing-scroll-container">
     <div class="breathing-cards">
-        <div class="breathing-card soundscape-breathing" onclick="closeBreathingOverlay(); openSoundscapeSettings();">
+        <div class="breathing-card soundscape-breathing" onclick="closeBreathingOverlay(); openSoundscapeSettings(true);">
             <h3>❄️ Paisaje Sonoro</h3>
             <p>Modo inmersivo con música</p>
         </div>
@@ -1830,6 +1856,7 @@
             <h3>5-5 · Coherencia</h3>
             <p>Equilibrio total (In 5, Ex 5)</p>
         </div>
+    </div>
     </div>
 </div>
 
@@ -2799,10 +2826,11 @@ async function reframeThought() {
 
 // --- LÓGICA DEFINITIVA PAISAJE SONORO ---
 
-function openSoundscapeSettings() {
+function openSoundscapeSettings(fromBreathing) {
     const overlay = document.getElementById('psOverlay');
     if(overlay) {
         overlay.style.display = 'flex';
+        overlay._fromBreathing = !!fromBreathing;
         const input = document.getElementById('psPatternInput');
         if(input) input.value = ''; // Limpia textos anteriores
     }
@@ -2810,11 +2838,15 @@ function openSoundscapeSettings() {
 
 function closeSoundscapeSettings() {
     const overlay = document.getElementById('psOverlay');
-    if(overlay) overlay.style.display = 'none';
-    // Si no hay sesión activa, aseguramos que el menú sea visible
+    const fromBreathing = overlay && overlay._fromBreathing;
+    if(overlay) { overlay.style.display = 'none'; overlay._fromBreathing = false; }
     if (typeof state !== 'undefined' && !state.run) {
-        const menu = document.getElementById('selectionMenu');
-        if(menu) { menu.style.display = 'flex'; menu.style.opacity = '1'; }
+        if (fromBreathing) {
+            openBreathingOverlay();
+        } else {
+            const menu = document.getElementById('selectionMenu');
+            if(menu) { menu.style.display = 'flex'; menu.style.opacity = '1'; }
+        }
     }
 }
 
