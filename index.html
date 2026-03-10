@@ -1487,6 +1487,125 @@
             margin-bottom: 20px;
             display: none;
         }
+
+        /* ── OVERLAY RESPIRACIÓN ── */
+        #breathingOverlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(15px);
+            z-index: 150;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 0;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .breathing-hero {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 52px 20px 24px;
+            background: linear-gradient(160deg, #e8f5e9 0%, #e0f7fa 100%);
+            margin-bottom: 10px;
+        }
+
+        .breathing-hero img {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 14px;
+            box-shadow: 0 6px 20px rgba(0,131,143,0.15);
+        }
+
+        .breathing-hero h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #37474f;
+            margin: 0 0 6px 0;
+        }
+
+        .breathing-hero p {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.88rem;
+            color: #78909c;
+            margin: 0;
+        }
+
+        .breathing-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 460px;
+            padding: 0 20px 40px;
+        }
+
+        .breathing-card {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(178,235,242,0.4);
+            border-radius: 16px;
+            padding: 18px 20px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s cubic-bezier(0.25,0.8,0.25,1);
+            box-shadow: 0 4px 10px rgba(178,235,242,0.1);
+        }
+
+        .breathing-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 10px 25px rgba(178,235,242,0.3);
+        }
+
+        .breathing-card h3 {
+            font-family: 'Manrope', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #37474f;
+            margin: 0 0 4px 0;
+        }
+
+        .breathing-card p {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.85rem;
+            color: #78909c;
+            margin: 0;
+        }
+
+        .breathing-card.custom-breathing {
+            border-color: rgba(76,175,80,0.3);
+            background: linear-gradient(135deg, rgba(232,245,233,0.6), rgba(241,248,233,0.6));
+        }
+
+        .breathing-card.custom-breathing h3 {
+            color: var(--primary);
+        }
+
+        .breathing-card.soundscape-breathing {
+            border-color: rgba(0,131,143,0.2);
+            background: linear-gradient(135deg, rgba(224,247,250,0.6), rgba(232,245,233,0.6));
+        }
+
+        .breathing-card.soundscape-breathing h3 {
+            color: var(--accent);
+        }
+
+        /* ── FOCUSNAUT ── */
+        .focusnaut-cards { display:flex; flex-direction:column; gap:16px; width:100%; max-width:460px; margin-top:30px; padding:0 5px; }
+        .focusnaut-card { background:rgba(255,255,255,0.75); backdrop-filter:blur(10px); border:1.5px solid rgba(30,215,96,0.2); border-left:4px solid #1ed760; border-radius:18px; padding:20px 22px; cursor:pointer; text-align:left; transition:all 0.35s cubic-bezier(0.25,0.8,0.25,1); box-shadow:0 4px 14px rgba(30,215,96,0.07); text-decoration:none; display:block; }
+        .focusnaut-card:hover { transform:translateY(-3px); background:rgba(255,255,255,0.95); box-shadow:0 10px 28px rgba(30,215,96,0.15); }
+        .focusnaut-card h3 { font-family:'Manrope',sans-serif; font-size:1rem; font-weight:700; color:#37474f; margin:0 0 6px 0; line-height:1.3; }
+        .focusnaut-card p { font-family:'Manrope',sans-serif; font-size:0.85rem; color:#78909c; margin:0 0 10px 0; line-height:1.5; }
+        .focusnaut-badge { display:inline-flex; align-items:center; gap:5px; font-size:0.75rem; font-weight:600; color:#1ed760; background:rgba(30,215,96,0.08); border-radius:20px; padding:3px 10px; }
+        #focusnautOverlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); backdrop-filter:blur(15px); z-index:150; display:none; flex-direction:column; align-items:center; justify-content:flex-start; padding-top:12vh; overflow-y:auto; text-align:center; }
     </style>
 </head>
 <body>
@@ -1647,9 +1766,12 @@
                 <div class="substack-author">by Álvaro García</div>
             </div>
         </div>
-        <div class="menu-card custom-card" onclick="openCustomModal()">
-            <h3>🎨 Crear Personalizado</h3>
-            <p>Define tus tiempos (ej: 4-7-8b)</p>
+        <div class="menu-card" onclick="openBreathingOverlay()" style="border: 1.5px solid rgba(0,131,143,0.2); background: linear-gradient(135deg, rgba(224,247,250,0.6), rgba(232,245,233,0.6));">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+                <img src="./pranayama.jpg" alt="Pranayama" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+                <h3 style="color:var(--accent);margin:0;">Respiración</h3>
+            </div>
+            <p>Patrones · Paisaje Sonoro · Personalizado</p>
         </div>
         <div class="menu-card" onclick="openReframeOverlay()" style="border: 1.5px solid rgba(0,131,143,0.2); background: linear-gradient(135deg, rgba(232,245,233,0.6), rgba(224,247,250,0.6));">
             <h3 style="color: var(--accent);">✨ Transforma tus Pensamientos</h3>
@@ -1659,29 +1781,80 @@
             <h3 style="color: var(--accent);">👩‍🚀🍃 Haz Foco</h3>
             <p>Ruido + frecuencia · concentración profunda</p>
         </div>
-        <div class="menu-card" onclick="openSoundscapeSettings()">
-          <h3>❄️ Paisaje sonoro</h3>
-          <p>Modo inmersivo</p>
-      </div>
-        <div class="menu-card" onclick="start('4-4-6-2')">
-            <h3>4-4-6-2 • Relax Profundo</h3>
+        <div class="menu-card" onclick="openFocusnautOverlay()" style="border: 1.5px solid rgba(30,215,96,0.2); background: linear-gradient(135deg, rgba(232,245,233,0.6), rgba(240,255,244,0.6));">
+            <h3 style="color: #1db954;">🎧 Focusnaut 🧑‍🚀</h3>
+            <p>Playlists curadas para el foco · Spotify</p>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- OVERLAY RESPIRACIÓN -->
+<div id="breathingOverlay">
+    <button onclick="closeBreathingOverlay()" style="position:absolute;top:18px;left:18px;background:none;border:none;color:var(--accent);font-family:'Manrope',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;padding:6px 10px;z-index:10;">← Menú</button>
+
+    <div class="breathing-hero">
+        <img src="./pranayama.jpg" alt="Pranayama">
+        <h2>Respiración</h2>
+        <p>Elige tu patrón · cada respiración es un nuevo comienzo</p>
+    </div>
+
+    <div class="breathing-cards">
+        <div class="breathing-card soundscape-breathing" onclick="closeBreathingOverlay(); openSoundscapeSettings();">
+            <h3>❄️ Paisaje Sonoro</h3>
+            <p>Modo inmersivo con música</p>
+        </div>
+        <div class="breathing-card custom-breathing" onclick="closeBreathingOverlay(); openCustomModal();">
+            <h3>🎨 Crear Personalizado</h3>
+            <p>Define tus tiempos (ej: 4-7-8b)</p>
+        </div>
+        <div class="breathing-card" onclick="closeBreathingOverlay(); start('4-4-6-2');">
+            <h3>4-4-6-2 · Relax Profundo</h3>
             <p>Baja pulsaciones rápidamente</p>
         </div>
-        <div class="menu-card" onclick="start('4-7-8b')">
-            <h3>4-7-8b • Relaxing break</h3>
-            <p>Relájate </p>
+        <div class="breathing-card" onclick="closeBreathingOverlay(); start('4-7-8b');">
+            <h3>4-7-8b · Relaxing Break</h3>
+            <p>Relájate</p>
         </div>
-        <div class="menu-card" onclick="start('box')">
-            <h3>Cuadrada • Enfoque</h3>
+        <div class="breathing-card" onclick="closeBreathingOverlay(); start('box');">
+            <h3>Cuadrada · Enfoque</h3>
             <p>Box Breathing (4-4-4-4)</p>
         </div>
-        <div class="menu-card" onclick="start('5-5')">
-            <h3>5-5 • Coherencia</h3>
+        <div class="breathing-card" onclick="closeBreathingOverlay(); start('5-5');">
+            <h3>5-5 · Coherencia</h3>
             <p>Equilibrio total (In 5, Ex 5)</p>
         </div>
     </div>
 </div>
 
+
+<!-- FOCUSNAUT OVERLAY -->
+<div id="focusnautOverlay">
+    <button onclick="closeFocusnautOverlay()" style="position:absolute;top:25px;left:25px;background:none;border:none;color:var(--accent);font-family:'Manrope',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;padding:6px 10px;">← Menú</button>
+    <h2 class="overlay-title">Focusnaut 🧑‍🚀</h2>
+    <p class="overlay-subtitle">Playlists curadas para tu foco · Spotify</p>
+    <div class="focusnaut-cards">
+        <a class="focusnaut-card" href="https://open.spotify.com/playlist/513hxmx7opHphhYmeL7yzn" target="_blank" rel="noopener">
+            <h3>🧠 Deep Focus Music</h3>
+            <p>40 Hz Binaural Study Music · Scientifically Tuned for Optimal Focus</p>
+            <span class="focusnaut-badge">▶ Abrir en Spotify</span>
+        </a>
+        <a class="focusnaut-card" href="https://open.spotify.com/playlist/2Iug1PcFU5lgQ6LO97GP9K" target="_blank" rel="noopener">
+            <h3>⏱ 8 Hours Study Music</h3>
+            <p>Binaural Focus Beats · Concentration & Productivity Sounds</p>
+            <span class="focusnaut-badge">▶ Abrir en Spotify</span>
+        </a>
+        <a class="focusnaut-card" href="https://open.spotify.com/playlist/1RA8wpst3GzRv1sjNsDwyU" target="_blank" rel="noopener">
+            <h3>🧠 ADHD Relief Music</h3>
+            <p>Calm & Focus Lofi Beats · Para mantener la calma y el foco</p>
+            <span class="focusnaut-badge">▶ Abrir en Spotify</span>
+        </a>
+    </div>
+    <div style="margin-top:20px;font-family:'Manrope',sans-serif;font-size:0.78rem;color:#b0bec5;">
+        Playlists creadas por <strong>Focusnaut</strong> en Spotify
+    </div>
+</div>
 
 <!-- HAZ FOCO — SELECCIÓN -->
 <div id="focusSelectOverlay">
@@ -2968,6 +3141,19 @@ function addFocusTone(hz) {
     focusAudioNodes.push(osc);
 }
 
+
+function openBreathingOverlay() {
+    document.getElementById('breathingOverlay').style.display = 'flex';
+}
+function closeBreathingOverlay() {
+    document.getElementById('breathingOverlay').style.display = 'none';
+}
+function openFocusnautOverlay() {
+    document.getElementById('focusnautOverlay').style.display = 'flex';
+}
+function closeFocusnautOverlay() {
+    document.getElementById('focusnautOverlay').style.display = 'none';
+}
 </script>
     
 </body>
