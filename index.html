@@ -2882,8 +2882,9 @@ function startWinterMode() {
     }
     window._patterns['custom'] = newPattern;
 
-    // 3. Cerrar la ventana blanca
-    closeSoundscapeSettings();
+    // 3. Cerrar la ventana blanca directamente (sin tocar navegación)
+    const psOverlay = document.getElementById('psOverlay');
+    if(psOverlay) { psOverlay.style.display = 'none'; psOverlay._fromBreathing = false; }
 
     // 4. Iniciar el motor nativo y silenciar el ambient (no aplica en modo Paisaje)
     try {
