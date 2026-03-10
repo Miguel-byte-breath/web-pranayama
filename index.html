@@ -3147,10 +3147,18 @@ function addFocusTone(hz) {
 
 
 function openBreathingOverlay() {
+    // Asegurarse de que el menú principal esté visible detrás
+    const menu = document.getElementById('selectionMenu');
+    menu.style.display = 'flex';
+    menu.style.opacity = '1';
     document.getElementById('breathingOverlay').style.display = 'flex';
 }
 function closeBreathingOverlay() {
     document.getElementById('breathingOverlay').style.display = 'none';
+    // Restaurar menú principal explícitamente
+    const menu = document.getElementById('selectionMenu');
+    menu.style.display = 'flex';
+    menu.style.opacity = '1';
 }
 function openFocusnautOverlay() {
     document.getElementById('focusnautOverlay').style.display = 'flex';
