@@ -2261,8 +2261,10 @@
             deferredPrompt.prompt();
             await deferredPrompt.userChoice;
             deferredPrompt = null;
+        } else if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            alert('¡La app ya está instalada en tu dispositivo! 🎉');
         } else {
-            alert('Para instalar: Usa el menú del navegador → Añadir a inicio.');
+            alert('Recarga la página y pulsa de nuevo Instalar App.');
         }
     }
 
