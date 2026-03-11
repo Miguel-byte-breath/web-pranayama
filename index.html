@@ -1808,7 +1808,7 @@
         <button class="action-btn" onclick="openShareConfig()">
             🎁 <span>Enviar Píldora</span>
         </button>
-        <button class="action-btn" id="installBtn" onclick="installApp()">
+        <button class="action-btn" id="installBtn" onclick="installApp()" style="display:none;">
             ⭐ <span>Instalar App</span>
         </button>
     </div>
@@ -2247,22 +2247,52 @@
         if(tip) tip.classList.toggle('visible');
     };
 
-    let deferredPrompt;
+    let deferredPrompt = null;
     const installBtn = document.getElementById('installBtn');
 
+    // Capturar el evento lo antes posible
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
         installBtn.style.display = 'flex';
+        console.log('[PWA] beforeinstallprompt capturado ✓');
     });
 
+    // Ocultar botón si ya está instalada
+    window.addEventListener('appinstalled', () => {
+        deferredPrompt = null;
+        installBtn.style.display = 'none';
+        console.log('[PWA] App instalada ✓');
+    });
+
+    // Si ya está en modo standalone (instalada), ocultar botón
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+        installBtn.style.display = 'none';
+    }
+
     async function installApp() {
-        if(deferredPrompt) {
+        if (deferredPrompt) {
             deferredPrompt.prompt();
-            await deferredPrompt.userChoice;
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log('[PWA] Usuario eligió:', outcome);
             deferredPrompt = null;
+            if (outcome === 'accepted') {
+                installBtn.style.display = 'none';
+            }
+        } else if (window.matchMedia('(display-mode: standalone)').matches) {
+            // Ya instalada
+            installBtn.style.display = 'none';
         } else {
-            alert('Para instalar: Usa el menú del navegador → Añadir a inicio.');
+            // Fallback: instrucciones claras según navegador
+            const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            const isSamsung = /samsungbrowser/i.test(navigator.userAgent);
+            if (isIOS) {
+                alert('En Safari: pulsa el botón compartir ↑ y luego "Añadir a pantalla de inicio".');
+            } else if (isSamsung) {
+                alert('En Samsung Internet: pulsa el menú ⋮ y luego "Añadir página a" → "Pantalla de inicio".');
+            } else {
+                alert('Recarga la página y vuelve a pulsar Instalar App. O usa el menú del navegador → "Instalar" o "Añadir a inicio".');
+            }
         }
     }
 
