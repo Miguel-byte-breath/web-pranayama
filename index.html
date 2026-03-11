@@ -1527,33 +1527,40 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 52px 20px 24px;
+            padding: 44px 20px 20px;
             background: linear-gradient(160deg, #e8f5e9 0%, #e0f7fa 100%);
             margin-bottom: 10px;
             box-sizing: border-box;
         }
 
         .breathing-hero img {
-            width: clamp(100px, 22vw, 180px);
-            height: clamp(100px, 22vw, 180px);
+            width: clamp(90px, 12vw, 150px);
+            height: clamp(90px, 12vw, 150px);
             border-radius: 50%;
             object-fit: cover;
-            margin-bottom: 16px;
+            margin-bottom: 10px;
             box-shadow: 0 8px 28px rgba(0,131,143,0.18);
+            flex-shrink: 0;
         }
 
         .breathing-hero h2 {
             font-family: 'Cinzel', serif;
-            font-size: clamp(1.4rem, 4vw, 2rem);
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
             color: #37474f;
-            margin: 0 0 6px 0;
+            margin: 0 0 4px 0;
         }
 
         .breathing-hero p {
             font-family: 'Manrope', sans-serif;
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             color: #78909c;
             margin: 0;
+        }
+
+        @media (min-width: 768px) {
+            .breathing-hero {
+                padding: 28px 20px 18px;
+            }
         }
 
         .breathing-cards {
