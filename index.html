@@ -1502,25 +1502,27 @@
             z-index: 150;
             display: none;
             flex-direction: column;
-            align-items: center;
+            align-items: stretch;
             justify-content: flex-start;
             overflow: hidden;
             text-align: center;
         }
 
         .breathing-scroll-inner {
+            flex: 1 1 auto;
             width: 100%;
-            height: 100%;
             overflow-y: auto;
             overflow-x: hidden;
             -webkit-overflow-scrolling: touch;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 0;
         }
 
         .breathing-hero {
             flex-shrink: 0;
+            position: relative;
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -1528,6 +1530,7 @@
             padding: 52px 20px 24px;
             background: linear-gradient(160deg, #e8f5e9 0%, #e0f7fa 100%);
             margin-bottom: 10px;
+            box-sizing: border-box;
         }
 
         .breathing-hero img {
@@ -1838,13 +1841,15 @@
 
 <!-- OVERLAY RESPIRACIÓN -->
 <div id="breathingOverlay">
-    <button onclick="closeBreathingOverlay()" style="position:fixed;top:18px;left:18px;background:none;border:none;color:var(--accent);font-family:'Manrope',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;padding:6px 10px;z-index:200;">← Menú</button>
-    <div class="breathing-scroll-inner">
+    <!-- Cabecera fija — nunca hace scroll -->
     <div class="breathing-hero">
+        <button onclick="closeBreathingOverlay()" style="position:absolute;top:14px;left:14px;background:none;border:none;color:var(--accent);font-family:'Manrope',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;padding:6px 10px;z-index:10;">← Menú</button>
         <img src="./pranayama.jpg" alt="Pranayama">
         <h2>Respiración</h2>
         <p>Elige tu patrón · cada respiración es un nuevo comienzo</p>
     </div>
+    <!-- Fichas con scroll -->
+    <div class="breathing-scroll-inner">
     <div class="breathing-scroll-container">
     <div class="breathing-cards">
         <div class="breathing-card soundscape-breathing" onclick="closeBreathingOverlay(); openSoundscapeSettings(true);">
