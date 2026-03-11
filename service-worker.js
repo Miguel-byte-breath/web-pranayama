@@ -1,4 +1,4 @@
-const CACHE_NAME = 'respira-v1.3.0-winter-32'; // ← Nueva versión
+const CACHE_NAME = 'respira-v1.5.0'; // ← Nueva versión
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
