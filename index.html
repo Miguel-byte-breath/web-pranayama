@@ -131,7 +131,7 @@
             transform: scale(0.95);
         }
 
-        /* V1.5.0 Estado ACTIVO para botones toggle Metronomo y Frases */
+        /* V1.3.0 Estado ACTIVO para botones toggle Metronomo y Frases */
         .btn-icon.active {
             background: var(--accent);
             color: white;
@@ -226,7 +226,7 @@
             line-height: 1.6;
             z-index: 30;
             margin-top: 10px;
-            /* v1.5.0 Altura mínima para evitar saltos y transición suave */
+            /* V1.3.0 Altura mínima para evitar saltos y transición suave */
             min-height: 2em;
             transition: opacity 0.6s ease;
         }
@@ -1808,7 +1808,7 @@
         <button class="action-btn" onclick="openShareConfig()">
             🎁 <span>Enviar Píldora</span>
         </button>
-        <button class="action-btn" id="installBtn" onclick="installApp()" style="display:none;">
+        <button class="action-btn" id="installBtn" onclick="installApp()">
             ⭐ <span>Instalar App</span>
         </button>
     </div>
@@ -2058,7 +2058,7 @@
         </div>
     </div>
     <div style="position: fixed; bottom: 10px; right: 15px; font-size: 0.65rem; color: #90a4ae; opacity: 0.5; z-index: 9999; pointer-events: none; font-family: 'Manrope', sans-serif;">
-        Ref <span id="app-version-display">v1.5.0</span>
+        Ref <span id="app-version-display">V1.3.0</span>
     </div>
     <div class="stage-container">
         <div class="panel-side">
@@ -2185,7 +2185,7 @@
         }
     }
 
-    // STATE v1.5.0 Quotes ENABLED by default
+    // STATE V1.3.0 Quotes ENABLED by default
     let state = {pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true, music: true};
 
     let audioCtx = null;
@@ -2247,52 +2247,24 @@
         if(tip) tip.classList.toggle('visible');
     };
 
-    let deferredPrompt = null;
+    let deferredPrompt;
     const installBtn = document.getElementById('installBtn');
 
-    // Capturar el evento lo antes posible
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
         installBtn.style.display = 'flex';
-        console.log('[PWA] beforeinstallprompt capturado ✓');
     });
-
-    // Ocultar botón si ya está instalada
-    window.addEventListener('appinstalled', () => {
-        deferredPrompt = null;
-        installBtn.style.display = 'none';
-        console.log('[PWA] App instalada ✓');
-    });
-
-    // Si ya está en modo standalone (instalada), ocultar botón
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-        installBtn.style.display = 'none';
-    }
 
     async function installApp() {
-        if (deferredPrompt) {
+        if(deferredPrompt) {
             deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            console.log('[PWA] Usuario eligió:', outcome);
+            await deferredPrompt.userChoice;
             deferredPrompt = null;
-            if (outcome === 'accepted') {
-                installBtn.style.display = 'none';
-            }
-        } else if (window.matchMedia('(display-mode: standalone)').matches) {
-            // Ya instalada
-            installBtn.style.display = 'none';
+        } else if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            alert('¡La app ya está instalada en tu dispositivo! 🎉');
         } else {
-            // Fallback: instrucciones claras según navegador
-            const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-            const isSamsung = /samsungbrowser/i.test(navigator.userAgent);
-            if (isIOS) {
-                alert('En Safari: pulsa el botón compartir ↑ y luego "Añadir a pantalla de inicio".');
-            } else if (isSamsung) {
-                alert('En Samsung Internet: pulsa el menú ⋮ y luego "Añadir página a" → "Pantalla de inicio".');
-            } else {
-                alert('Recarga la página y vuelve a pulsar Instalar App. O usa el menú del navegador → "Instalar" o "Añadir a inicio".');
-            }
+            alert('Recarga la página y pulsa de nuevo Instalar App.');
         }
     }
 
@@ -2436,7 +2408,7 @@
         }
     }
 
-    // --- v1.5.0 LOGICA TOGGLE FRASES ---
+    // --- V1.3.0 LOGICA TOGGLE FRASES ---
     function toggleQuotes() {
         state.quotesEnabled = !state.quotesEnabled;
         const btn = document.getElementById('quoteToggleBtn');
@@ -2628,7 +2600,7 @@
         els.menu.style.opacity = '0';
         setTimeout(() => els.menu.style.display='none', 400);
 
-        // v1.5.0 Reset states: Queremos que empiece ENCENDIDO por defecto
+        // V1.3.0 Reset states: Queremos que empiece ENCENDIDO por defecto
         // NOTA: state.winterMode NO se toca aquí — lo gestiona startWinterMode() y stop()
         state.quotesEnabled = true;
         const btn = document.getElementById('quoteToggleBtn');
