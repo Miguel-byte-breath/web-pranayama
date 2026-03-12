@@ -1802,7 +1802,6 @@
             <ellipse cx="6.5" cy="10.5" rx="4.5" ry="9.5" fill="#2a9d8f" opacity="0.7" transform="rotate(10 6.5 10.5)"/>
         </svg>
     </div>
-    <button class="global-info-btn" onclick="document.getElementById('guideOverlay').style.display='flex'">i</button>
     <div class="menu-title">ELIGE TU RITMO</div>
     <div class="menu-actions">
         <button class="action-btn" onclick="openShareConfig()">
@@ -1851,6 +1850,7 @@
     <!-- Cabecera fija — nunca hace scroll -->
     <div class="breathing-hero">
         <button onclick="closeBreathingOverlay()" style="position:absolute;top:14px;left:14px;background:none;border:none;color:var(--accent);font-family:'Manrope',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;padding:6px 10px;z-index:10;">← Menú</button>
+        <button onclick="document.getElementById('guideOverlay').style.display='flex'" style="position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.9);border:1px solid rgba(76,175,80,0.3);color:var(--primary);font-family:'Manrope',sans-serif;font-weight:800;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 15px rgba(76,175,80,0.15);transition:all 0.3s ease;z-index:10;">i</button>
         <img src="./pranayama.jpg" alt="Pranayama">
         <h2>Respiración</h2>
         <p>Elige tu patrón · cada respiración es un nuevo comienzo</p>
