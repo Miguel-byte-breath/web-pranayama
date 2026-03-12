@@ -631,7 +631,7 @@
         }
 
         /* --- OVERLAYS --- */
-        #customOverlay, #shareConfigOverlay, #guideOverlay, #psOverlay, #reframeOverlay {
+        #customOverlay, #shareConfigOverlay, #psOverlay, #reframeOverlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -1677,22 +1677,24 @@
     <div style="font-family:'Manrope'; color:#546e7a; font-weight:600;">Preparando...</div>
 </div>
 
-<!-- GUIA OVERLAY -->
-<div id="guideOverlay">
-    <button onclick="document.getElementById('guideOverlay').style.display='none'" style="position:absolute; top:25px; right:25px; background:none; border:none; font-size:2rem; color:#78909c; cursor:pointer; padding:10px; line-height:1; z-index:10;">&times;</button>
-    <h2 class="overlay-title">Guía de Respiración</h2>
-    <p class="overlay-subtitle">Interpretación de símbolos</p>
-    <div class="guide-card">
-        <div class="guide-row"><span class="guide-icon" style="color:var(--c-inhale);">●</span><span><strong>Inhala</strong> — Verde</span></div>
-        <div class="guide-row"><span class="guide-icon" style="color:var(--c-hold);">●</span><span><strong>Pausa/Retén</strong> — Naranja</span></div>
-        <div class="guide-row"><span class="guide-icon" style="color:var(--c-exhale);">●</span><span><strong>Exhala</strong> — Azul</span></div>
-        <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-        <div style="font-size:0.9rem; color:#78909c; margin-bottom:10px;">TIP AVANZADO</div>
-        <div class="guide-row"><span class="guide-icon">👃</span><span><strong>Nariz</strong> — Si ves este icono, inhala o exhala por la nariz.</span></div>
-        <div class="guide-row"><span class="guide-icon">💨</span><span><strong>Boca</strong> — Si ves este icono o añades "b", exhala soplando por la boca.</span></div>
-    </div>
-    <div style="margin-top:40px;">
-        <button class="btn-text" style="background:transparent; color:var(--accent); border:1px solid var(--accent);" onclick="document.getElementById('guideOverlay').style.display='none'">Entendido</button>
+<!-- GUIA PANEL — mismo patrón que focusInfoPanel -->
+<div id="guideOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.98);backdrop-filter:blur(15px);z-index:500;flex-direction:column;align-items:center;justify-content:flex-start;padding:10vh 24px 40px;overflow-y:auto;text-align:left;">
+    <button onclick="document.getElementById('guideOverlay').style.display='none'" style="position:absolute;top:25px;right:25px;background:none;border:none;font-size:2rem;color:#78909c;cursor:pointer;padding:10px;line-height:1;">&times;</button>
+    <div style="max-width:520px;width:100%;">
+        <h2 style="font-family:'Cinzel',serif;color:#37474f;font-size:1.4rem;margin-bottom:6px;text-align:center;">Guía de Respiración</h2>
+        <p style="font-family:'Manrope',sans-serif;font-size:0.9rem;color:#78909c;margin-bottom:28px;text-align:center;">Interpretación de símbolos</p>
+        <div style="background:rgba(255,255,255,0.8);border-radius:14px;padding:20px 22px;margin-bottom:20px;border:1px solid rgba(0,131,143,0.08);">
+            <div class="guide-row"><span class="guide-icon" style="color:var(--c-inhale);">●</span><span><strong>Inhala</strong> — Verde</span></div>
+            <div class="guide-row"><span class="guide-icon" style="color:var(--c-hold);">●</span><span><strong>Pausa/Retén</strong> — Naranja</span></div>
+            <div class="guide-row"><span class="guide-icon" style="color:var(--c-exhale);">●</span><span><strong>Exhala</strong> — Azul</span></div>
+            <hr style="border:0;border-top:1px solid #eee;margin:15px 0;">
+            <div style="font-size:0.85rem;color:#78909c;margin-bottom:10px;font-family:'Manrope',sans-serif;font-weight:600;letter-spacing:0.05em;">TIP AVANZADO</div>
+            <div class="guide-row"><span class="guide-icon">👃</span><span><strong>Nariz</strong> — Si ves este icono, inhala o exhala por la nariz.</span></div>
+            <div class="guide-row"><span class="guide-icon">💨</span><span><strong>Boca</strong> — Si ves este icono o añades "b", exhala soplando por la boca.</span></div>
+        </div>
+        <div style="margin-top:32px;text-align:center;">
+            <button class="btn-text" style="background:transparent;color:var(--accent);border:1px solid var(--accent);" onclick="document.getElementById('guideOverlay').style.display='none'">Entendido</button>
+        </div>
     </div>
 </div>
 
@@ -1802,7 +1804,6 @@
             <ellipse cx="6.5" cy="10.5" rx="4.5" ry="9.5" fill="#2a9d8f" opacity="0.7" transform="rotate(10 6.5 10.5)"/>
         </svg>
     </div>
-    <button class="global-info-btn" onclick="document.getElementById('guideOverlay').style.display='flex'">i</button>
     <div class="menu-title">ELIGE TU RITMO</div>
     <div class="menu-actions">
         <button class="action-btn" onclick="openShareConfig()">
@@ -1851,6 +1852,7 @@
     <!-- Cabecera fija — nunca hace scroll -->
     <div class="breathing-hero">
         <button onclick="closeBreathingOverlay()" style="position:absolute;top:14px;left:14px;background:none;border:none;color:var(--accent);font-family:'Manrope',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;padding:6px 10px;z-index:10;">← Menú</button>
+        <button onclick="document.getElementById('guideOverlay').style.display='flex'" style="position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.9);border:1px solid rgba(76,175,80,0.3);color:var(--primary);font-family:'Manrope',sans-serif;font-weight:800;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 15px rgba(76,175,80,0.15);transition:all 0.3s ease;z-index:10;">i</button>
         <img src="./pranayama.jpg" alt="Pranayama">
         <h2>Respiración</h2>
         <p>Elige tu patrón · cada respiración es un nuevo comienzo</p>
