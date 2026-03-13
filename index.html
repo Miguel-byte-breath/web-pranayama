@@ -1669,6 +1669,20 @@
 </head>
 <body>
 
+<!-- Mostrar píldora inmediatamente si viene con parámetros, antes de renderizar nada -->
+<script>
+(function() {
+    if (new URLSearchParams(window.location.search).has('p')) {
+        document.documentElement.style.overflow = 'hidden';
+        // Inyectar estilo temporal para ocultar todo excepto pillOverlay
+        var s = document.createElement('style');
+        s.id = 'pill-hide-all';
+        s.textContent = 'body > *:not(#pillOverlay) { visibility: hidden !important; } #pillOverlay { display: flex !important; visibility: visible !important; }';
+        document.head.appendChild(s);
+    }
+})();
+</script>
+
 <div class="organic-shape shape-1"></div>
 <div class="organic-shape shape-2"></div>
 
@@ -2035,7 +2049,7 @@
     <h1 style="color:var(--accent); font-family:'Cinzel'; margin-bottom:15px;">Una pausa para ti</h1>
     <h2 id="pillRecipient" style="color:#546e7a; margin-bottom:25px; font-weight:400; font-family:'Manrope';"></h2>
     <p id="pillMessage" style="font-size:1.4rem; font-family:'Cinzel'; color:#37474f; margin-bottom:50px; max-width:600px;"></p>
-    <button class="btn-text" style="background:var(--primary); color:white; padding:16px 50px;" onclick="closePill()">Comenzar</button>
+    <button class="btn-text" style="background:var(--primary); color:white; padding:16px 50px;" onclick="closePill(); start('pill');">Comenzar</button>
 </div>
 
 <!-- APP LAYOUT -->
@@ -2810,6 +2824,10 @@
 
     function closePill() {
         document.getElementById('pillOverlay').style.display = 'none';
+        // Quitar el estilo temporal que ocultaba la app
+        var s = document.getElementById('pill-hide-all');
+        if (s) s.remove();
+        document.documentElement.style.overflow = '';
     }
 
     // CHECK SHARE
@@ -2824,11 +2842,7 @@
             const newPattern = parsePatternString(pString);
             if(newPattern.length >= 2) {
                 patterns['pill'] = newPattern;
-                document.getElementById('pillOverlay').style.display = 'flex';
-                setTimeout(() => {
-                    closePill();
-                    start('pill');
-                }, 800);
+                // El inline script ya mostró el pillOverlay, solo rellenamos datos
             }
         }
     });
