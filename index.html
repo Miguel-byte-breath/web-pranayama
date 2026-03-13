@@ -2035,7 +2035,7 @@
     <h1 style="color:var(--accent); font-family:'Cinzel'; margin-bottom:15px;">Una pausa para ti</h1>
     <h2 id="pillRecipient" style="color:#546e7a; margin-bottom:25px; font-weight:400; font-family:'Manrope';"></h2>
     <p id="pillMessage" style="font-size:1.4rem; font-family:'Cinzel'; color:#37474f; margin-bottom:50px; max-width:600px;"></p>
-    <button class="btn-text" style="background:var(--primary); color:white; padding:16px 50px;" onclick="closePill(); start('pill');">Comenzar</button>
+    <button class="btn-text" style="background:var(--primary); color:white; padding:16px 50px;" onclick="closePill()">Comenzar</button>
 </div>
 
 <!-- APP LAYOUT -->
@@ -2259,12 +2259,6 @@
     });
 
     async function installApp() {
-        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
-                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        if (isIOS) {
-            alert('Para instalar en iPhone/iPad:\n\n1. Pulsa el botón compartir ↑ (barra inferior de Safari)\n2. Pulsa "Añadir a pantalla de inicio"\n3. Pulsa "Añadir"\n\n💡 Si ya la tienes instalada, ábrela desde tu pantalla de inicio.');
-            return;
-        }
         if(deferredPrompt) {
             deferredPrompt.prompt();
             await deferredPrompt.userChoice;
@@ -2775,6 +2769,10 @@
             if(newPattern.length >= 2) {
                 patterns['pill'] = newPattern;
                 document.getElementById('pillOverlay').style.display = 'flex';
+                setTimeout(() => {
+                    closePill();
+                    start('pill');
+                }, 3000);
             }
         }
     });
