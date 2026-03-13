@@ -2258,6 +2258,13 @@
         installBtn.style.display = 'flex';
     });
 
+    // Cuando el sistema confirma la instalación, guardamos el flag
+    window.addEventListener('appinstalled', () => {
+        localStorage.setItem('respira_installed', '1');
+        deferredPrompt = null;
+        installBtn.style.display = 'none';
+    });
+
     async function installApp() {
         const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -2265,28 +2272,28 @@
             alert('Para instalar en iPhone/iPad:\n\n1. Pulsa el botón compartir ↑ (barra inferior de Safari)\n2. Pulsa "Añadir a pantalla de inicio"\n3. Pulsa "Añadir"\n\n💡 Si ya la tienes instalada, ábrela desde tu pantalla de inicio.');
             return;
         }
-        if(deferredPrompt) {
+        if (deferredPrompt) {
             deferredPrompt.prompt();
-            await deferredPrompt.userChoice;
+            const { outcome } = await deferredPrompt.userChoice;
             deferredPrompt = null;
+            if (outcome === 'accepted') {
+                localStorage.setItem('respira_installed', '1');
+                installBtn.style.display = 'none';
+            }
             return;
         }
-        // Standalone: la están abriendo desde la app instalada
+        // Standalone: abierta desde la app instalada
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
             alert('¡La app ya está instalada en tu dispositivo! 🎉');
             return;
         }
-        // getInstalledRelatedApps: detecta si la PWA está instalada aunque estemos en el navegador
-        if ('getInstalledRelatedApps' in navigator) {
-            try {
-                const apps = await navigator.getInstalledRelatedApps();
-                if (apps.length > 0) {
-                    alert('¡La app ya está instalada en tu dispositivo! 🎉\nAbrela desde el menú Inicio, escritorio o barra de tareas.');
-                    return;
-                }
-            } catch(e) {}
+        // Flag local: instaló en este navegador/dispositivo
+        if (localStorage.getItem('respira_installed') === '1') {
+            alert('¡La app ya está instalada! 🎉\nÁbrela desde el menú Inicio, escritorio o barra de tareas.');
+            return;
         }
-        alert('Recarga la página y pulsa de nuevo Instalar App.');
+        // Sin señal clara — mensaje neutro sin bucle
+        alert('Si ya tienes la app instalada, ábrela desde el menú Inicio o escritorio.\n\nSi no la tienes aún, recarga la página y pulsa de nuevo.');
     }
 
     function openCustomModal() {
