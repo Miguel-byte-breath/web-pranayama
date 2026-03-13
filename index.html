@@ -1669,20 +1669,6 @@
 </head>
 <body>
 
-<!-- Mostrar píldora inmediatamente si viene con parámetros, antes de renderizar nada -->
-<script>
-(function() {
-    if (new URLSearchParams(window.location.search).has('p')) {
-        document.documentElement.style.overflow = 'hidden';
-        // Inyectar estilo temporal para ocultar todo excepto pillOverlay
-        var s = document.createElement('style');
-        s.id = 'pill-hide-all';
-        s.textContent = 'body > *:not(#pillOverlay) { visibility: hidden !important; } #pillOverlay { display: flex !important; visibility: visible !important; }';
-        document.head.appendChild(s);
-    }
-})();
-</script>
-
 <div class="organic-shape shape-1"></div>
 <div class="organic-shape shape-2"></div>
 
@@ -2263,80 +2249,30 @@
         if(tip) tip.classList.toggle('visible');
     };
 
-    let deferredPrompt = null;
+    let deferredPrompt;
     const installBtn = document.getElementById('installBtn');
-    const installBtnSpan = installBtn.querySelector('span');
-
-    // Si ya está en standalone (instalada), ocultar botón
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-        installBtn.style.display = 'none';
-    }
 
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        // Restaurar botón a estado normal si estaba esperando
-        installBtn.disabled = false;
-        installBtn.style.opacity = '1';
-        if (installBtnSpan) installBtnSpan.textContent = 'Instalar App';
-        console.log('[PWA] Listo para instalar ✓');
-    });
-
-    window.addEventListener('appinstalled', () => {
-        deferredPrompt = null;
-        installBtn.style.display = 'none';
+        installBtn.style.display = 'flex';
     });
 
     async function installApp() {
-        // Detección iOS/iPadOS — Safari nunca soporta beforeinstallprompt
         const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-
         if (isIOS) {
             alert('Para instalar en iPhone/iPad:\n\n1. Pulsa el botón compartir ↑ (barra inferior de Safari)\n2. Pulsa "Añadir a pantalla de inicio"\n3. Pulsa "Añadir"\n\n💡 Si ya la tienes instalada, ábrela desde tu pantalla de inicio.');
             return;
         }
-
-        // Ya abierta en modo standalone = ya instalada
-        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-            alert('¡La app ya está instalada en tu dispositivo! 🎉');
-            return;
-        }
-
-        if (deferredPrompt) {
-            // Listo — lanzar diálogo nativo
+        if(deferredPrompt) {
             deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
+            await deferredPrompt.userChoice;
             deferredPrompt = null;
-            if (outcome === 'accepted') installBtn.style.display = 'none';
+        } else if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            alert('¡La app ya está instalada en tu dispositivo! 🎉');
         } else {
-            // Esperar hasta 6 segundos a que el navegador valide la PWA
-            installBtn.disabled = true;
-            installBtn.style.opacity = '0.6';
-            if (installBtnSpan) installBtnSpan.textContent = 'Preparando…';
-
-            const ready = await new Promise((resolve) => {
-                const timeout = setTimeout(() => resolve(false), 6000);
-                window.addEventListener('beforeinstallprompt', (e) => {
-                    e.preventDefault();
-                    deferredPrompt = e;
-                    clearTimeout(timeout);
-                    resolve(true);
-                }, { once: true });
-            });
-
-            installBtn.disabled = false;
-            installBtn.style.opacity = '1';
-            if (installBtnSpan) installBtnSpan.textContent = 'Instalar App';
-
-            if (ready && deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                deferredPrompt = null;
-                if (outcome === 'accepted') installBtn.style.display = 'none';
-            } else {
-                alert('Recarga la página y pulsa de nuevo Instalar App.');
-            }
+            alert('Recarga la página y pulsa de nuevo Instalar App.');
         }
     }
 
@@ -2824,10 +2760,6 @@
 
     function closePill() {
         document.getElementById('pillOverlay').style.display = 'none';
-        // Quitar el estilo temporal que ocultaba la app
-        var s = document.getElementById('pill-hide-all');
-        if (s) s.remove();
-        document.documentElement.style.overflow = '';
     }
 
     // CHECK SHARE
@@ -2842,7 +2774,7 @@
             const newPattern = parsePatternString(pString);
             if(newPattern.length >= 2) {
                 patterns['pill'] = newPattern;
-                // El inline script ya mostró el pillOverlay, solo rellenamos datos
+                document.getElementById('pillOverlay').style.display = 'flex';
             }
         }
     });
