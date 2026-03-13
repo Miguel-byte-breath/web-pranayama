@@ -6,6 +6,12 @@
   "background_color": "#eefcfd",
   "theme_color": "#eefcfd",
   "description": "Tu espacio de calma y respiración consciente.",
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://web-pranayama.vercel.app/manifest.json"
+    }
+  ],
   "icons": [
     {
       "src": "icon-192.png",
