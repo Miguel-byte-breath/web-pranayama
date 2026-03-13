@@ -2269,11 +2269,24 @@
             deferredPrompt.prompt();
             await deferredPrompt.userChoice;
             deferredPrompt = null;
-        } else if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-            alert('¡La app ya está instalada en tu dispositivo! 🎉');
-        } else {
-            alert('Recarga la página y pulsa de nuevo Instalar App.');
+            return;
         }
+        // Standalone: la están abriendo desde la app instalada
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            alert('¡La app ya está instalada en tu dispositivo! 🎉');
+            return;
+        }
+        // getInstalledRelatedApps: detecta si la PWA está instalada aunque estemos en el navegador
+        if ('getInstalledRelatedApps' in navigator) {
+            try {
+                const apps = await navigator.getInstalledRelatedApps();
+                if (apps.length > 0) {
+                    alert('¡La app ya está instalada en tu dispositivo! 🎉\nAbrela desde el menú Inicio, escritorio o barra de tareas.');
+                    return;
+                }
+            } catch(e) {}
+        }
+        alert('Recarga la página y pulsa de nuevo Instalar App.');
     }
 
     function openCustomModal() {
