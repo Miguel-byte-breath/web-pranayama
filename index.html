@@ -1305,6 +1305,78 @@
         .focus-card.green { border-left: 4px solid #66bb6a; }
 
         /* ── HAZ FOCO — PANTALLA SESIÓN ── */
+        /* ── Timer selector scroll ── */
+        .focus-timer-selector {
+            width: 100%;
+            max-width: 340px;
+            margin: 0 auto 24px;
+            text-align: center;
+        }
+        .focus-timer-label-top {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .focus-timer-scroll {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            position: relative;
+            height: 130px;
+            overflow: hidden;
+            cursor: ns-resize;
+            user-select: none;
+        }
+        .focus-timer-scroll::before,
+        .focus-timer-scroll::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0;
+            height: 44px;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .focus-timer-scroll::before { top: 0; background: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); }
+        .focus-timer-scroll::after  { bottom: 0; background: linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0)); }
+        .focus-timer-scroll-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s ease;
+        }
+        .focus-timer-item {
+            height: 44px;
+            min-width: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Manrope', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #b0bec5;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        .focus-timer-item.selected {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: rgba(0,131,143,0.08);
+        }
+        .focus-session-countdown {
+            font-size: 0.78rem;
+            font-family: 'Manrope', sans-serif;
+            color: #90a4ae;
+            margin-top: 4px;
+            min-height: 18px;
+        }
+
         #focusSessionOverlay {
             position: fixed;
             top: 0; left: 0;
@@ -1968,6 +2040,15 @@
         </div>
     </div>
 
+    <!-- Selector de tiempo tipo scroll -->
+    <div class="focus-timer-selector">
+        <div class="focus-timer-label-top">⏱ Duración de la sesión</div>
+        <div class="focus-timer-scroll" id="focusTimerScroll">
+            <div class="focus-timer-scroll-inner" id="focusTimerInner"></div>
+        </div>
+        <div class="focus-session-countdown" id="focusTimerHint">Sin límite de tiempo</div>
+    </div>
+
     <div class="focus-cards">
         <div class="focus-card brown" onclick="startFocusSession('brown')">
             <div class="focus-card-header">
@@ -2006,7 +2087,7 @@
 
     <div class="focus-orb" id="focusOrb">
         <div class="focus-timer" id="focusTimer">00:00</div>
-        <div class="focus-timer-label">en curso</div>
+        <div class="focus-timer-label" id="focusTimerLabel">en curso</div>
     </div>
 
     <!-- Selector de modo -->
@@ -3016,14 +3097,87 @@ let focusCurrentType = null;
 let focusMasterGain = null;
 let focusToneGain = null;   // ganancia independiente del tono
 let focusNoiseGain = null;  // ganancia independiente del ruido
+let focusCountdownTotal = 0;   // segundos totales elegidos (0 = sin límite)
+let focusTimerIndex = 0;       // índice seleccionado en el scroll
 let focusMode = 'both';     // 'both' | 'noise' | 'tone'
 
 function openFocusSelect() {
+    initFocusTimerScroll();
     document.getElementById('focusSelectOverlay').style.display = 'flex';
 }
 
 function closeFocusSelect() {
     document.getElementById('focusSelectOverlay').style.display = 'none';
+}
+
+// Opciones del selector de tiempo
+const FOCUS_DURATIONS = [
+    { label: 'Sin límite', seconds: 0 },
+    { label: '5 min',  seconds: 5 * 60 },
+    { label: '10 min', seconds: 10 * 60 },
+    { label: '15 min', seconds: 15 * 60 },
+    { label: '20 min', seconds: 20 * 60 },
+    { label: '25 min', seconds: 25 * 60 },
+    { label: '30 min', seconds: 30 * 60 },
+    { label: '45 min', seconds: 45 * 60 },
+    { label: '60 min', seconds: 60 * 60 },
+    { label: '90 min', seconds: 90 * 60 },
+];
+
+function initFocusTimerScroll() {
+    const inner = document.getElementById('focusTimerInner');
+    inner.innerHTML = '';
+    FOCUS_DURATIONS.forEach((d, i) => {
+        const el = document.createElement('div');
+        el.className = 'focus-timer-item' + (i === focusTimerIndex ? ' selected' : '');
+        el.textContent = d.label;
+        el.dataset.index = i;
+        inner.appendChild(el);
+    });
+    updateFocusTimerScroll();
+
+    // Scroll con rueda del ratón
+    const scroll = document.getElementById('focusTimerScroll');
+    scroll.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (e.deltaY > 0 && focusTimerIndex < FOCUS_DURATIONS.length - 1) focusTimerIndex++;
+        else if (e.deltaY < 0 && focusTimerIndex > 0) focusTimerIndex--;
+        updateFocusTimerScroll();
+    }, { passive: false });
+
+    // Touch/drag
+    let startY = 0, lastY = 0;
+    scroll.addEventListener('touchstart', (e) => { startY = lastY = e.touches[0].clientY; });
+    scroll.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const dy = lastY - e.touches[0].clientY;
+        lastY = e.touches[0].clientY;
+        if (Math.abs(dy) > 8) {
+            if (dy > 0 && focusTimerIndex < FOCUS_DURATIONS.length - 1) focusTimerIndex++;
+            else if (dy < 0 && focusTimerIndex > 0) focusTimerIndex--;
+            updateFocusTimerScroll();
+        }
+    }, { passive: false });
+
+    // Click en item
+    inner.addEventListener('click', (e) => {
+        const item = e.target.closest('.focus-timer-item');
+        if (item) { focusTimerIndex = parseInt(item.dataset.index); updateFocusTimerScroll(); }
+    });
+}
+
+function updateFocusTimerScroll() {
+    const items = document.querySelectorAll('.focus-timer-item');
+    items.forEach((el, i) => el.classList.toggle('selected', i === focusTimerIndex));
+    // Centrar item seleccionado
+    const inner = document.getElementById('focusTimerInner');
+    const offset = -focusTimerIndex * 44 + 43;
+    inner.style.transform = `translateY(${offset}px)`;
+    // Hint
+    const hint = document.getElementById('focusTimerHint');
+    const d = FOCUS_DURATIONS[focusTimerIndex];
+    hint.textContent = d.seconds === 0 ? 'Sin límite de tiempo' : `La sesión se detendrá a los ${d.label}`;
+    focusCountdownTotal = d.seconds;
 }
 
 function startFocusSession(type) {
@@ -3042,7 +3196,17 @@ function startFocusSession(type) {
     focusRunning = false;
     focusSeconds = 0;
     focusMode = 'both';
-    document.getElementById('focusTimer').textContent = '00:00';
+    // Mostrar tiempo límite o cronómetro ascendente
+    const totalSecs = focusCountdownTotal;
+    if (totalSecs > 0) {
+        const m = String(Math.floor(totalSecs / 60)).padStart(2, '0');
+        const s = String(totalSecs % 60).padStart(2, '0');
+        document.getElementById('focusTimer').textContent = `${m}:${s}`;
+        document.getElementById('focusTimerLabel').textContent = 'restante';
+    } else {
+        document.getElementById('focusTimer').textContent = '00:00';
+        document.getElementById('focusTimerLabel').textContent = 'en curso';
+    }
     document.getElementById('focusMainBtn').textContent = 'Iniciar';
     document.getElementById('focusVolume').value = 70;
     // Reset selector de modo
@@ -3062,10 +3226,44 @@ function toggleFocusSession() {
         document.getElementById('focusMainBtn').textContent = 'Pausar';
         startFocusAudio(focusCurrentType);
         focusInterval = setInterval(() => {
-            focusSeconds++;
-            const m = String(Math.floor(focusSeconds / 60)).padStart(2, '0');
-            const s = String(focusSeconds % 60).padStart(2, '0');
-            document.getElementById('focusTimer').textContent = `${m}:${s}`;
+            if (focusCountdownTotal > 0) {
+                // Cuenta regresiva
+                const remaining = focusCountdownTotal - focusSeconds - 1;
+                if (remaining <= 0) {
+                    // Tiempo agotado — fade out y aviso
+                    clearInterval(focusInterval);
+                    focusRunning = false;
+                    document.getElementById('focusTimer').textContent = '00:00';
+                    document.getElementById('focusTimerLabel').textContent = 'completado ✓';
+                    document.getElementById('focusMainBtn').textContent = 'Iniciar';
+                    // Fade out suave del audio (3 segundos)
+                    if (focusAudioCtx && focusNoiseGain && focusToneGain) {
+                        const t = focusAudioCtx.currentTime;
+                        focusNoiseGain.gain.linearRampToValueAtTime(0, t + 3);
+                        focusToneGain.gain.linearRampToValueAtTime(0, t + 3);
+                        setTimeout(() => {
+                            stopFocusAudio();
+                            // Aviso visual en el orbe
+                            const orb = document.getElementById('focusOrb');
+                            orb.style.background = 'radial-gradient(circle at 40% 35%, #a5d6a7, #43a047)';
+                            setTimeout(() => {
+                                alert('✅ Sesión completada\n\n¡Bien hecho! Has completado tu sesión de foco.');
+                            }, 200);
+                        }, 3100);
+                    }
+                    return;
+                }
+                focusSeconds++;
+                const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+                const s = String(remaining % 60).padStart(2, '0');
+                document.getElementById('focusTimer').textContent = `${m}:${s}`;
+            } else {
+                // Cronómetro ascendente (sin límite)
+                focusSeconds++;
+                const m = String(Math.floor(focusSeconds / 60)).padStart(2, '0');
+                const s = String(focusSeconds % 60).padStart(2, '0');
+                document.getElementById('focusTimer').textContent = `${m}:${s}`;
+            }
         }, 1000);
     } else {
         focusRunning = false;
