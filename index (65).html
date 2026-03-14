@@ -1,0 +1,3260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Respira • Tu Espacio de Calma</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#eefcfd">
+    <meta name="description" content="Una aplicación minimalista para respirar, relajarse y leer.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;700&family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* --- 1. BASE VARIABLES --- */
+        :root {
+            --dune-light: #eefcfd;
+            --dune-mid: #e0f7fa;
+            --text-main: #37474f;
+            --text-muted: #78909c;
+            --primary: #4CAF50;
+            --accent: #00838f;
+            --substack-orange: #FF6719;
+            --organic-blue: #80deea;
+            --organic-gold: #fff9c4;
+            --bg-zen: #e0f2f1;
+            --c-inhale: #81c784;
+            --c-inhale: #4CAF50;
+            --c-hold: #FF9800;
+            --c-exhale: #2196F3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+                body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Manrope', sans-serif;
+            color: var(--text-main);
+            height: 100dvh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            /* Fondo ZEN sutil - tonos pastel suaves */
+            background: linear-gradient(135deg, #f5f9f9 0%, #e8f4f5 50%, #f0f7f8 100%);
+            background-size: 200% 200%;
+            animation: organicGradient 20s ease infinite;
+        }
+
+
+        /* Animación del fondo */
+        @keyframes organicGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- 2. LAYOUT GENERAL CORREGIDO --- */
+        .app-layout {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            /* --- CAMBIO CRÍTICO --- Elevamos toda la app al piso 2 para que NADA la tape */
+            position: relative;
+            z-index: 2;
+        }
+
+        .top-bar {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            z-index: 50;
+            height: 60px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .top-left, .top-right {
+            pointer-events: auto;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .badge {
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(10px);
+            color: var(--accent);
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .btn-icon {
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.3);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            color: var(--text-main);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .btn-icon:hover {
+            background: rgba(255,255,255,0.9);
+            transform: translateY(-2px);
+        }
+
+        .btn-icon:active {
+            transform: scale(0.95);
+        }
+
+        /* V1.3.0 Estado ACTIVO para botones toggle Metronomo y Frases */
+        .btn-icon.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(0, 131, 143, 0.4);
+        }
+
+        .btn-text {
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 14px;
+            flex-shrink: 0;
+            border-radius: 30px;
+            color: var(--text-main);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        /* --- 3. ESCENARIO CENTRAL --- */
+        .stage-container {
+            flex: 1;
+            display: flex;
+            width: 100%;
+            position: relative;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 10px 0;
+        }
+
+        .panel-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            width: 100%;
+            min-height: 90px;
+        }
+
+        .panel-center {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 60px 0;
+            flex-shrink: 0;
+        }
+
+        .phase-text {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 400;
+            letter-spacing: 2px;
+            color: var(--accent);
+            text-transform: uppercase;
+            text-align: center;
+            white-space: nowrap;
+            transition: color 0.5s ease;
+            text-shadow: 0 10px 30px rgba(168, 206, 212, 0.4);
+            z-index: 30;
+            margin-bottom: 5px;
+        }
+
+        .mode-indicator {
+            margin-top: 10px;
+            font-size: 2.5rem;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.5s ease;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            z-index: 50;
+        }
+
+        .mode-indicator.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .quote {
+            padding: 0 25px;
+            color: var(--text-muted);
+            font-family: 'Cinzel', serif;
+            font-size: 1.15rem;
+            text-align: center;
+            max-width: 500px;
+            line-height: 1.6;
+            z-index: 30;
+            margin-top: 10px;
+            /* V1.3.0 Altura mínima para evitar saltos y transición suave */
+            min-height: 2em;
+            transition: opacity 0.6s ease;
+        }
+
+        .sphere-wrapper {
+            position: relative;
+            width: min(50vw, 260px);
+            height: min(50vw, 260px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+       .sphere {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), var(--c-phase));
+            box-shadow: 
+                0 20px 70px var(--c-phase),
+                inset 0 0 20px rgba(255,255,255,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            
+            /* Esto mejora el rendimiento pero NO anima el movimiento */
+            will-change: transform, background;
+            transform: scale(0.8); 
+            
+            /* --- CORRECCIÓN CRÍTICA --- */
+            /* SOLO animamos el color y la sombra. */
+            /* ELIMINAMOS 'transform' de aquí para que el JS tenga el control total */
+            transition: background 0.1s linear, box-shadow 0.1s linear;
+        }
+
+        .counter-big {
+            font-family: 'Manrope', sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 15px rgba(0,0,0,0.15);
+            line-height: 1;
+        }
+
+        .sphere-label {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            z-index: 25;
+        }
+
+        .p-num {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.6);
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
+
+        .p-mode-sub {
+            font-size: 0.6em;
+            vertical-align: super;
+            opacity: 0.8;
+            margin-left:1px;
+        }
+
+        .p-sep {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .p-num.active {
+            color: #fff;
+            font-weight: 800;
+            transform: scale(1.4);
+            text-shadow: 0 0 12px rgba(255,255,255,1);
+        }
+
+        /* --- 4. VISUALIZADOR --- */
+        .bottom-viz {
+            flex-shrink: 0;
+            width: 100%;
+            height: 90px;
+            margin: 0 auto 4vh auto;
+            position: relative;
+            z-index: 15;
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
+        }
+
+        #breathGraph {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* --- 5. MENÚ SELECCIÓN --- */
+        #selectionMenu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(238, 252, 253, 0.95);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            transition: opacity 0.4s ease;
+        }
+
+        /* --- HOJAS AL VIENTO --- */
+        .leaves-container {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .leaf {
+            position: absolute;
+            top: -40px;
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+
+        /* Posiciones horizontales de entrada */
+        .lf1 { left: 8%;   animation: fall1 9s  ease-in-out infinite; animation-delay: 0s;   }
+        .lf2 { left: 22%;  animation: fall2 12s ease-in-out infinite; animation-delay: 2.5s; }
+        .lf3 { left: 41%;  animation: fall3 8s  ease-in-out infinite; animation-delay: 5s;   }
+        .lf4 { left: 60%;  animation: fall4 11s ease-in-out infinite; animation-delay: 1.5s; }
+        .lf5 { left: 75%;  animation: fall5 10s ease-in-out infinite; animation-delay: 3.5s; }
+        .lf6 { left: 88%;  animation: fall6 13s ease-in-out infinite; animation-delay: 7s;   }
+
+        /* Caída: desde top:-40px hasta ~33vh, con vaivén lateral y giro */
+        @keyframes fall1 {
+            0%   { transform: translate(0px, 0)      rotate(0deg)   scale(1);   opacity: 0;    }
+            8%   { opacity: 0.7; }
+            50%  { transform: translate(28px, 16vh)  rotate(120deg) scale(0.95); opacity: 0.6; }
+            85%  { transform: translate(-10px, 30vh) rotate(210deg) scale(0.9);  opacity: 0.2; }
+            100% { transform: translate(15px, 34vh)  rotate(260deg) scale(0.85); opacity: 0;   }
+        }
+        @keyframes fall2 {
+            0%   { transform: translate(0px, 0)      rotate(30deg)  scale(1);    opacity: 0;   }
+            8%   { opacity: 0.65; }
+            45%  { transform: translate(-22px, 14vh) rotate(150deg) scale(0.95); opacity: 0.55;}
+            80%  { transform: translate(18px, 28vh)  rotate(230deg) scale(0.9);  opacity: 0.2; }
+            100% { transform: translate(-5px, 34vh)  rotate(280deg) scale(0.85); opacity: 0;   }
+        }
+        @keyframes fall3 {
+            0%   { transform: translate(0px, 0)      rotate(15deg)  scale(1);    opacity: 0;   }
+            10%  { opacity: 0.7; }
+            40%  { transform: translate(35px, 13vh)  rotate(100deg) scale(0.95); opacity: 0.6; }
+            75%  { transform: translate(10px, 27vh)  rotate(190deg) scale(0.9);  opacity: 0.25;}
+            100% { transform: translate(25px, 34vh)  rotate(240deg) scale(0.85); opacity: 0;   }
+        }
+        @keyframes fall4 {
+            0%   { transform: translate(0px, 0)       rotate(-20deg) scale(1);    opacity: 0;   }
+            9%   { opacity: 0.6; }
+            50%  { transform: translate(-30px, 15vh)  rotate(110deg) scale(0.95); opacity: 0.5; }
+            82%  { transform: translate(-8px, 29vh)   rotate(200deg) scale(0.9);  opacity: 0.2; }
+            100% { transform: translate(-20px, 34vh)  rotate(250deg) scale(0.85); opacity: 0;   }
+        }
+        @keyframes fall5 {
+            0%   { transform: translate(0px, 0)      rotate(10deg)  scale(1);    opacity: 0;   }
+            8%   { opacity: 0.65; }
+            45%  { transform: translate(25px, 14vh)  rotate(130deg) scale(0.95); opacity: 0.55;}
+            78%  { transform: translate(-15px, 28vh) rotate(220deg) scale(0.9);  opacity: 0.2; }
+            100% { transform: translate(10px, 34vh)  rotate(270deg) scale(0.85); opacity: 0;   }
+        }
+        @keyframes fall6 {
+            0%   { transform: translate(0px, 0)       rotate(-10deg) scale(1);    opacity: 0;   }
+            10%  { opacity: 0.6; }
+            48%  { transform: translate(-28px, 15vh)  rotate(140deg) scale(0.95); opacity: 0.5; }
+            80%  { transform: translate(12px, 29vh)   rotate(215deg) scale(0.9);  opacity: 0.2; }
+            100% { transform: translate(-5px, 34vh)   rotate(260deg) scale(0.85); opacity: 0;   }
+        }
+
+        /* --- BOTONES Y TEXTOS --- */
+        .global-info-btn {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            color: var(--primary);
+            font-family: 'Manrope', sans-serif;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.15);
+            transition: all 0.3s ease;
+            z-index: 110;
+        }
+
+        .global-info-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .menu-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem;
+            color: #263238;
+            margin-bottom: 30px;
+            letter-spacing: 0.1em;
+            font-weight: 500;
+            text-align: center;
+            background: -webkit-linear-gradient(45deg, #263238, #546e7a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .menu-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .action-btn {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.05);
+            padding: 12px 20px;
+            border-radius: 30px;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 450px;
+            max-height: 55vh;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        /* --- TARJETAS --- */
+        .menu-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 16px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 10px rgba(178, 235, 242, 0.1);
+            position: relative;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-3px) scale(1.01);
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 10px 25px rgba(178, 235, 242, 0.3);
+        }
+
+        .menu-card h3 {
+            color: #37474f;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+            font-weight: 700;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .menu-card p {
+            color: #78909c;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .menu-card.custom-card {
+            border: 2px dashed rgba(0, 131, 143, 0.3);
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .menu-card.custom-card h3 {
+            color: var(--accent);
+        }
+
+        /* --- SUBSTACK CARD PRO --- */
+        .substack-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, #F0FFF4 50%, #E0F2F1 100%);
+            border: 1px solid rgba(255, 103, 25, 0.15);
+            border-radius: 16px;
+            padding: 25px 22px;
+            min-height: 100px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(200, 230, 201, 0.4);
+            transition: all 0.4s ease;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 15px;
+            flex-wrap: nowrap;
+        }
+
+        .substack-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, transparent 70%);
+            opacity: 0.6;
+            pointer-events: none;
+            transform: rotate(30deg);
+        }
+
+        .substack-card:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(200, 230, 201, 0.6), 0 0 10px rgba(255, 103, 25, 0.1);
+        }
+
+        .substack-icon {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            z-index: 2;
+        }
+
+        .substack-content {
+            z-index: 2;
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .substack-label {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #78909c;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .substack-title {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #263238;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+
+        .substack-author {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.9rem;
+            color: var(--substack-orange);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* --- OVERLAYS --- */
+        #customOverlay, #shareConfigOverlay, #psOverlay, #reframeOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 150;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 15vh;
+            overflow-y: auto;
+            backdrop-filter: blur(15px);
+            text-align: center;
+        }
+
+        /* --- REFRAME OVERLAY --- */
+        .reframe-textarea {
+            width: 100%;
+            max-width: 480px;
+            min-height: 120px;
+            padding: 18px 20px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-main);
+            background: rgba(255,255,255,0.8);
+            border: 1.5px solid rgba(0,131,143,0.25);
+            border-radius: 16px;
+            resize: none;
+            outline: none;
+            line-height: 1.6;
+            transition: border-color 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .reframe-textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .reframe-textarea::placeholder {
+            color: #b0bec5;
+        }
+
+        .reframe-result {
+            width: 100%;
+            max-width: 480px;
+            background: linear-gradient(135deg, rgba(232,245,233,0.9), rgba(224,247,250,0.9));
+            border: 1px solid rgba(0,131,143,0.15);
+            border-radius: 16px;
+            padding: 22px 24px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.05rem;
+            color: var(--text-main);
+            line-height: 1.7;
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .reframe-result.visible {
+            display: block;
+        }
+
+        .reframe-spinner {
+            display: none;
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(0,131,143,0.15);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 10px auto;
+        }
+
+        .reframe-spinner.visible {
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .reframe-label {
+            font-size: 0.75rem;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .reframe-new-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 8px 0;
+            font-family: 'Manrope', sans-serif;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .reframe-new-btn:hover {
+            color: var(--accent);
+        }
+
+        .reframe-error {
+            color: #e57373;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .reframe-error.visible {
+            display: block;
+        }
+
+        .overlay-title {
+            font-family:'Cinzel';
+            color:var(--text-main);
+            margin-bottom:10px;
+            font-size: 1.5rem;
+        }
+
+        .overlay-subtitle {
+            color:var(--text-muted);
+            margin-bottom:30px;
+            font-size: 0.95rem;
+        }
+
+        .custom-input-container {
+            position: relative;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .big-input {
+            font-size: 2.8rem;
+            font-family: 'Manrope', sans-serif;
+            font-weight: 300;
+            border: none;
+            border-bottom: 2px solid var(--accent);
+            background: transparent;
+            color: var(--text-main);
+            width: 320px;
+            text-align: center;
+            letter-spacing: 2px;
+            outline: none;
+            padding-bottom: 5px;
+            border-radius: 0;
+        }
+
+        .normal-input {
+            width: 80%;
+            max-width: 300px;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #cfd8dc;
+            border-radius: 10px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 1rem;
+            color: var(--text-main);
+            background: #fcfcfc;
+            outline: none;
+            text-align: center;
+        }
+
+        .normal-input:focus {
+            border-color: var(--accent);
+            background: white;
+        }
+
+        .info-bubble {
+            width: 32px;
+            height: 32px;
+            background: var(--text-muted);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 15px;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* TOOLTIP DE AYUDA Estilo Burbuja */
+        .info-tooltip {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-85%);
+            width: 290px;
+            background: #37474f;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 200;
+            text-align: left;
+        }
+
+        .info-tooltip.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .info-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: 20%;
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent transparent #37474f transparent;
+        }
+
+        /* FIX UX Close button for tooltip */
+        .close-tooltip {
+            float: right;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #cfd8dc;
+            margin: -10px -5px 0 0;
+            font-weight: 300;
+        }
+
+        .close-tooltip:hover {
+            color: white;
+        }
+
+        /* GUIA ICONOS CARD */
+        .guide-card {
+            background: white;
+            border:1px solid #eee;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 90%;
+            width: 350px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            text-align: left;
+        }
+
+        .guide-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 15px;
+            font-size: 1rem;
+            color: #546e7a;
+        }
+
+        .guide-icon {
+            width: 30px;
+            text-align: center;
+            font-size: 1.4rem;
+        }
+
+        /* REFUGIO/SUBSTACK OVERLAY MÓVIL VERTICAL Diseño original aireado */
+        .refugio-card {
+            background: white;
+            border: 1px solid #EEE;
+            border-radius: 16px;
+            max-width: 380px;
+            width: 90%;
+            padding: 30px 30px 45px 30px; /* Aire original */
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .refugio-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--substack-orange);
+        }
+
+        .refugio-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6rem;
+            color: #2c2c2c;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .refugio-author {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.95rem;
+            color: var(--substack-orange);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 25px; /* Aire original */
+        }
+
+        .refugio-excerpt {
+            font-family: 'Manrope', sans-serif;
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.6;
+            font-style: italic;
+            margin-bottom: 35px; /* Aire original */
+        }
+
+        .refugio-btn {
+            display: inline-block;
+            text-decoration: none;
+            background: var(--substack-orange);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-family: 'Manrope', sans-serif;
+            box-shadow: 0 5px 15px rgba(255, 103, 25, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .refugio-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 103, 25, 0.4);
+        }
+
+        /* --- PILL SHARE --- */
+        #pillOverlay, #shareModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        #shareText {
+            width: 100%;
+            max-width: 400px;
+            height: 100px;
+            border: 1px solid #cfd8dc;
+            border-radius: 12px;
+            padding: 15px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.9rem;
+            color: #546e7a;
+            margin-bottom: 25px;
+            background: #fcfcfc;
+            resize: none;
+            outline: none;
+        }
+
+        .share-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-wa, .btn-copy {
+            padding: 14px 28px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            color: white;
+        }
+
+        .btn-wa {
+            background: #25D366;
+        }
+
+        .btn-copy {
+            background: #546e7a;
+        }
+
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.8);
+            z-index: 400;
+            backdrop-filter: blur(5px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- MEDIA QUERIES PC FIX --- */
+        @media (min-width: 768px), (orientation: landscape) {
+            #substackOverlay {
+                justify-content: center;
+                padding-top: 20px;
+            }
+
+            .refugio-card {
+                max-width: 500px;
+                padding: 25px 40px;
+            }
+
+            .refugio-excerpt {
+                margin-bottom: 25px;
+            }
+
+            .app-layout {
+                grid-template-rows: 60px 1fr 80px;
+            }
+
+            .stage-container {
+                flex-direction: row;
+                justify-content: space-around;
+                padding: 0 4vw;
+            }
+
+            .sphere-wrapper {
+                width: 50vh;
+                height: 50vh;
+            }
+
+            .sphere {
+                width: 65%;
+                height: 65%;
+            }
+
+            /* Escalar el patrón respiratorio para que no se salga de la esfera en landscape */
+            .sphere-label {
+                gap: 3px;
+                margin-top: 6px;
+            }
+
+            .p-num {
+                font-size: 0.65rem;
+            }
+
+            .p-sep {
+                font-size: 0.6rem;
+            }
+
+            .counter-big {
+                font-size: 2.8rem;
+            }
+
+            .bottom-viz {
+                height: 70px;
+                width: 80%;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr 1fr;
+                max-width: 800px;
+                gap:25px;
+            }
+
+            #customOverlay, #shareConfigOverlay, #guideOverlay {
+                padding-top: 5vh;
+                justify-content: center;
+            }
+        }
+
+        /* --- ADORNOS ORGÁNICOS REVISIÓN FINAL --- */
+                .organic-shape {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(80px); /* Blur más difuso */
+            z-index: 0;
+            opacity: 0.15; /* MUY sutil */
+            pointer-events: none;
+            animation: floatOrganic 25s infinite alternate ease-in-out;
+        }
+
+        .shape-1 { /* Azul aguamarina suave */
+            background: #b2dfdb;
+            top: -150px;
+            right: -150px;
+        }
+
+        .shape-2 { /* Verde menta suave */
+            background: #c8e6c9;
+            bottom: -200px;
+            left: -150px;
+            animation-delay: -8s;
+        }
+
+
+               @keyframes floatOrganic {
+            from {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            to {
+                transform: translate(60px, 60px) rotate(20deg);
+            }
+        }
+/* --- NUEVO: ESTILOS MODO INVIERNO --- */
+    /* 1. El vídeo de fondo (invisible por defecto) */
+    .video-background {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        object-fit: cover; /* Cubre toda la pantalla sin deformarse */
+        z-index: -1; /* Se queda al fondo */
+        opacity: 0; /* Invisible */
+        transition: opacity 1.5s ease; /* Transición muy suave */
+        pointer-events: none; /* Los clicks lo atraviesan */
+    }
+
+    /* 2. Cuando se activa la clase .winter-mode... */
+    .app-layout.winter-mode .video-background {
+        opacity: 1; /* ...aparece el vídeo */
+    }
+    
+    .app-layout.winter-mode .organic-shape {
+        opacity: 0 !important; /* ...y desaparecen las formas de colores */
+    }
+
+    /* 3. Ajuste de lectura: Texto blanco con sombra para que destaque sobre la nieve */
+    .app-layout.winter-mode .phase-text,
+    .app-layout.winter-mode .counter-big,
+    .app-layout.winter-mode .sphere-label {
+        color: #ffffff !important;
+        text-shadow: 0 0 8px rgba(0,0,0,0.9), 0 2px 20px rgba(0,0,0,0.7), 0 0 40px rgba(0,0,0,0.4);
+    }
+    .app-layout.winter-mode .p-num,
+    .app-layout.winter-mode .p-sep {
+    text-shadow: 0 0 6px rgba(0,0,0,0.9), 0 1px 8px rgba(0,0,0,0.7);
+    }
+        
+    /* Pequeño detalle: oscurecer un poco la barra superior para que se vean los iconos blancos */
+        .app-layout.winter-mode .top-bar button {
+        color: white;
+        text-shadow: 0 1px 5px rgba(0,0,0,0.5);
+    }
+
+        /* ── HAZ FOCO — OVERLAY SELECCIÓN ── */
+        #focusSelectOverlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(15px);
+            z-index: 150;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 12vh;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .focus-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+            max-width: 460px;
+            margin-top: 30px;
+            padding: 0 5px;
+        }
+
+        .focus-card {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(0,131,143,0.15);
+            border-radius: 18px;
+            padding: 22px 24px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.35s cubic-bezier(0.25,0.8,0.25,1);
+            box-shadow: 0 4px 14px rgba(0,131,143,0.07);
+        }
+
+        .focus-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 10px 28px rgba(0,131,143,0.15);
+        }
+
+        .focus-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .focus-card-dot {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .focus-card h3 {
+            font-family: 'Manrope', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #37474f;
+            margin: 0;
+        }
+
+        .focus-card p {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.88rem;
+            color: #78909c;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .focus-card .focus-freq {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--accent);
+            background: rgba(0,131,143,0.08);
+            border-radius: 20px;
+            padding: 3px 10px;
+            letter-spacing: 0.5px;
+        }
+
+        /* colores por tipo */
+        .focus-card.brown .focus-card-dot { background: #8d6e63; }
+        .focus-card.brown { border-left: 4px solid #8d6e63; }
+        .focus-card.pink  .focus-card-dot { background: #e91e8c; }
+        .focus-card.pink  { border-left: 4px solid #f06292; }
+        .focus-card.green .focus-card-dot { background: #43a047; }
+        .focus-card.green { border-left: 4px solid #66bb6a; }
+
+        /* ── HAZ FOCO — PANTALLA SESIÓN ── */
+        #focusSessionOverlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(160deg, #e8f5e9 0%, #e0f7fa 60%, #f1f8e9 100%);
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .focus-session-type {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .focus-session-name {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            color: #37474f;
+            margin-bottom: 6px;
+        }
+
+        .focus-session-freq {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.9rem;
+            color: #78909c;
+            margin-bottom: 40px;
+        }
+
+        .focus-orb {
+            width: min(52vw, 220px);
+            height: min(52vw, 220px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-bottom: 36px;
+            transition: background 1s ease, box-shadow 1s ease;
+            box-shadow: 0 20px 60px rgba(0,131,143,0.15), inset 0 0 30px rgba(255,255,255,0.5);
+            animation: focusPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes focusPulse {
+            0%, 100% { transform: scale(1);    box-shadow: 0 20px 60px rgba(0,131,143,0.15); }
+            50%       { transform: scale(1.04); box-shadow: 0 28px 80px rgba(0,131,143,0.25); }
+        }
+
+        .focus-timer {
+            font-family: 'Manrope', sans-serif;
+            font-size: 2.6rem;
+            font-weight: 300;
+            color: white;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.15);
+            line-height: 1;
+        }
+
+        .focus-timer-label {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.8);
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .focus-controls {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .focus-btn-main {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 44px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0,131,143,0.3);
+        }
+
+        .focus-btn-main:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(0,131,143,0.4);
+        }
+
+        .focus-btn-stop {
+            background: transparent;
+            color: #78909c;
+            border: 1.5px solid #cfd8dc;
+            border-radius: 50px;
+            padding: 14px 28px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .focus-btn-stop:hover {
+            border-color: #90a4ae;
+            color: #546e7a;
+        }
+
+        .focus-volume {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 28px;
+            opacity: 0.7;
+        }
+
+        .focus-volume input[type=range] {
+            -webkit-appearance: none;
+            width: 140px;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(0,131,143,0.2);
+            outline: none;
+        }
+
+        .focus-volume input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+        }
+
+        .focus-volume-label {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.8rem;
+            color: #78909c;
+        }
+
+        /* ── HAZ FOCO — SELECTOR DE MODO ── */
+        .focus-mode-selector {
+            display: flex;
+            gap: 6px;
+            background: rgba(0,131,143,0.07);
+            border-radius: 30px;
+            padding: 5px;
+            margin-bottom: 24px;
+        }
+
+        .focus-mode-btn {
+            background: transparent;
+            border: none;
+            border-radius: 24px;
+            padding: 7px 14px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #78909c;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .focus-mode-btn.active {
+            background: white;
+            color: var(--accent);
+            box-shadow: 0 2px 8px rgba(0,131,143,0.15);
+        }
+
+        .focus-174-note {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.78rem;
+            color: #90a4ae;
+            margin-top: -16px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* ── OVERLAY RESPIRACIÓN ── */
+        #breathingOverlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(15px);
+            z-index: 150;
+            display: none;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .breathing-scroll-inner {
+            flex: 1 1 auto;
+            width: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 0;
+        }
+
+        .breathing-hero {
+            flex-shrink: 0;
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 44px 20px 20px;
+            background: linear-gradient(160deg, #e8f5e9 0%, #e0f7fa 100%);
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        .breathing-hero img {
+            width: clamp(100px, 22vw, 180px);
+            height: clamp(100px, 22vw, 180px);
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            box-shadow: 0 8px 28px rgba(0,131,143,0.18);
+            flex-shrink: 0;
+        }
+
+        .breathing-hero h2 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            color: #37474f;
+            margin: 0 0 4px 0;
+        }
+
+        .breathing-hero p {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.85rem;
+            color: #78909c;
+            margin: 0;
+        }
+
+        @media (min-width: 768px) {
+            .breathing-hero {
+                padding: 16px 20px 12px;
+            }
+        }
+
+        .breathing-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 460px;
+            padding: 0 20px 40px;
+        }
+
+        .breathing-scroll-container {
+            position: relative;
+            width: 100%;
+            max-width: 460px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .breathing-scroll-container::after {
+            content: '';
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(to top, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+            display: block;
+            margin-top: -80px;
+            border-radius: 0 0 18px 18px;
+        }
+
+        .breathing-card {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(178,235,242,0.4);
+            border-radius: 16px;
+            padding: 18px 20px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s cubic-bezier(0.25,0.8,0.25,1);
+            box-shadow: 0 4px 10px rgba(178,235,242,0.1);
+        }
+
+        .breathing-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.95);
+            box-shadow: 0 10px 25px rgba(178,235,242,0.3);
+        }
+
+        .breathing-card h3 {
+            font-family: 'Manrope', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #37474f;
+            margin: 0 0 4px 0;
+        }
+
+        .breathing-card p {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.85rem;
+            color: #78909c;
+            margin: 0;
+        }
+
+        .breathing-card.custom-breathing {
+            border-color: rgba(76,175,80,0.3);
+            background: linear-gradient(135deg, rgba(232,245,233,0.6), rgba(241,248,233,0.6));
+        }
+
+        .breathing-card.custom-breathing h3 { color: var(--primary); }
+
+        .breathing-card.soundscape-breathing {
+            border-color: rgba(0,131,143,0.2);
+            background: linear-gradient(135deg, rgba(224,247,250,0.6), rgba(232,245,233,0.6));
+        }
+
+        .breathing-card.soundscape-breathing h3 { color: var(--accent); }
+
+        /* ── FOCUSNAUT ── */
+        #focusnautOverlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(15px);
+            z-index: 150;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 12vh;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .focusnaut-cards { display:flex; flex-direction:column; gap:16px; width:100%; max-width:460px; margin-top:30px; padding:0 20px; }
+        .focusnaut-card { background:rgba(255,255,255,0.75); backdrop-filter:blur(10px); border:1.5px solid rgba(30,215,96,0.2); border-left:4px solid #1ed760; border-radius:18px; padding:20px 22px; cursor:pointer; text-align:left; transition:all 0.35s cubic-bezier(0.25,0.8,0.25,1); box-shadow:0 4px 14px rgba(30,215,96,0.07); text-decoration:none; display:block; }
+        .focusnaut-card:hover { transform:translateY(-3px); background:rgba(255,255,255,0.95); box-shadow:0 10px 28px rgba(30,215,96,0.15); }
+        .focusnaut-card h3 { font-family:'Manrope',sans-serif; font-size:1rem; font-weight:700; color:#37474f; margin:0 0 6px 0; line-height:1.3; }
+        .focusnaut-card p { font-family:'Manrope',sans-serif; font-size:0.85rem; color:#78909c; margin:0 0 10px 0; line-height:1.5; }
+        .focusnaut-badge { display:inline-flex; align-items:center; gap:5px; font-size:0.75rem; font-weight:600; color:#1ed760; background:rgba(30,215,96,0.08); border-radius:20px; padding:3px 10px; }
+    </style>
+</head>
+<body>
+
+<div class="organic-shape shape-1"></div>
+<div class="organic-shape shape-2"></div>
+
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+    <div style="font-family:'Manrope'; color:#546e7a; font-weight:600;">Preparando...</div>
+</div>
+
+<!-- GUIA PANEL — mismo patrón que focusInfoPanel -->
+<div id="guideOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.98);backdrop-filter:blur(15px);z-index:500;flex-direction:column;align-items:center;justify-content:flex-start;padding:10vh 24px 40px;overflow-y:auto;text-align:left;">
+    <button onclick="document.getElementById('guideOverlay').style.display='none'" style="position:absolute;top:25px;right:25px;background:none;border:none;font-size:2rem;color:#78909c;cursor:pointer;padding:10px;line-height:1;">&times;</button>
+    <div style="max-width:520px;width:100%;">
+        <h2 style="font-family:'Cinzel',serif;color:#37474f;font-size:1.4rem;margin-bottom:6px;text-align:center;">Guía de Respiración</h2>
+        <p style="font-family:'Manrope',sans-serif;font-size:0.9rem;color:#78909c;margin-bottom:28px;text-align:center;">Interpretación de símbolos</p>
+        <div style="background:rgba(255,255,255,0.8);border-radius:14px;padding:20px 22px;margin-bottom:20px;border:1px solid rgba(0,131,143,0.08);">
+            <div class="guide-row"><span class="guide-icon" style="color:var(--c-inhale);">●</span><span><strong>Inhala</strong> — Verde</span></div>
+            <div class="guide-row"><span class="guide-icon" style="color:var(--c-hold);">●</span><span><strong>Pausa/Retén</strong> — Naranja</span></div>
+            <div class="guide-row"><span class="guide-icon" style="color:var(--c-exhale);">●</span><span><strong>Exhala</strong> — Azul</span></div>
+            <hr style="border:0;border-top:1px solid #eee;margin:15px 0;">
+            <div style="font-size:0.85rem;color:#78909c;margin-bottom:10px;font-family:'Manrope',sans-serif;font-weight:600;letter-spacing:0.05em;">TIP AVANZADO</div>
+            <div class="guide-row"><span class="guide-icon">👃</span><span><strong>Nariz</strong> — Si ves este icono, inhala o exhala por la nariz.</span></div>
+            <div class="guide-row"><span class="guide-icon">💨</span><span><strong>Boca</strong> — Si ves este icono o añades "b", exhala soplando por la boca.</span></div>
+        </div>
+        <div style="margin-top:32px;text-align:center;">
+            <button class="btn-text" style="background:transparent;color:var(--accent);border:1px solid var(--accent);" onclick="document.getElementById('guideOverlay').style.display='none'">Entendido</button>
+        </div>
+    </div>
+</div>
+
+<!-- SUBSTACK OVERLAY -->
+<div id="substackOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:300; display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(15px); padding:20px 20px 50px 20px; text-align:center; visibility:hidden; opacity:0; pointer-events:none; transition:all 0.4s ease; overflow-y:auto;">
+    <button onclick="const el=document.getElementById('substackOverlay'); el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none';" style="position:absolute; top:25px; right:25px; background:none; border:none; font-size:2rem; color:#78909c; cursor:pointer; padding:10px; line-height:1; z-index:10;">&times;</button>
+    <h2 style="font-family:'Cinzel'; color:#37474f; margin-bottom:20px; margin-top:40px;">Refugio Poético</h2>
+    <div class="refugio-card">
+        <div class="refugio-title">Regla de los 10.000 Pies ...</div>
+        <div class="refugio-author">by Álvaro García</div>
+        <div class="refugio-excerpt">JARDÍN MENTAL</div>
+        <a href="https://open.substack.com/pub/jardinmental/p/modo-0-1?r=2vlvha&utm_campaign=post&utm_medium=web" target="_blank" rel="noopener noreferrer" class="refugio-btn">
+            📖 Leer en Substack
+        </a>
+    </div>
+    <button class="btn-text" style="margin-top:35px; background:transparent; border:1px solid #cfd8dc; color:#78909c;" onclick="const el = document.getElementById('substackOverlay'); el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none';">
+        Volver al Menú
+    </button>
+</div>
+
+<!-- CUSTOM OVERLAY -->
+<div id="customOverlay">
+    <h2 class="overlay-title">Diseña tu Respiración</h2>
+    <p class="overlay-subtitle">Introduce 4 tiempos<br>Añade "b" para boca (ej: "4b")</p>
+    <div class="custom-input-container">
+        <input type="text" id="customPatternInput" class="big-input" placeholder="4-2-6b-0" maxlength="10" value="">
+        <div class="info-bubble" onclick="toggleTooltip(this)">?
+            <div class="info-tooltip">
+                <span class="close-tooltip" onclick="event.stopPropagation(); this.parentElement.classList.remove('visible');">&times;</span>
+                <strong>Escribe los segundos de cada fase.</strong> El sistema pone los guiones.<br><br>
+                <span style="color:var(--c-inhale);">1. Inhala — Verde</span><br>
+                <span style="color:var(--c-hold);">2. Mantén — Naranja</span><br>
+                <span style="color:var(--c-exhale);">3. Exhala — Azul</span><br>
+                <span style="color:var(--c-hold);">4. Sostén — Naranja</span><br><br>
+                <hr style="border:0; border-top:1px solid rgba(255,255,255,0.2); margin:10px 0;">
+                <strong>Opciones Extra</strong><br>
+                • Añade <strong>"b"</strong> para boca (ej: "8b").<br>
+                • Usa <strong>"0"</strong> para saltar una fase.
+            </div>
+        </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:15px; margin-bottom: 50px;">
+        <button class="btn-text" style="background:var(--primary); color:white; padding:15px 40px; font-size:1.1rem; border:none;" onclick="startCustom()">Comenzar</button>
+        <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="document.getElementById('customOverlay').style.display='none'">Cancelar</button>
+    </div>
+</div>
+
+<!-- SHARE CONFIG OVERLAY -->
+<div id="shareConfigOverlay">
+    <h2 class="overlay-title">Enviar Píldora</h2>
+    <p class="overlay-subtitle">Configura el regalo</p>
+    <div class="custom-input-container">
+        <input type="text" id="pillPatternInput" class="big-input" placeholder="4-7-8b" maxlength="10" value="">
+        <div class="info-bubble" onclick="toggleTooltip(this)">?
+            <div class="info-tooltip">
+                <span class="close-tooltip" onclick="event.stopPropagation(); this.parentElement.classList.remove('visible');">&times;</span>
+                <strong>Escribe los segundos de cada fase.</strong> El sistema pone los guiones.<br><br>
+                <span style="color:var(--c-inhale);">1. Inhala — Verde</span><br>
+                <span style="color:var(--c-hold);">2. Mantén — Naranja</span><br>
+                <span style="color:var(--c-exhale);">3. Exhala — Azul</span><br>
+                <span style="color:var(--c-hold);">4. Sostén — Naranja</span><br><br>
+                <hr style="border:0; border-top:1px solid rgba(255,255,255,0.2); margin:10px 0;">
+                <strong>Opciones Extra</strong><br>
+                • Añade <strong>"b"</strong> para boca (ej: "8b").<br>
+                • Usa <strong>"0"</strong> para saltar una fase.
+            </div>
+        </div>
+    </div>
+    <input type="text" id="pillNameInput" class="normal-input" placeholder="¿Para quién es?" maxlength="20">
+    <input type="text" id="pillMessageInput" class="normal-input" placeholder="Mensaje opcional" maxlength="50">
+    <div style="display:flex; flex-direction:column; gap:15px; margin-top:20px; margin-bottom: 50px;">
+        <button class="btn-text" style="background:var(--accent); color:white; padding:15px 40px; font-size:1.1rem; border:none;" onclick="generateShareLink()">Generar Enlace</button>
+        <button class="btn-text" style="background:transparent; color:#78909c; border:none;" onclick="document.getElementById('shareConfigOverlay').style.display='none'">Cancelar</button>
+    </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div id="shareModal">
+    <h2 style="font-family:'Cinzel'; color:#37474f;">¡Píldora Lista!</h2>
+    <textarea id="shareText" readonly></textarea>
+    <div class="share-actions">
+        <button class="btn-wa" onclick="sendWhatsapp()">📱 WhatsApp</button>
+        <button class="btn-copy" onclick="copyToClipboard()">📋 Copiar</button>
+    </div>
+    <button class="btn-text" style="margin-top:30px; background:transparent; border:none;" onclick="document.getElementById('shareModal').style.display='none'">Cerrar</button>
+</div>
+
+<!-- MENU SELECCION -->
+<div id="selectionMenu">
+    <div class="leaves-container">
+        <svg class="leaf lf1" width="14" height="22" viewBox="0 0 14 22">
+            <ellipse cx="7" cy="11" rx="5" ry="10" fill="#5a9e6f" opacity="0.75" transform="rotate(-20 7 11)"/>
+        </svg>
+        <svg class="leaf lf2" width="12" height="20" viewBox="0 0 12 20">
+            <ellipse cx="6" cy="10" rx="4" ry="9" fill="#b5651d" opacity="0.7" transform="rotate(15 6 10)"/>
+        </svg>
+        <svg class="leaf lf3" width="16" height="24" viewBox="0 0 16 24">
+            <ellipse cx="8" cy="12" rx="6" ry="11" fill="#4a7fa5" opacity="0.65" transform="rotate(-10 8 12)"/>
+        </svg>
+        <svg class="leaf lf4" width="12" height="19" viewBox="0 0 12 19">
+            <ellipse cx="6" cy="9" rx="4" ry="8.5" fill="#8b3a62" opacity="0.7" transform="rotate(25 6 9)"/>
+        </svg>
+        <svg class="leaf lf5" width="15" height="22" viewBox="0 0 15 22">
+            <ellipse cx="7.5" cy="11" rx="5" ry="10" fill="#7c6fa0" opacity="0.65" transform="rotate(-15 7.5 11)"/>
+        </svg>
+        <svg class="leaf lf6" width="13" height="21" viewBox="0 0 13 21">
+            <ellipse cx="6.5" cy="10.5" rx="4.5" ry="9.5" fill="#2a9d8f" opacity="0.7" transform="rotate(10 6.5 10.5)"/>
+        </svg>
+    </div>
+    <div class="menu-title">ELIGE TU RITMO</div>
+    <div class="menu-actions">
+        <button class="action-btn" onclick="openShareConfig()">
+            🎁 <span>Enviar Píldora</span>
+        </button>
+        <button class="action-btn" id="installBtn" onclick="installApp()">
+            ⭐ <span>Instalar App</span>
+        </button>
+    </div>
+    <div class="menu-grid">
+        <div class="substack-card" onclick="const el = document.getElementById('substackOverlay'); el.style.visibility='visible'; el.style.opacity='1'; el.style.pointerEvents='auto';">
+            <div class="substack-icon">
+                <svg viewBox="0 0 24 24" fill="#FF6719" width="20" height="20">
+                    <path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/>
+                </svg>
+            </div>
+            <div class="substack-content">
+                <div class="substack-label">Rincón de Lectura</div>
+                <div class="substack-title">Regla de los 10000 Pies ...</div>
+                <div class="substack-author">by Álvaro García</div>
+            </div>
+        </div>
+        <div class="menu-card" onclick="openBreathingOverlay()" style="border: 1.5px solid rgba(0,131,143,0.2); background: linear-gradient(135deg, rgba(224,247,250,0.6), rgba(232,245,233,0.6));">
+            <h3 style="color:var(--accent);">⏱️🍃 Respiración</h3>
+            <p>Patrones · Paisaje Sonoro · Personalizado</p>
+        </div>
+        <div class="menu-card" onclick="openReframeOverlay()" style="border: 1.5px solid rgba(0,131,143,0.2); background: linear-gradient(135deg, rgba(232,245,233,0.6), rgba(224,247,250,0.6));">
+            <h3 style="color: var(--accent);">✨ Transforma tus Pensamientos</h3>
+            <p>Una nueva perspectiva para tu mente · IA</p>
+        </div>
+        <div class="menu-card" onclick="openFocusSelect()" style="border: 1.5px solid rgba(0,131,143,0.2); background: linear-gradient(135deg, rgba(232,245,233,0.6), rgba(241,248,233,0.6));">
+            <h3 style="color: var(--accent);">👩‍🚀🍃 Haz Foco</h3>
+            <p>Ruido + frecuencia · concentración profunda</p>
+        </div>
+        <div class="menu-card" onclick="openFocusnautOverlay()" style="border: 1.5px solid rgba(30,215,96,0.2); background: linear-gradient(135deg, rgba(232,245,233,0.6), rgba(240,255,244,0.6));">
+            <h3 style="color: var(--accent);">🧑‍🚀🎧 Focusnaut</h3>
+            <p>Playlists seleccionadas para tu foco · Spotify</p>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- OVERLAY RESPIRACIÓN -->
+<div id="breathingOverlay">
+    <!-- Cabecera fija — nunca hace scroll -->
+    <div class="breathing-hero">
+        <button onclick="closeBreathingOverlay()" style="position:absolute;top:14px;left:14px;background:none;border:none;color:var(--accent);font-family:'Manrope',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;padding:6px 10px;z-index:10;">← Menú</button>
+        <button onclick="document.getElementById('guideOverlay').style.display='flex'" style="position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.9);border:1px solid rgba(76,175,80,0.3);color:var(--primary);font-family:'Manrope',sans-serif;font-weight:800;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 15px rgba(76,175,80,0.15);transition:all 0.3s ease;z-index:10;">i</button>
+        <img src="./pranayama.jpg" alt="Pranayama">
+        <h2>Respiración</h2>
+        <p>Elige tu patrón · cada respiración es un nuevo comienzo</p>
+    </div>
+    <!-- Fichas con scroll -->
+    <div class="breathing-scroll-inner">
+    <div class="breathing-scroll-container">
+    <div class="breathing-cards">
+        <div class="breathing-card soundscape-breathing" onclick="closeBreathingOverlay(); openSoundscapeSettings(true);">
+            <h3>❄️ Paisaje Sonoro</h3>
+            <p>Modo inmersivo con música</p>
+        </div>
+        <div class="breathing-card custom-breathing" onclick="closeBreathingOverlay(); openCustomModal();">
+            <h3>🎨 Crear Personalizado</h3>
+            <p>Define tus tiempos (ej: 4-7-8b)</p>
+        </div>
+        <div class="breathing-card" onclick="closeBreathingOverlay(); start('4-4-6-2');">
+            <h3>4-4-6-2 · Relax Profundo</h3>
+            <p>Baja pulsaciones rápidamente</p>
+        </div>
+        <div class="breathing-card" onclick="closeBreathingOverlay(); start('4-7-8b');">
+            <h3>4-7-8b · Relaxing Break</h3>
+            <p>Relájate</p>
+        </div>
+        <div class="breathing-card" onclick="closeBreathingOverlay(); start('box');">
+            <h3>Cuadrada · Enfoque</h3>
+            <p>Box Breathing (4-4-4-4)</p>
+        </div>
+        <div class="breathing-card" onclick="closeBreathingOverlay(); start('5-5');">
+            <h3>5-5 · Coherencia</h3>
+            <p>Equilibrio total (In 5, Ex 5)</p>
+        </div>
+    </div>
+    </div>
+    </div>
+</div>
+
+<!-- FOCUSNAUT OVERLAY -->
+<div id="focusnautOverlay">
+    <button onclick="closeFocusnautOverlay()" style="position:absolute;top:25px;left:25px;background:none;border:none;color:var(--accent);font-family:'Manrope',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;padding:6px 10px;">← Menú</button>
+    <h2 class="overlay-title">Focusnaut 🧑‍🚀</h2>
+    <p class="overlay-subtitle">Playlists curadas para tu foco · Spotify</p>
+    <div class="focusnaut-cards">
+        <a class="focusnaut-card" href="https://open.spotify.com/playlist/513hxmx7opHphhYmeL7yzn" target="_blank" rel="noopener">
+            <h3>🧠 Deep Focus Music</h3>
+            <p>40 Hz Binaural Study Music · Scientifically Tuned for Optimal Focus</p>
+            <span class="focusnaut-badge">▶ Abrir en Spotify</span>
+        </a>
+        <a class="focusnaut-card" href="https://open.spotify.com/playlist/2Iug1PcFU5lgQ6LO97GP9K" target="_blank" rel="noopener">
+            <h3>⏱ 8 Hours Study Music</h3>
+            <p>Binaural Focus Beats · Concentration & Productivity Sounds</p>
+            <span class="focusnaut-badge">▶ Abrir en Spotify</span>
+        </a>
+        <a class="focusnaut-card" href="https://open.spotify.com/playlist/1RA8wpst3GzRv1sjNsDwyU" target="_blank" rel="noopener">
+            <h3>🧠 ADHD Relief Music</h3>
+            <p>Calm & Focus Lofi Beats · Para mantener la calma y el foco</p>
+            <span class="focusnaut-badge">▶ Abrir en Spotify</span>
+        </a>
+    </div>
+    <div style="margin-top:24px;font-family:'Manrope',sans-serif;font-size:0.78rem;color:#b0bec5;padding-bottom:40px;">
+        Playlists creadas por <strong>Focusnaut</strong> en Spotify
+    </div>
+</div>
+
+<!-- HAZ FOCO — SELECCIÓN -->
+<div id="focusSelectOverlay">
+    <button onclick="closeFocusSelect()" style="position:absolute;top:25px;left:25px;background:none;border:none;color:var(--accent);font-family:'Manrope',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;padding:6px 10px;">← Menú</button>
+    <button onclick="document.getElementById('focusInfoPanel').style.display='flex'" style="position:absolute;top:25px;right:25px;width:34px;height:34px;border-radius:50%;background:rgba(0,131,143,0.1);border:1.5px solid rgba(0,131,143,0.25);color:var(--accent);font-family:'Manrope',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s ease;">i</button>
+    <h2 class="overlay-title">Haz Foco 👩‍🚀🍃</h2>
+    <p class="overlay-subtitle">Elige tu entorno sonoro — ruido + frecuencia</p>
+
+    <!-- Panel informativo Solfeggio -->
+    <div id="focusInfoPanel" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.98);backdrop-filter:blur(15px);z-index:300;flex-direction:column;align-items:center;justify-content:flex-start;padding:10vh 24px 40px;overflow-y:auto;text-align:left;">
+        <button onclick="document.getElementById('focusInfoPanel').style.display='none'" style="position:absolute;top:25px;right:25px;background:none;border:none;font-size:2rem;color:#78909c;cursor:pointer;padding:10px;line-height:1;">&times;</button>
+        <div style="max-width:520px;width:100%;">
+            <h2 style="font-family:'Cinzel',serif;color:#37474f;font-size:1.4rem;margin-bottom:6px;">¿Cómo funciona?</h2>
+            <p style="color:#78909c;font-size:0.9rem;margin-bottom:28px;font-family:'Manrope',sans-serif;">Ruido + tono simultáneos — dos capas de audio independientes mezcladas</p>
+
+            <div style="background:rgba(0,131,143,0.05);border-radius:14px;padding:20px 22px;margin-bottom:20px;border:1px solid rgba(0,131,143,0.1);">
+                <p style="font-family:'Manrope',sans-serif;font-size:0.92rem;color:#37474f;line-height:1.7;margin:0;">
+                    <strong>1. El ruido</strong> (marrón, rosa o verde) — sonido continuo que cubre todo el espectro de frecuencias, como estática suave. Su función es <em>enmascarar distracciones del entorno</em>.<br><br>
+                    <strong>2. El tono</strong> (174, 528 o 396 Hz) — nota pura y sutil por debajo del ruido. Lo percibes más como una "sensación de fondo" que como una melodía. El volumen está calibrado muy bajo para que no moleste.
+                </p>
+            </div>
+
+            <h3 style="font-family:'Cinzel',serif;color:#37474f;font-size:1.1rem;margin-bottom:12px;">Frecuencias Solfeggio</h3>
+            <p style="font-family:'Manrope',sans-serif;font-size:0.88rem;color:#78909c;line-height:1.6;margin-bottom:16px;">Escala de frecuencias proveniente de himnos gregorianos medievales, redescubierta en los años 90 por el Dr. Joseph Puleo. Cada frecuencia tendría un efecto terapéutico específico:</p>
+
+            <div style="background:rgba(255,255,255,0.8);border-radius:12px;padding:16px 20px;border:1px solid rgba(0,131,143,0.08);margin-bottom:20px;">
+                <table style="width:100%;font-family:'Manrope',sans-serif;font-size:0.86rem;border-collapse:collapse;">
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">174 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Alivio del dolor y la tensión, sensación de seguridad</td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">285 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Regeneración de tejidos</td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">396 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Liberación del miedo y la culpa</td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">417 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Facilitar el cambio</td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">528 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Reparación y transformación — el "Mi" del amor</td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">639 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Conexión y relaciones</td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">741 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Expresión y solución de problemas</td></tr>
+                    <tr style="border-bottom:1px solid rgba(0,131,143,0.08);"><td style="padding:6px 0;color:var(--accent);font-weight:700;">852 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Intuición y orden espiritual</td></tr>
+                    <tr><td style="padding:6px 0;color:var(--accent);font-weight:700;">963 Hz</td><td style="padding:6px 0 6px 12px;color:#546e7a;">Conexión con la conciencia universal</td></tr>
+                </table>
+            </div>
+
+            <div style="background:linear-gradient(135deg,rgba(232,245,233,0.8),rgba(224,247,250,0.8));border-radius:12px;padding:16px 20px;border:1px solid rgba(0,131,143,0.1);">
+                <p style="font-family:'Manrope',sans-serif;font-size:0.88rem;color:#546e7a;line-height:1.7;margin:0;">
+                    <strong>Honestidad científica:</strong> no hay evidencia clínica sólida que demuestre estos efectos específicos. Lo que sí está demostrado es que el ruido de fondo mejora la concentración y que los tonos puros tienen efectos relajantes sobre el sistema nervioso. La combinación funciona — los mecanismos exactos del Solfeggio son más especulativos.<br><br>
+                    Es un territorio entre la ciencia, la tradición y el bienestar subjetivo. Muchas personas reportan beneficios reales, aunque la neurociencia aún no los explica del todo.
+                </p>
+            </div>
+
+            <div style="margin-top:32px;text-align:center;">
+                <button class="btn-text" onclick="document.getElementById('focusInfoPanel').style.display='none'" style="background:transparent;color:var(--accent);border:1px solid var(--accent);">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="focus-cards">
+        <div class="focus-card brown" onclick="startFocusSession('brown')">
+            <div class="focus-card-header">
+                <div class="focus-card-dot"></div>
+                <h3>🟤 Tierra y Liberación</h3>
+            </div>
+            <p>Ruido marrón grave — como una cascada profunda. Tono sutil de 174 Hz para soltar tensión y entrar en concentración profunda. Ideal para bloquear el entorno y anclar la mente.</p>
+            <span class="focus-freq">Ruido marrón + 174 Hz</span>
+        </div>
+        <div class="focus-card pink" onclick="startFocusSession('pink')">
+            <div class="focus-card-header">
+                <div class="focus-card-dot"></div>
+                <h3>🌸 Claridad</h3>
+            </div>
+            <p>Ruido rosa equilibrado — suave y envolvente. Tono de 528 Hz, el "Mi" del ADN. Para estudiar, leer o trabajar con la mente completamente despejada.</p>
+            <span class="focus-freq">Ruido rosa + 528 Hz</span>
+        </div>
+        <div class="focus-card green" onclick="startFocusSession('green')">
+            <div class="focus-card-header">
+                <div class="focus-card-dot"></div>
+                <h3>🌿 Calma Activa</h3>
+            </div>
+            <p>Ruido verde — variante cálida del rosa, como lluvia suave en un bosque. Tono de 396 Hz para liberar el miedo. Para cuando necesitas serenidad sin adormecerte.</p>
+            <span class="focus-freq">Ruido verde + 396 Hz</span>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- HAZ FOCO — SESIÓN -->
+<div id="focusSessionOverlay">
+    <div class="focus-session-type" id="focusSessionType">RUIDO MARRÓN</div>
+    <div class="focus-session-name" id="focusSessionName">Tierra y Liberación</div>
+    <div class="focus-session-freq" id="focusSessionFreq">174 Hz · liberación de tensión</div>
+
+    <div class="focus-orb" id="focusOrb">
+        <div class="focus-timer" id="focusTimer">00:00</div>
+        <div class="focus-timer-label">en curso</div>
+    </div>
+
+    <!-- Selector de modo -->
+    <div class="focus-mode-selector">
+        <button class="focus-mode-btn active" id="modeBtnBoth" onclick="setFocusMode('both')">🌊 Ruido + tono</button>
+        <button class="focus-mode-btn" id="modeBtnNoise" onclick="setFocusMode('noise')">🔈 Solo ruido</button>
+        <button class="focus-mode-btn" id="modeBtnTone" onclick="setFocusMode('tone')">🎵 Solo tono</button>
+    </div>
+
+    <p class="focus-174-note" id="focus174note">👂 174 Hz es muy grave — con auriculares se aprecia mejor</p>
+
+    <div class="focus-controls">
+        <button class="focus-btn-main" id="focusMainBtn" onclick="toggleFocusSession()">Iniciar</button>
+        <button class="focus-btn-stop" onclick="stopFocusSession()">← Volver</button>
+    </div>
+
+    <div class="focus-volume">
+        <span class="focus-volume-label">🔈</span>
+        <input type="range" id="focusVolume" min="0" max="100" value="70" oninput="setFocusVolume(this.value)">
+        <span class="focus-volume-label">🔊</span>
+    </div>
+</div>
+
+<!-- PILL OVERLAY -->
+<div id="pillOverlay">
+    <h1 style="color:var(--accent); font-family:'Cinzel'; margin-bottom:15px;">Una pausa para ti</h1>
+    <h2 id="pillRecipient" style="color:#546e7a; margin-bottom:25px; font-weight:400; font-family:'Manrope';"></h2>
+    <p id="pillMessage" style="font-size:1.4rem; font-family:'Cinzel'; color:#37474f; margin-bottom:50px; max-width:600px;"></p>
+    <button class="btn-text" style="background:var(--primary); color:white; padding:16px 50px;" onclick="closePill(); start('pill');">Comenzar</button>
+</div>
+
+<!-- APP LAYOUT -->
+<div class="app-layout">
+    <video id="bgVideo" class="video-background" loop playsinline muted>
+        <source src="./cielo.mp4" type="video/mp4">
+    </video>
+    <audio id="winterAudio" loop preload="auto">
+        <source src="./clavier_1.mp3" type="audio/mpeg">
+    </audio>
+    <div class="top-bar">
+        <div class="top-left">
+            <button class="btn-text" onclick="stop()">← Volver</button>
+            <div class="badge" id="cycleBadge">0</div>
+        </div>
+        <div class="top-right">
+            <button class="btn-icon active" id="quoteToggleBtn" onclick="toggleQuotes()">💬</button>
+            <button class="btn-text" id="tempoBtn" onclick="toggleTempo()">1x</button>
+            <button class="btn-icon" id="soundBtn" onclick="toggleSound()">🔔</button>
+            <button class="btn-icon" id="musicBtn" onclick="toggleMusic()">🎵</button>
+            <button class="btn-icon" id="metronomeBtn" onclick="toggleMetronome()">⏱</button>
+        </div>
+    </div>
+    <div style="position: fixed; bottom: 10px; right: 15px; font-size: 0.65rem; color: #90a4ae; opacity: 0.5; z-index: 9999; pointer-events: none; font-family: 'Manrope', sans-serif;">
+        Ref <span id="app-version-display">V1.3.0</span>
+    </div>
+    <div class="stage-container">
+        <div class="panel-side">
+            <div class="phase-text" id="phaseText">LISTO</div>
+            <div class="mode-indicator" id="modeIcon"></div>
+        </div>
+        <div class="panel-center">
+            <div class="sphere-wrapper" onclick="togglePause()" title="Toca para Pausar/Reanudar">
+                <div class="sphere" id="sphere">
+                    <div class="counter-big" id="counterText"></div>
+                    <div class="sphere-label" id="patternDisplay"></div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-side">
+            <div class="quote" id="phraseContent">Respira...</div>
+        </div>
+    </div>
+    <div class="bottom-viz">
+        <canvas id="breathGraph"></canvas>
+    </div>
+</div>
+<!-- REFRAME OVERLAY -->
+<div id="reframeOverlay">
+    <button onclick="closeReframeOverlay()" style="position:absolute; top:25px; left:25px; background:none; border:none; color:var(--accent); font-family:'Manrope',sans-serif; font-size:0.95rem; font-weight:600; cursor:pointer; padding:6px 10px; z-index:10;">← Volver</button>
+    <h2 class="overlay-title">Transforma tus Pensamientos</h2>
+    <p class="overlay-subtitle">Escribe lo que sientas — nuestra IA es una brisa ligera 🪁</p>
+
+    <div style="width:100%; max-width:480px; display:flex; flex-direction:column; gap:16px; align-items:center;">
+        <textarea
+            id="reframeInput"
+            class="reframe-textarea"
+            placeholder="Hoy me siento… / Estoy pensando que… / Me preocupa…"
+            maxlength="500"
+        ></textarea>
+
+        <button
+            id="reframeBtn"
+            class="btn-text"
+            onclick="reframeThought()"
+            style="background: var(--accent); color: white; padding: 14px 40px; font-size: 1rem; border: none; width: 100%; max-width: 480px;"
+        >
+            Transformar
+        </button>
+
+        <div class="reframe-spinner" id="reframeSpinner"></div>
+        <div class="reframe-error" id="reframeError">Algo ha ido mal. Comprueba tu conexión e inténtalo de nuevo.</div>
+
+        <div class="reframe-result" id="reframeResult">
+            <div class="reframe-label">✦ Nueva perspectiva</div>
+            <div id="reframeText"></div>
+        </div>
+
+        <button class="reframe-new-btn" id="reframeNewBtn" style="display:none;" onclick="resetReframe()">
+            → Transformar otro pensamiento
+        </button>
+    </div>
+
+    <div style="margin-top:40px;">
+
+    </div>
+</div>
+
+<div id="psOverlay"  style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: white; z-index: 999999; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+    <h2 style="font-family: 'Cinzel', serif; font-size: 2rem; color: #37474f; margin-bottom: 10px;">Diseña tu Paisaje</h2>
+    <p style="font-family: 'Manrope', sans-serif; color: #78909c; margin-bottom: 30px;">Introduce 4 tiempos (ej: 4-2-6-2)<br>Añade "b" para boca (ej: "8b")</p>
+    
+    <input type="text" id="psPatternInput" oninput="formatPsPattern(this)" style="font-size: 2rem; text-align: center; padding: 10px; width: 80%; max-width: 300px; border: 2px solid #e0f7fa; border-radius: 10px; margin-bottom: 40px;" placeholder="4-4-4-4" maxlength="10">
+    
+    <div style="display: flex; flex-direction: column; gap: 15px; width: 80%; max-width: 300px;">
+        <button type="button" onclick="startWinterMode()" style="background-color: #4CAF50; color: white; padding: 15px; border: none; border-radius: 30px; font-size: 1.2rem; cursor: pointer;">Comenzar</button>
+        <button type="button" onclick="closeSoundscapeSettings()" style="background: transparent; color: #78909c; padding: 15px; border: none; font-size: 1rem; cursor: pointer;">Cancelar</button>
+    </div>
+</div>
+<script>
+    // --- VARIABLES Y CONFIGURACIÓN ---
+    const C_INHALE = '#4CAF50';
+    const C_HOLD = '#FF9800';
+    const C_EXHALE = '#2196F3';
+
+    // --- AUDIO AMBIENTAL ---
+    const ambientAudio = new Audio('ambient.mp3');
+    ambientAudio.loop = true;
+    ambientAudio.volume = 0.5;
+
+    let patterns = {
+        '4-4-6-2': [
+            {t:'INHALA', b:4, y:'rise', c:C_INHALE, m:'nose'},
+            {t:'MANTÉN', b:4, y:'holdhigh', c:C_HOLD, m:'nose'},
+            {t:'EXHALA', b:6, y:'fall', c:C_EXHALE, m:'nose'},
+            {t:'SOSTÉN', b:2, y:'holdlow', c:C_HOLD, m:'nose'}
+        ],
+        '4-7-8b': [
+            {t:'INHALA', b:4, y:'rise', c:C_INHALE, m:'nose'},
+            {t:'MANTÉN', b:7, y:'holdhigh', c:C_HOLD, m:'nose'},
+            {t:'EXHALA', b:8, y:'fall', c:C_EXHALE, m:'mouth'}
+        ],
+        'box': [
+            {t:'INHALA', b:4, y:'rise', c:C_INHALE, m:'nose'},
+            {t:'MANTÉN', b:4, y:'holdhigh', c:C_HOLD, m:'nose'},
+            {t:'EXHALA', b:4, y:'fall', c:C_EXHALE, m:'nose'},
+            {t:'SOSTÉN', b:4, y:'holdlow', c:C_HOLD, m:'nose'}
+        ],
+        '5-5': [
+            {t:'INHALA', b:5, y:'rise', c:C_INHALE, m:'nose'},
+            {t:'EXHALA', b:5, y:'fall', c:C_EXHALE, m:'nose'}
+        ]
+    };
+
+    // --- FRASES ZEN ---
+    const pSubjects = ['El río antiguo', 'La brisa suave', 'El bambú flexible', 'La montaña quieta', 'Tu mente clara', 'El momento presente', 'La hoja seca', 'El agua profunda', 'Este aliento', 'La nube blanca', 'El vacío fértil', 'La raíz fuerte', 'El amor inmenso', 'La belleza oculta', 'Tu corazón sabio', 'La flor del alma', 'La luz interior'];
+    const pActions = ['fluye sin esfuerzo', 'no opone resistencia', 'se dobla sin romperse', 'observa en silencio', 'refleja el cielo', 'encuentra su camino', 'suelta el control', 'descansa en paz', 'existe sin más', 'acepta el cambio', 'danza con el viento', 'crece despacio', 'abraza lo que es', 'florece sin prisa', 'sana las heridas', 'irradia calidez', 'ama sin apego', 've la verdad'];
+    const pConclusions = ['Sé como el agua.', 'Todo es perfecto.', 'Paz infinita.', 'Vuelve al centro.', 'Nada que hacer.', 'Mente serena.', 'Simple y puro.', 'Aquí y ahora.', 'Conecta contigo.', 'Fluye con todo.', 'Amor es todo.', 'Belleza pura.', 'Eres el amor.', 'Suelta y confía.', 'Eres suficiente.', 'Luz radiante.'];
+    const masterQuotes = ['El vacío es forma, la forma es vacío.', 'Si te doblas como el junco, el viento no te romperá.', 'El viaje de mil millas comienza con un aliento.', 'Conoce lo blanco, pero conserva lo negro.', 'Sé el valle del universo, recíbelo todo.', 'Poco a poco, el barro se asienta y el agua se aclara.', 'Haz nada, y nada quedará sin hacer.', 'El amor no reclama posesión, sino que da libertad.', 'La belleza no está en el rostro, sino en la luz del corazón.', 'Aceptar es el verdadero acto de transformación.'];
+
+    function getWuWeiQuote() {
+        if(Math.random() < 0.3) {
+            return masterQuotes[Math.floor(Math.random() * masterQuotes.length)];
+        } else {
+            const s = pSubjects[Math.floor(Math.random() * pSubjects.length)];
+            const a = pActions[Math.floor(Math.random() * pActions.length)];
+            const c = pConclusions[Math.floor(Math.random() * pConclusions.length)];
+            return `${s} ${a}. ${c}`;
+        }
+    }
+
+    // STATE V1.3.0 Quotes ENABLED by default
+    let state = {pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true, music: true};
+
+    let audioCtx = null;
+    let nextNoteTime = 0.0;
+    let currentBeatIndex = 0;
+    let scheduleTimerID = null;
+    const lookahead = 25.0;
+    const scheduleAheadTime = 0.1;
+
+    // --- DOM REFERENCES ---
+    const els = {
+        menu: document.getElementById('selectionMenu'),
+        sph: document.getElementById('sphere'),
+        ph: document.getElementById('phaseText'),
+        cnt: document.getElementById('counterText'),
+        qt: document.getElementById('phraseContent'),
+        cvs: document.getElementById('breathGraph'),
+        ctx: document.getElementById('breathGraph').getContext('2d'),
+        cyc: document.getElementById('cycleBadge'),
+        pat: document.getElementById('patternDisplay'),
+        load: document.getElementById('loadingOverlay'),
+        shareModal: document.getElementById('shareModal'),
+        shareText: document.getElementById('shareText'),
+        customOverlay: document.getElementById('customOverlay'),
+        customInput: document.getElementById('customPatternInput'),
+        shareConfigOverlay: document.getElementById('shareConfigOverlay'),
+        pillPatternInput: document.getElementById('pillPatternInput'),
+        pillNameInput: document.getElementById('pillNameInput'),
+        pillMessageInput: document.getElementById('pillMessageInput'),
+        modeIcon: document.getElementById('modeIcon')
+    };
+
+    function formatPatternInput(input) {
+        let raw = input.value.replace(/[^0-9bBg]/g, '').toLowerCase();
+        let formatted = '';
+        for(let i=0; i < raw.length; i++) {
+            const char = raw[i];
+            const isDigit = /[0-9]/.test(char);
+            if(isDigit) {
+                if(formatted.length > 0) formatted += '-';
+                formatted += char;
+            } else {
+                if(formatted.length > 0 && formatted.slice(-1) !== 'b') formatted += char;
+            }
+        }
+        input.value = formatted;
+    }
+
+    if(els.customInput) {
+        els.customInput.addEventListener('input', e => formatPatternInput(e.target));
+    }
+
+    if(els.pillPatternInput) {
+        els.pillPatternInput.addEventListener('input', e => formatPatternInput(e.target));
+    }
+
+    window.toggleTooltip = function(el) {
+        const tip = el.querySelector('.info-tooltip');
+        if(tip) tip.classList.toggle('visible');
+    };
+
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'flex';
+    });
+
+    // Cuando el sistema confirma la instalación, guardamos el flag
+    window.addEventListener('appinstalled', () => {
+        localStorage.setItem('respira_installed', '1');
+        deferredPrompt = null;
+        installBtn.style.display = 'none';
+    });
+
+    async function installApp() {
+        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+                      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        if (isIOS) {
+            alert('Para instalar en iPhone/iPad:\n\n1. Pulsa el botón compartir ↑ (barra inferior de Safari)\n2. Pulsa "Añadir a pantalla de inicio"\n3. Pulsa "Añadir"\n\n💡 Si ya la tienes instalada, ábrela desde tu pantalla de inicio.');
+            return;
+        }
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            if (outcome === 'accepted') {
+                localStorage.setItem('respira_installed', '1');
+                installBtn.style.display = 'none';
+            }
+            return;
+        }
+        // Standalone: abierta desde la app instalada
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            alert('¡La app ya está instalada en tu dispositivo! 🎉');
+            return;
+        }
+        // Flag local: instaló en este navegador/dispositivo
+        if (localStorage.getItem('respira_installed') === '1') {
+            alert('¡La app ya está instalada! 🎉\nÁbrela desde el menú Inicio, escritorio o barra de tareas.');
+            return;
+        }
+        // Sin señal clara — mensaje neutro sin bucle
+        alert('Si ya tienes la app instalada, ábrela desde el menú Inicio o escritorio.\n\nSi no la tienes aún, recarga la página y pulsa de nuevo.');
+    }
+
+    function openCustomModal() {
+        els.customOverlay.style.display = 'flex';
+        els.customInput.value = '';
+        els.customInput.focus();
+    }
+
+    function parsePatternString(str) {
+        const chunks = str.split('-');
+        const defs = [
+            {t:'INHALA', y:'rise', c:C_INHALE},
+            {t:'MANTÉN', y:'holdhigh', c:C_HOLD},
+            {t:'EXHALA', y:'fall', c:C_EXHALE},
+            {t:'SOSTÉN', y:'holdlow', c:C_HOLD},
+            {t:'PAUSA', y:'holdlow', c:C_HOLD}
+        ];
+        let newPattern = [];
+        chunks.forEach((chunk, i) => {
+            let beats = parseInt(chunk.replace(/[^0-9]/g, ''));
+            if(!isNaN(beats) && beats > 0) {
+                let mode = 'nose';
+                if(chunk.toLowerCase().includes('b')) mode = 'mouth';
+                let defIdx = i % defs.length;
+                newPattern.push({t: defs[defIdx].t, b: beats, y: defs[defIdx].y, c: defs[defIdx].c, m: mode});
+            }
+        });
+        return newPattern;
+    }
+    // Exponer al scope global para que startWinterMode pueda usarla
+    window._parsePatternString = parsePatternString;
+    window._patterns = patterns;
+
+    function startCustom() {
+        const val = els.customInput.value.trim();
+        const newPattern = parsePatternString(val);
+        if(newPattern.length < 2) {
+            alert('Introduce al menos 2 fases válidas.');
+            return;
+        }
+        patterns['custom'] = newPattern;
+        els.customOverlay.style.display = 'none';
+        start('custom');
+    }
+
+    function initAudio() {
+        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if(audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+    }
+
+    function playTone(freq, type, dur, time) {
+        if(!state.snd && !state.met) return;
+        try {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, time);
+            let vol = 0.0;
+            if(state.snd) vol = 0.05;
+            if(state.met && type === 'square') vol = 0.05;
+            if(state.met && state.snd && type === 'square') vol = 0.08;
+            gain.gain.setValueAtTime(vol, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(time);
+            osc.stop(time + dur);
+        } catch(e) {}
+    }
+
+    function scheduleNote(beatNumber, time) {
+        if(state.paused) return;
+        let accumulatedBeats = 0;
+        let phase = null;
+        let beatInPhase = 0;
+        for(let p of state.data) {
+            if(beatNumber >= accumulatedBeats && beatNumber < accumulatedBeats + p.b) {
+                phase = p;
+                beatInPhase = beatNumber - accumulatedBeats + 1;
+                break;
+            }
+            accumulatedBeats += p.b;
+        }
+        if(phase) {
+            if(beatInPhase === 1) {
+                let freq = 440;
+                if(phase.y === 'rise') freq = 300;
+                else if(phase.y === 'holdhigh') freq = 450;
+                else if(phase.y === 'fall') freq = 400;
+                else freq = 250;
+                playTone(freq, 'sine', 0.2, time);
+            }
+            if(state.met) {
+                playTone(beatInPhase === 1 ? 1200 : 800, 'square', 0.05, time);
+            }
+        }
+    }
+
+    function nextBeat() {
+        if(state.paused) return;
+        const secondsPerBeat = state.tempo;
+        nextNoteTime += secondsPerBeat;
+        currentBeatIndex++;
+        const totalBeats = state.data.reduce((acc, p) => acc + p.b, 0);
+        if(currentBeatIndex >= totalBeats) {
+            currentBeatIndex = 0;
+            state.cyc++;
+            if(state.quotesEnabled) updateQuote();
+        }
+    }
+
+    function updateQuote() {
+        const rawQuote = getWuWeiQuote();
+        els.qt.innerHTML = rawQuote.replace('. ', '.<br>');
+    }
+
+    function scheduler() {
+        if(state.run) {
+            if(!state.paused) {
+                while(nextNoteTime < audioCtx.currentTime + scheduleAheadTime) {
+                    scheduleNote(currentBeatIndex, nextNoteTime);
+                    nextBeat();
+                }
+            } else {
+                nextNoteTime = audioCtx.currentTime;
+            }
+            scheduleTimerID = setTimeout(scheduler, lookahead);
+        }
+    }
+
+    function togglePause() {
+        if(!state.run) return;
+        state.paused = !state.paused;
+        if(state.paused) {
+            els.ph.textContent = 'PAUSA';
+            els.ph.style.color = '#78909c';
+            els.modeIcon.style.opacity = 0.5;
+        } else {
+            nextNoteTime = audioCtx.currentTime;
+        }
+    }
+
+    // --- V1.3.0 LOGICA TOGGLE FRASES ---
+    function toggleQuotes() {
+        state.quotesEnabled = !state.quotesEnabled;
+        const btn = document.getElementById('quoteToggleBtn');
+        if(state.quotesEnabled) {
+            // ENCENDIDO: Botón brilla, frase aparece y se actualiza
+            btn.classList.add('active');
+            updateQuote(); // Cargar nueva frase al encender
+            els.qt.style.opacity = '1';
+        } else {
+            // APAGADO: Botón normal, frase se desvanece pero el hueco queda
+            btn.classList.remove('active');
+            els.qt.style.opacity = '0';
+        }
+    }
+
+    function draw() {
+        if(!state.run) return;
+        if(state.paused) {
+            requestAnimationFrame(draw);
+            return;
+        }
+        const currentTime = audioCtx.currentTime;
+        const elapsed = currentTime - state.startAudioTime;
+        const totalCycleDur = state.dur;
+        const cycleCountVisual = Math.floor(elapsed / totalCycleDur);
+        els.cyc.textContent = cycleCountVisual;
+        const timeInCycle = (elapsed % totalCycleDur);
+        const p = state.data.find(x => timeInCycle >= x.start && timeInCycle < x.end);
+        
+        if(p) {
+            // Actualizar textos y colores si cambian
+            if(els.ph.textContent !== p.t) {
+                els.ph.textContent = p.t;
+                els.ph.style.color = p.c;
+            }
+            
+            // Iconos
+            const isHold = (p.y === 'holdhigh' || p.y === 'holdlow');
+            if(isHold) {
+                els.modeIcon.textContent = '⏸';
+                els.modeIcon.classList.add('visible');
+            } else if(p.m === 'mouth') {
+                els.modeIcon.textContent = '💨';
+                els.modeIcon.classList.add('visible');
+            } else {
+                els.modeIcon.textContent = '👃';
+                els.modeIcon.classList.add('visible');
+            }
+            els.sph.style.setProperty('--c-phase', p.c);
+            
+            // Indicador de pasos (puntos abajo)
+            const currentPhaseIdx = state.data.indexOf(p);
+            state.data.forEach((_, idx) => {
+                const el = document.getElementById(`p-step-${idx}`);
+                if(el) {
+                    if(idx === currentPhaseIdx) el.classList.add('active');
+                    else el.classList.remove('active');
+                }
+            });
+            
+            // Contador numérico
+            const timeInPhase = timeInCycle - p.start;
+            let currentBeat = Math.floor(timeInPhase / state.tempo) + 1;
+            currentBeat = Math.min(currentBeat, p.b);
+            els.cnt.textContent = currentBeat;
+            
+            // --- CORRECCIÓN MATEMÁTICA ---
+            const progress = timeInPhase / p.dur;
+            // Esta fórmula va suavemente de 0 a 1 (sin negativos)
+            const ease = (1 - Math.cos(Math.PI * progress)) / 2;
+            
+            let maxScale = 1.45;
+            if(window.innerWidth < 400) maxScale = 1.35;
+            let rawScale = 1;
+            
+            if(p.y === 'rise') rawScale = 0.8 + (maxScale - 0.8) * ease;
+            else if(p.y === 'fall') rawScale = maxScale - (maxScale - 0.8) * ease;
+            else if(p.y === 'holdhigh') rawScale = maxScale;
+            else rawScale = 0.8;
+            
+            els.sph.style.transform = `scale(${rawScale})`;
+        }
+        
+        // --- DIBUJADO DE CANVAS (Línea de tiempo) ---
+        const w = els.cvs.width / (window.devicePixelRatio||1);
+        const h = els.cvs.height / (window.devicePixelRatio||1);
+        els.ctx.clearRect(0, 0, w, h);
+        const centerX = w / 2;
+        const trackY = h / 2;
+        const trackH = 14;
+        const pxPerSec = (w / 7) / state.tempo;
+        for(let c = cycleCountVisual - 1; c <= cycleCountVisual + 1; c++) {
+            const cycleStartTime = c * totalCycleDur;
+            state.data.forEach(phase => {
+                const pStartAbs = cycleStartTime + phase.start;
+                const pEndAbs = cycleStartTime + phase.end;
+                const xStart = centerX + (pStartAbs - elapsed) * pxPerSec;
+                const xEnd = centerX + (pEndAbs - elapsed) * pxPerSec;
+                if(xEnd < 0 || xStart > w) return;
+                els.ctx.fillStyle = phase.c;
+                els.ctx.fillRect(xStart, trackY - trackH/2, xEnd - xStart, trackH);
+                els.ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+                els.ctx.lineWidth = 2;
+                for(let b = 0; b <= phase.b; b++) {
+                    const beatTimeAbs = pStartAbs + b * state.tempo;
+                    const markX = centerX + (beatTimeAbs - elapsed) * pxPerSec;
+                    els.ctx.beginPath();
+                    els.ctx.moveTo(markX, trackY - trackH - 2);
+                    els.ctx.lineTo(markX, trackY + trackH + 2);
+                    els.ctx.stroke();
+                }
+            });
+        }
+        els.ctx.beginPath();
+        els.ctx.fillStyle = '#FFFFFF';
+        els.ctx.arc(centerX, trackY, 9, 0, Math.PI * 2);
+        els.ctx.fill();
+        els.ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+        els.ctx.lineWidth = 1;
+        els.ctx.stroke();
+        els.ctx.beginPath();
+        els.ctx.fillStyle = '#37474f';
+        els.ctx.moveTo(centerX - 6, trackY - 25);
+        els.ctx.lineTo(centerX + 6, trackY - 25);
+        els.ctx.lineTo(centerX, trackY - 15);
+        els.ctx.fill();
+        requestAnimationFrame(draw);
+    }
+
+    function prepareData(k) {
+        if(!patterns[k]) return false;
+        state.pk = k;
+        state.data = [];
+        let acc = 0;
+        patterns[k].forEach(x => {
+            const d = x.b * state.tempo;
+            state.data.push({...x, start:acc, end:acc+d, dur:d});
+            acc += d;
+        });
+        state.dur = acc;
+        return true;
+    }
+
+    function initCanvas() {
+        if(!els.cvs) return;
+        const dpr = window.devicePixelRatio || 1;
+        const rect = els.cvs.getBoundingClientRect();
+        els.cvs.width = rect.width * dpr;
+        els.cvs.height = rect.height * dpr;
+        els.ctx.scale(dpr, dpr);
+    }
+
+    function renderPattern(k) {
+        if(!patterns[k]) return;
+        els.pat.innerHTML = '';
+        patterns[k].forEach((step, idx) => {
+            const numSpan = document.createElement('span');
+            numSpan.textContent = step.b;
+            if(step.m === 'mouth') {
+                const sub = document.createElement('span');
+                sub.textContent = 'b';
+                sub.className = 'p-mode-sub';
+                numSpan.appendChild(sub);
+            }
+            numSpan.className = 'p-num';
+            numSpan.id = `p-step-${idx}`;
+            els.pat.appendChild(numSpan);
+            if(idx < patterns[k].length - 1) {
+                const sep = document.createElement('span');
+                sep.textContent = '—';
+                sep.className = 'p-sep';
+                els.pat.appendChild(sep);
+            }
+        });
+    }
+
+    function start(k) {
+        if(!prepareData(k)) {
+            alert('Error: Patrón no encontrado');
+            return;
+        }
+        // MÚSICA: Solo arranca ambient si NO estamos en modo Paisaje Sonoro
+        if(state.music && !state.winterMode) {
+            ambientAudio.currentTime = 0;
+            ambientAudio.play().catch(e => console.log('Audio error', e));
+        }
+        initAudio();
+        renderPattern(k);
+        els.menu.style.opacity = '0';
+        setTimeout(() => els.menu.style.display='none', 400);
+
+        // V1.3.0 Reset states: Queremos que empiece ENCENDIDO por defecto
+        // NOTA: state.winterMode NO se toca aquí — lo gestiona startWinterMode() y stop()
+        state.quotesEnabled = true;
+        const btn = document.getElementById('quoteToggleBtn');
+        btn.classList.add('active'); // Botón iluminado
+        els.qt.style.opacity = '1'; // Frase visible
+        els.qt.textContent = 'Sigue el ritmo, respira, nada más.'; // Frase inicial
+
+        setTimeout(() => {
+            initCanvas();
+            state.run = true;
+            state.paused = false;
+            state.startAudioTime = audioCtx ? audioCtx.currentTime : 0;
+            nextNoteTime = state.startAudioTime;
+            currentBeatIndex = 0;
+            state.cyc = 0;
+            if(audioCtx) scheduler();
+            requestAnimationFrame(draw);
+        }, 100);
+    }
+
+    function stop() {
+        // --- LIMPIEZA MODO INVIERNO ---
+        const wasWinterMode = document.querySelector('.app-layout').classList.contains('winter-mode');
+        document.querySelector('.app-layout').classList.remove('winter-mode');
+
+        // Apagamos vídeo y audio de invierno
+        const vid = document.getElementById('bgVideo');
+        const aud = document.getElementById('winterAudio');
+        if(vid) vid.pause();
+        if(aud) { aud.pause(); aud.currentTime = 0; }
+        // --------------------------------------
+        ambientAudio.pause();
+        state.run = false;
+        clearTimeout(scheduleTimerID);
+        els.sph.style.transform = 'scale(0.8)';
+        els.ph.textContent = 'LISTO';
+        els.ph.style.color = 'var(--accent)';
+        els.modeIcon.classList.remove('visible');
+        els.cnt.textContent = '';
+        els.cyc.textContent = '0';
+        els.sph.style.setProperty('--c-phase', '#4CAF50');
+        els.pat.innerHTML = '';
+        els.ctx.clearRect(0, 0, els.cvs.width, els.cvs.height);
+
+        state.winterMode = false;
+
+        // Si veníamos del Paisaje Sonoro, volvemos a su pantalla intermedia
+        if (wasWinterMode) {
+            openSoundscapeSettings();
+        } else {
+            // Volver al overlay de Respiración
+            openBreathingOverlay();
+        }
+    }
+
+    function toggleTempo() {
+        const t = [1.0, 1.5, 2.0];
+        const idx = t.indexOf(state.tempo);
+        const next = t[(idx+1)%t.length];
+        state.tempo = next;
+        document.getElementById('tempoBtn').innerText = next===1.0?'1x':next===1.5?'Lento':'Zen';
+        if(state.run) start(state.pk);
+    }
+
+    function toggleSound() {
+        state.snd=!state.snd;
+        document.getElementById('soundBtn').textContent=state.snd?'🔔':'🔕';
+        if(state.run) initAudio();
+    }
+
+    function toggleMetronome() {
+        state.met=!state.met;
+        document.getElementById('metronomeBtn').classList.toggle('active');
+    }
+
+    function toggleMusic() {
+    state.music = !state.music;
+    const audPaisaje = document.getElementById('winterAudio');
+    const musicBtn = document.getElementById('musicBtn');
+
+    // Feedback visual en el botón
+    if (musicBtn) musicBtn.style.opacity = state.music ? '1' : '0.35';
+
+    if (state.music) {
+        if (state.winterMode) {
+            if (audPaisaje) audPaisaje.play().catch(e => console.log(e));
+        } else {
+            if (typeof ambientAudio !== 'undefined') ambientAudio.play().catch(e => console.log(e));
+        }
+    } else {
+        if (state.winterMode) {
+            if (audPaisaje) audPaisaje.pause();
+        } else {
+            if (typeof ambientAudio !== 'undefined') ambientAudio.pause();
+        }
+    }
+}
+
+    function openShareConfig() {
+        let lastP = state.pk;
+        if(lastP && lastP !== 'custom') {
+            els.pillPatternInput.value = lastP;
+        }
+        els.shareConfigOverlay.style.display = 'flex';
+        els.pillPatternInput.focus();
+    }
+
+    async function generateShareLink() {
+        let pString = els.pillPatternInput.value.trim();
+        if(!pString) {
+            alert('Falta el patrón.');
+            return;
+        }
+        const testP = parsePatternString(pString);
+        if(testP.length < 2) {
+            alert('Patrón inválido. Ej: 4-7-8b');
+            return;
+        }
+        const n = els.pillNameInput.value.trim() || 'Amigo';
+        const m = els.pillMessageInput.value.trim() || 'Respira conmigo...';
+        els.shareConfigOverlay.style.display = 'none';
+        els.load.style.display = 'flex';
+        const baseUrl = location.href.split('?')[0];
+        const longUrl = `${baseUrl}?p=${encodeURIComponent(pString)}&to=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
+        let finalUrl = longUrl;
+        try {
+            const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
+            if(response.ok) finalUrl = await response.text();
+        } catch(e) {}
+        els.load.style.display = 'none';
+        els.shareText.value = `Píldora de Respiración:\n${m}\n→ ${pString}\n${finalUrl}`;
+        els.shareModal.style.display = 'flex';
+    }
+
+    function sendWhatsapp() {
+        window.open(`https://wa.me/?text=${encodeURIComponent(els.shareText.value)}`, '_blank');
+    }
+
+    function copyToClipboard() {
+        els.shareText.select();
+        els.shareText.setSelectionRange(0, 99999);
+        try {
+            navigator.clipboard.writeText(els.shareText.value).then(() => alert('¡Copiado!'));
+        } catch(e) {
+            document.execCommand('copy');
+            alert('¡Copiado!');
+        }
+    }
+
+    function closePill() {
+        document.getElementById('pillOverlay').style.display = 'none';
+    }
+
+    // CHECK SHARE
+    window.addEventListener('load', () => {
+        const params = new URLSearchParams(window.location.search);
+        if(params.has('p')) {
+            const pString = params.get('p');
+            const to = params.get('to') || 'Amigo';
+            const msg = params.get('msg') || 'Respira conmigo...';
+            document.getElementById('pillRecipient').textContent = `Para ${to}`;
+            document.getElementById('pillMessage').textContent = msg;
+            const newPattern = parsePatternString(pString);
+            if(newPattern.length >= 2) {
+                patterns['pill'] = newPattern;
+                document.getElementById('pillOverlay').style.display = 'flex';
+                // El patrón está listo — el usuario arranca con "Comenzar".
+            }
+        }
+    });
+// --- LÓGICA TRANSFORMA TUS PENSAMIENTOS ---
+
+function openReframeOverlay() {
+    const overlay = document.getElementById('reframeOverlay');
+    if (overlay) {
+        overlay.style.display = 'flex';
+        resetReframe();
+        setTimeout(() => document.getElementById('reframeInput').focus(), 100);
+    }
+}
+
+function closeReframeOverlay() {
+    const overlay = document.getElementById('reframeOverlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+function resetReframe() {
+    document.getElementById('reframeInput').value = '';
+    document.getElementById('reframeInput').style.display = 'block';
+    document.getElementById('reframeBtn').style.display = 'block';
+    document.getElementById('reframeBtn').disabled = false;
+    document.getElementById('reframeBtn').textContent = 'Transformar';
+    document.getElementById('reframeSpinner').classList.remove('visible');
+    document.getElementById('reframeResult').classList.remove('visible');
+    document.getElementById('reframeError').classList.remove('visible');
+    document.getElementById('reframeNewBtn').style.display = 'none';
+    document.getElementById('reframeInput').focus();
+}
+
+async function reframeThought() {
+    const input = document.getElementById('reframeInput');
+    const thought = input.value.trim();
+
+    if (!thought) {
+        input.focus();
+        return;
+    }
+
+    const btn      = document.getElementById('reframeBtn');
+    const spinner  = document.getElementById('reframeSpinner');
+    const result   = document.getElementById('reframeResult');
+    const errorEl  = document.getElementById('reframeError');
+    const newBtn   = document.getElementById('reframeNewBtn');
+    const textEl   = document.getElementById('reframeText');
+
+    // Estado: cargando
+    btn.disabled = true;
+    btn.textContent = 'Transformando…';
+    spinner.classList.add('visible');
+    result.classList.remove('visible');
+    errorEl.classList.remove('visible');
+
+    try {
+        const response = await fetch('/api/reframe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ thought })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.error || 'Error desconocido');
+
+        // Mostrar resultado
+        textEl.textContent = data.reframed;
+        result.classList.add('visible');
+        input.style.display = 'none';
+        btn.style.display = 'none';
+        newBtn.style.display = 'block';
+
+    } catch (err) {
+        console.error('Reframe error:', err);
+        errorEl.classList.add('visible');
+        btn.disabled = false;
+        btn.textContent = 'Transformar';
+    } finally {
+        spinner.classList.remove('visible');
+    }
+}
+
+// --- LÓGICA DEFINITIVA PAISAJE SONORO ---
+
+function openSoundscapeSettings(fromBreathing) {
+    const overlay = document.getElementById('psOverlay');
+    if(overlay) {
+        overlay.style.display = 'flex';
+        overlay._fromBreathing = !!fromBreathing;
+        const input = document.getElementById('psPatternInput');
+        if(input) input.value = ''; // Limpia textos anteriores
+    }
+}
+
+function closeSoundscapeSettings() {
+    const overlay = document.getElementById('psOverlay');
+    const fromBreathing = overlay && overlay._fromBreathing;
+    if(overlay) { overlay.style.display = 'none'; overlay._fromBreathing = false; }
+    if (typeof state !== 'undefined' && !state.run) {
+        if (fromBreathing) {
+            openBreathingOverlay();
+        } else {
+            const menu = document.getElementById('selectionMenu');
+            if(menu) { menu.style.display = 'flex'; menu.style.opacity = '1'; }
+        }
+    }
+}
+
+// Función exclusiva para los guiones de esta ventana
+function formatPsPattern(inputCaja) {
+    let val = inputCaja.value.replace(/[^0-9b]/g, '');
+    if (val.length > 0) {
+        let formatted = val[0];
+        for (let i = 1; i < val.length; i++) {
+            if (val[i] === 'b' || val[i-1] === 'b') formatted += val[i];
+            else formatted += '-' + val[i];
+        }
+        inputCaja.value = formatted.substring(0, 10);
+    }
+}
+
+function startWinterMode() {
+    // 1. Recoger el ritmo desde el overlay del Paisaje Sonoro
+    const psInput = document.getElementById('psPatternInput');
+    let ritmo = psInput ? psInput.value.trim() : "4-4-4-4";
+    if (!ritmo) ritmo = "4-4-4-4";
+
+    // 2. SOLUCIÓN DEFINITIVA: construir el array del patrón directamente
+    //    y asignarlo a patterns['custom'], sin pasar por el DOM.
+    if (typeof window._parsePatternString !== 'function' || typeof window._patterns === 'undefined') {
+        alert('Error interno: el motor aún no está listo. Inténtalo de nuevo.');
+        return;
+    }
+    const newPattern = window._parsePatternString(ritmo);
+    if (newPattern.length < 2) {
+        alert('Introduce al menos 2 fases válidas, por ejemplo: 4-4-4-4');
+        return;
+    }
+    window._patterns['custom'] = newPattern;
+
+    // 3. Cerrar la ventana blanca directamente (sin tocar navegación)
+    const psOverlay = document.getElementById('psOverlay');
+    if(psOverlay) { psOverlay.style.display = 'none'; psOverlay._fromBreathing = false; }
+
+    // 4. Iniciar el motor nativo y silenciar el ambient (no aplica en modo Paisaje)
+    try {
+        start('custom');
+    } catch (e) {
+        console.error("Error al arrancar:", e);
+    }
+    // start() puede haber arrancado ambientAudio — lo paramos de inmediato
+    if (typeof ambientAudio !== 'undefined' && ambientAudio) {
+        ambientAudio.pause();
+        ambientAudio.currentTime = 0;
+    }
+
+    // 5. Activar modo paisaje y audio
+    // Lo hacemos con un pequeño delay para que el motor esté estable
+    setTimeout(() => {
+        if (typeof state !== 'undefined' && state.run === true) {
+            state.winterMode = true;
+            document.querySelector('.app-layout').classList.add('winter-mode');
+            
+            const vid = document.getElementById('bgVideo');
+            if(vid) { vid.currentTime = 0; vid.play().catch(e=>console.log(e)); }
+            
+            // El <audio id="winterAudio"> ya tiene el src fijo en el HTML, no lo reasignamos
+            const aud = document.getElementById('winterAudio');
+            if(aud) {
+                aud.currentTime = 0;
+                aud.volume = 0.5;
+                if(state.music) aud.play().catch(e=>console.log(e));
+            }
+
+            document.documentElement.style.setProperty('--c-phase', '#ffffff');
+        }
+    }, 200);
+}
+
+// ══════════════════════════════════════════════
+// HAZ FOCO — LÓGICA COMPLETA
+// ══════════════════════════════════════════════
+
+const FOCUS_CONFIG = {
+    brown: {
+        type: 'RUIDO MARRÓN',
+        name: 'Tierra y Liberación',
+        freq: '174 Hz · liberación de tensión',
+        hz: 174,
+        orbFrom: 'radial-gradient(circle at 35% 35%, #a1887f, #6d4c41)',
+        noiseType: 'brown'
+    },
+    pink: {
+        type: 'RUIDO ROSA',
+        name: 'Claridad',
+        freq: '528 Hz · reparación y claridad',
+        hz: 528,
+        orbFrom: 'radial-gradient(circle at 35% 35%, #f48fb1, #c2185b)',
+        noiseType: 'pink'
+    },
+    green: {
+        type: 'RUIDO VERDE',
+        name: 'Calma Activa',
+        freq: '396 Hz · liberación del miedo',
+        hz: 396,
+        orbFrom: 'radial-gradient(circle at 35% 35%, #a5d6a7, #388e3c)',
+        noiseType: 'green'
+    }
+};
+
+let focusAudioCtx = null;
+let focusAudioNodes = [];
+let focusRunning = false;
+let focusSeconds = 0;
+let focusInterval = null;
+let focusCurrentType = null;
+let focusMasterGain = null;
+let focusToneGain = null;   // ganancia independiente del tono
+let focusNoiseGain = null;  // ganancia independiente del ruido
+let focusMode = 'both';     // 'both' | 'noise' | 'tone'
+
+function openFocusSelect() {
+    document.getElementById('focusSelectOverlay').style.display = 'flex';
+}
+
+function closeFocusSelect() {
+    document.getElementById('focusSelectOverlay').style.display = 'none';
+}
+
+function startFocusSession(type) {
+    focusCurrentType = type;
+    const cfg = FOCUS_CONFIG[type];
+
+    // Actualizar textos
+    document.getElementById('focusSessionType').textContent = cfg.type;
+    document.getElementById('focusSessionName').textContent = cfg.name;
+    document.getElementById('focusSessionFreq').textContent = cfg.freq;
+
+    // Color de la orb
+    document.getElementById('focusOrb').style.background = cfg.orbFrom;
+
+    // Reset estado
+    focusRunning = false;
+    focusSeconds = 0;
+    focusMode = 'both';
+    document.getElementById('focusTimer').textContent = '00:00';
+    document.getElementById('focusMainBtn').textContent = 'Iniciar';
+    document.getElementById('focusVolume').value = 70;
+    // Reset selector de modo
+    ['modeBtnBoth','modeBtnNoise','modeBtnTone'].forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById('modeBtnBoth').classList.add('active');
+    // Nota 174 Hz — solo en marrón
+    document.getElementById('focus174note').style.display = (type === 'brown') ? 'block' : 'none';
+
+    // Cerrar selección y abrir sesión
+    closeFocusSelect();
+    document.getElementById('focusSessionOverlay').style.display = 'flex';
+}
+
+function toggleFocusSession() {
+    if (!focusRunning) {
+        focusRunning = true;
+        document.getElementById('focusMainBtn').textContent = 'Pausar';
+        startFocusAudio(focusCurrentType);
+        focusInterval = setInterval(() => {
+            focusSeconds++;
+            const m = String(Math.floor(focusSeconds / 60)).padStart(2, '0');
+            const s = String(focusSeconds % 60).padStart(2, '0');
+            document.getElementById('focusTimer').textContent = `${m}:${s}`;
+        }, 1000);
+    } else {
+        focusRunning = false;
+        document.getElementById('focusMainBtn').textContent = 'Continuar';
+        clearInterval(focusInterval);
+        if (focusAudioCtx) focusAudioCtx.suspend().catch(() => {});
+    }
+}
+
+function stopFocusSession() {
+    clearInterval(focusInterval);
+    focusRunning = false;
+    stopFocusAudio();
+    focusSeconds = 0;
+    document.getElementById('focusSessionOverlay').style.display = 'none';
+    // Volver al overlay intermedio de selección
+    document.getElementById('focusSelectOverlay').style.display = 'flex';
+}
+
+function setFocusVolume(val) {
+    if (!focusAudioCtx) return;
+    const v = val / 100;
+    if (focusNoiseGain) focusNoiseGain.gain.setTargetAtTime(
+        (focusMode === 'tone') ? 0 : v * 0.42, focusAudioCtx.currentTime, 0.1);
+    if (focusToneGain) focusToneGain.gain.setTargetAtTime(
+        (focusMode === 'noise') ? 0 : v * 0.18, focusAudioCtx.currentTime, 0.1);
+}
+
+function setFocusMode(mode) {
+    focusMode = mode;
+    // Actualizar botones
+    ['modeBtnBoth','modeBtnNoise','modeBtnTone'].forEach(id => document.getElementById(id).classList.remove('active'));
+    const map = { both:'modeBtnBoth', noise:'modeBtnNoise', tone:'modeBtnTone' };
+    document.getElementById(map[mode]).classList.add('active');
+    // Aplicar volumen inmediatamente si hay audio activo
+    if (focusAudioCtx && focusRunning) {
+        const v = document.getElementById('focusVolume').value / 100;
+        const now = focusAudioCtx.currentTime;
+        // Cancelar cualquier ramp pendiente antes de cambiar — esto es clave
+        if (focusNoiseGain) {
+            focusNoiseGain.gain.cancelScheduledValues(now);
+            focusNoiseGain.gain.setTargetAtTime((mode === 'tone')  ? 0 : v * 0.42, now, 0.3);
+        }
+        if (focusToneGain) {
+            focusToneGain.gain.cancelScheduledValues(now);
+            focusToneGain.gain.setTargetAtTime((mode === 'noise') ? 0 : v * 0.18, now, 0.3);
+        }
+    }
+}
+
+// ── MOTOR DE AUDIO ──────────────────────────────
+
+function startFocusAudio(type) {
+    stopFocusAudio();
+    try {
+        focusAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (focusAudioCtx.state === 'suspended') focusAudioCtx.resume();
+        focusAudioNodes = [];
+
+        const v = document.getElementById('focusVolume').value / 100;
+
+        // Ganancia independiente para el ruido
+        focusNoiseGain = focusAudioCtx.createGain();
+        focusNoiseGain.gain.setValueAtTime(0, focusAudioCtx.currentTime);
+        const noiseTarget = (focusMode === 'tone') ? 0 : v * 0.42;
+        focusNoiseGain.gain.linearRampToValueAtTime(noiseTarget, focusAudioCtx.currentTime + 3);
+        focusNoiseGain.connect(focusAudioCtx.destination);
+
+        // Ganancia independiente para el tono
+        focusToneGain = focusAudioCtx.createGain();
+        focusToneGain.gain.setValueAtTime(0, focusAudioCtx.currentTime);
+        const toneTarget = (focusMode === 'noise') ? 0 : v * 0.18;
+        focusToneGain.gain.linearRampToValueAtTime(toneTarget, focusAudioCtx.currentTime + 5);
+        focusToneGain.connect(focusAudioCtx.destination);
+
+        if (type === 'brown') createFocusBrownNoise();
+        else if (type === 'pink') createFocusPinkNoise();
+        else if (type === 'green') createFocusGreenNoise();
+
+        addFocusTone(FOCUS_CONFIG[type].hz);
+    } catch(e) { console.warn('Focus audio error', e); }
+}
+
+function stopFocusAudio() {
+    if (focusAudioCtx) {
+        focusAudioNodes.forEach(n => { try { n.stop?.(); } catch(e) {} });
+        focusAudioCtx.close().catch(() => {});
+        focusAudioCtx = null;
+        focusAudioNodes = [];
+        focusMasterGain = null;
+        focusToneGain = null;
+        focusNoiseGain = null;
+    }
+}
+
+function createFocusBrownNoise() {
+    const bufferSize = focusAudioCtx.sampleRate * 4;
+    const buffer = focusAudioCtx.createBuffer(1, bufferSize, focusAudioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let lastOut = 0;
+    for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        data[i] = (lastOut + 0.02 * white) / 1.02;
+        lastOut = data[i];
+        data[i] *= 3.5;
+    }
+    const source = focusAudioCtx.createBufferSource();
+    source.buffer = buffer; source.loop = true;
+    const filter = focusAudioCtx.createBiquadFilter();
+    filter.type = 'lowpass'; filter.frequency.value = 600;
+    source.connect(filter); filter.connect(focusNoiseGain);
+    source.start();
+    focusAudioNodes.push(source);
+}
+
+function createFocusPinkNoise() {
+    const bufferSize = focusAudioCtx.sampleRate * 4;
+    const buffer = focusAudioCtx.createBuffer(1, bufferSize, focusAudioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for (let i = 0; i < bufferSize; i++) {
+        const w = Math.random() * 2 - 1;
+        b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
+        b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
+        b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
+        data[i] = (b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.11;
+        b6 = w*0.115926;
+    }
+    const source = focusAudioCtx.createBufferSource();
+    source.buffer = buffer; source.loop = true;
+    source.connect(focusNoiseGain);
+    source.start();
+    focusAudioNodes.push(source);
+}
+
+function createFocusGreenNoise() {
+    const bufferSize = focusAudioCtx.sampleRate * 4;
+    const buffer = focusAudioCtx.createBuffer(1, bufferSize, focusAudioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
+    for (let i = 0; i < bufferSize; i++) {
+        const w = Math.random() * 2 - 1;
+        b0=0.99886*b0+w*0.0555179; b1=0.99332*b1+w*0.0750759;
+        b2=0.96900*b2+w*0.1538520; b3=0.86650*b3+w*0.3104856;
+        b4=0.55000*b4+w*0.5329522; b5=-0.7616*b5-w*0.0168980;
+        data[i] = (b0+b1+b2+b3+b4+b5+b6+w*0.5362)*0.11;
+        b6 = w*0.115926;
+    }
+    const source = focusAudioCtx.createBufferSource();
+    source.buffer = buffer; source.loop = true;
+    // Filtro bandpass para el tono "verde" — más cálido que el rosa puro
+    const filter = focusAudioCtx.createBiquadFilter();
+    filter.type = 'bandpass'; filter.frequency.value = 1200; filter.Q.value = 0.8;
+    source.connect(filter); filter.connect(focusNoiseGain);
+    source.start();
+    focusAudioNodes.push(source);
+}
+
+function addFocusTone(hz) {
+    const osc = focusAudioCtx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = hz;
+    osc.connect(focusToneGain);
+    osc.start();
+    focusAudioNodes.push(osc);
+}
+
+
+function openBreathingOverlay() {
+    // Asegurarse de que el menú principal esté visible detrás
+    const menu = document.getElementById('selectionMenu');
+    menu.style.display = 'flex';
+    menu.style.opacity = '1';
+    document.getElementById('breathingOverlay').style.display = 'flex';
+}
+function closeBreathingOverlay() {
+    document.getElementById('breathingOverlay').style.display = 'none';
+    // Restaurar menú principal explícitamente
+    const menu = document.getElementById('selectionMenu');
+    menu.style.display = 'flex';
+    menu.style.opacity = '1';
+}
+function openFocusnautOverlay() {
+    document.getElementById('focusnautOverlay').style.display = 'flex';
+}
+function closeFocusnautOverlay() {
+    document.getElementById('focusnautOverlay').style.display = 'none';
+}
+</script>
+    
+</body>
+</html>
