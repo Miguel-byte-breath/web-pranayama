@@ -690,6 +690,17 @@
             line-height: 1.7;
             display: none;
             animation: fadeInUp 0.5s ease;
+            text-align: left;
+        }
+        .reframe-result p {
+            margin: 0 0 10px;
+        }
+        .reframe-result p:last-child {
+            margin-bottom: 0;
+        }
+        .reframe-result strong {
+            color: var(--accent);
+            font-weight: 700;
         }
 
         .reframe-result.visible {
@@ -1305,78 +1316,6 @@
         .focus-card.green { border-left: 4px solid #66bb6a; }
 
         /* ── HAZ FOCO — PANTALLA SESIÓN ── */
-        /* ── Timer selector scroll ── */
-        .focus-timer-selector {
-            width: 100%;
-            max-width: 340px;
-            margin: 0 auto 24px;
-            text-align: center;
-        }
-        .focus-timer-label-top {
-            font-family: 'Manrope', sans-serif;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--accent);
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-        .focus-timer-scroll {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0;
-            position: relative;
-            height: 130px;
-            overflow: hidden;
-            cursor: ns-resize;
-            user-select: none;
-        }
-        .focus-timer-scroll::before,
-        .focus-timer-scroll::after {
-            content: '';
-            position: absolute;
-            left: 0; right: 0;
-            height: 44px;
-            z-index: 2;
-            pointer-events: none;
-        }
-        .focus-timer-scroll::before { top: 0; background: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); }
-        .focus-timer-scroll::after  { bottom: 0; background: linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0)); }
-        .focus-timer-scroll-inner {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: transform 0.2s ease;
-        }
-        .focus-timer-item {
-            height: 44px;
-            min-width: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Manrope', sans-serif;
-            font-size: 1.05rem;
-            font-weight: 500;
-            color: #b0bec5;
-            border-radius: 10px;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-        }
-        .focus-timer-item.selected {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--accent);
-            background: rgba(0,131,143,0.08);
-        }
-        .focus-session-countdown {
-            font-size: 0.78rem;
-            font-family: 'Manrope', sans-serif;
-            color: #90a4ae;
-            margin-top: 4px;
-            min-height: 18px;
-        }
-
         #focusSessionOverlay {
             position: fixed;
             top: 0; left: 0;
@@ -1554,196 +1493,6 @@
             color: var(--accent);
             box-shadow: 0 2px 8px rgba(0,131,143,0.15);
         }
-
-        /* ── Botón timer ── */
-        .focus-timer-btn {
-            background: transparent;
-            border: none;
-            border-radius: 24px;
-            padding: 7px 12px;
-            font-family: 'Manrope', sans-serif;
-            font-size: 0.85rem;
-            color: #78909c;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .focus-timer-btn.active {
-            background: white;
-            color: var(--accent);
-            box-shadow: 0 2px 8px rgba(0,131,143,0.15);
-        }
-        .focus-timer-btn .timer-badge {
-            display: none;
-            font-size: 0.72rem;
-            font-weight: 700;
-            background: var(--accent);
-            color: white;
-            border-radius: 10px;
-            padding: 1px 6px;
-        }
-        .focus-timer-btn.has-time .timer-badge { display: inline; }
-
-        /* ── Panel flotante timer ── */
-        #focusTimerPanel {
-            display: none;
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: rgba(255,255,255,0.98);
-            backdrop-filter: blur(20px);
-            border-radius: 24px 24px 0 0;
-            box-shadow: 0 -8px 40px rgba(0,131,143,0.12);
-            z-index: 600;
-            padding: 0 24px 32px;
-            flex-direction: column;
-            align-items: center;
-            max-width: 480px;
-            margin: 0 auto;
-        }
-        #focusTimerPanel.open { display: flex; }
-        .ftp-handle {
-            width: 40px; height: 4px;
-            background: rgba(0,131,143,0.2);
-            border-radius: 2px;
-            margin: 14px auto 20px;
-        }
-        .ftp-title {
-            font-family: 'Cinzel', serif;
-            font-size: 1rem;
-            color: #37474f;
-            margin-bottom: 6px;
-            text-align: center;
-        }
-        .ftp-subtitle {
-            font-family: 'Manrope', sans-serif;
-            font-size: 0.8rem;
-            color: #90a4ae;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        /* Scroll picker */
-        .ftp-scroll-wrap {
-            position: relative;
-            height: 154px;
-            width: 200px;
-            overflow: hidden;
-            margin: 0 auto 6px;
-            cursor: ns-resize;
-        }
-        .ftp-scroll-wrap::before,
-        .ftp-scroll-wrap::after {
-            content: '';
-            position: absolute;
-            left: 0; right: 0;
-            height: 55px;
-            z-index: 2;
-            pointer-events: none;
-        }
-        .ftp-scroll-wrap::before { top: 0; background: linear-gradient(to bottom, rgba(255,255,255,1), rgba(255,255,255,0)); }
-        .ftp-scroll-wrap::after  { bottom: 0; background: linear-gradient(to top, rgba(255,255,255,1), rgba(255,255,255,0)); }
-        .ftp-scroll-track {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: transform 0.18s cubic-bezier(.25,.8,.25,1);
-        }
-        .ftp-item {
-            height: 44px;
-            width: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Manrope', sans-serif;
-            font-size: 1rem;
-            font-weight: 500;
-            color: #b0bec5;
-            flex-shrink: 0;
-            transition: all 0.18s ease;
-            border-radius: 10px;
-        }
-        .ftp-item.sel {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--accent);
-            background: rgba(0,131,143,0.07);
-        }
-        /* Separador central */
-        .ftp-center-line {
-            position: absolute;
-            top: 55px;
-            left: 16px; right: 16px;
-            height: 44px;
-            border-top: 1.5px solid rgba(0,131,143,0.15);
-            border-bottom: 1.5px solid rgba(0,131,143,0.15);
-            border-radius: 10px;
-            pointer-events: none;
-            z-index: 1;
-        }
-        /* Toggle aviso */
-        .ftp-notify-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 280px;
-            margin: 16px auto 0;
-            padding: 12px 16px;
-            background: rgba(0,131,143,0.04);
-            border-radius: 14px;
-            border: 1px solid rgba(0,131,143,0.08);
-        }
-        .ftp-notify-label {
-            font-family: 'Manrope', sans-serif;
-            font-size: 0.85rem;
-            color: #546e7a;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .ftp-toggle {
-            position: relative;
-            width: 42px; height: 24px;
-        }
-        .ftp-toggle input { opacity: 0; width: 0; height: 0; }
-        .ftp-toggle-slider {
-            position: absolute;
-            inset: 0;
-            background: #cfd8dc;
-            border-radius: 24px;
-            cursor: pointer;
-            transition: background 0.25s;
-        }
-        .ftp-toggle-slider::before {
-            content: '';
-            position: absolute;
-            width: 18px; height: 18px;
-            left: 3px; top: 3px;
-            background: white;
-            border-radius: 50%;
-            transition: transform 0.25s;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-        }
-        .ftp-toggle input:checked + .ftp-toggle-slider { background: var(--accent); }
-        .ftp-toggle input:checked + .ftp-toggle-slider::before { transform: translateX(18px); }
-        /* Botón confirmar */
-        .ftp-confirm {
-            margin-top: 20px;
-            padding: 12px 40px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 24px;
-            font-family: 'Manrope', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 14px rgba(0,131,143,0.25);
-        }
-        .ftp-confirm:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,131,143,0.3); }
 
         .focus-174-note {
             font-family: 'Manrope', sans-serif;
@@ -2268,34 +2017,14 @@
 
     <div class="focus-orb" id="focusOrb">
         <div class="focus-timer" id="focusTimer">00:00</div>
-        <div class="focus-timer-label" id="focusTimerLabel">en curso</div>
+        <div class="focus-timer-label">en curso</div>
     </div>
 
-    <!-- Selector de modo + botón timer -->
+    <!-- Selector de modo -->
     <div class="focus-mode-selector">
         <button class="focus-mode-btn active" id="modeBtnBoth" onclick="setFocusMode('both')">🌊 Ruido + tono</button>
         <button class="focus-mode-btn" id="modeBtnNoise" onclick="setFocusMode('noise')">🔈 Solo ruido</button>
         <button class="focus-mode-btn" id="modeBtnTone" onclick="setFocusMode('tone')">🎵 Solo tono</button>
-        <button class="focus-timer-btn" id="focusTimerBtn" onclick="toggleFocusTimerPanel()">⏱ <span class="timer-badge" id="focusTimerBadge"></span></button>
-    </div>
-
-    <!-- Panel flotante timer (bottom sheet) -->
-    <div id="focusTimerPanel">
-        <div class="ftp-handle"></div>
-        <div class="ftp-title">Temporizador de sesión</div>
-        <div class="ftp-subtitle">Desliza para elegir la duración</div>
-        <div class="ftp-scroll-wrap" id="ftpScrollWrap">
-            <div class="ftp-center-line"></div>
-            <div class="ftp-scroll-track" id="ftpTrack"></div>
-        </div>
-        <div class="ftp-notify-row">
-            <span class="ftp-notify-label">🔔 Avisarme al terminar</span>
-            <label class="ftp-toggle">
-                <input type="checkbox" id="ftpNotifyCheck" checked>
-                <span class="ftp-toggle-slider"></span>
-            </label>
-        </div>
-        <button class="ftp-confirm" onclick="confirmFocusTimer()">Establecer</button>
     </div>
 
     <p class="focus-174-note" id="focus174note">👂 174 Hz es muy grave — con auriculares se aprecia mejor</p>
@@ -3110,6 +2839,19 @@ function resetReframe() {
     document.getElementById('reframeInput').focus();
 }
 
+function formatReframe(text) {
+    return text
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') // seguridad
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')  // **negrita**
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')              // *cursiva*
+        .replace(/^[-–]\s+/gm, '• ')                       // guiones → bullet
+        .replace(/
+{2,}/g, '</p><p>')                     // doble salto → párrafo
+        .replace(/
+/g, '<br>')                            // salto simple → br
+        .replace(/^/, '<p>').replace(/$/, '</p>');         // envolver en párrafo
+}
+
 async function reframeThought() {
     const input = document.getElementById('reframeInput');
     const thought = input.value.trim();
@@ -3145,7 +2887,7 @@ async function reframeThought() {
         if (!response.ok) throw new Error(data.error || 'Error desconocido');
 
         // Mostrar resultado
-        textEl.textContent = data.reframed;
+        textEl.innerHTML = formatReframe(data.reframed);
         result.classList.add('visible');
         input.style.display = 'none';
         btn.style.display = 'none';
@@ -3298,8 +3040,6 @@ let focusCurrentType = null;
 let focusMasterGain = null;
 let focusToneGain = null;   // ganancia independiente del tono
 let focusNoiseGain = null;  // ganancia independiente del ruido
-let focusCountdownTotal = 0;   // segundos totales elegidos (0 = sin límite)
-let focusTimerIndex = 0;       // índice seleccionado en el scroll
 let focusMode = 'both';     // 'both' | 'noise' | 'tone'
 
 function openFocusSelect() {
@@ -3309,114 +3049,6 @@ function openFocusSelect() {
 function closeFocusSelect() {
     document.getElementById('focusSelectOverlay').style.display = 'none';
 }
-
-// ── TEMPORIZADOR DE SESIÓN ──
-const FOCUS_DURATIONS = [
-    { label: 'Sin límite', seconds: 0 },
-    { label: '5 min',  seconds: 5 * 60 },
-    { label: '10 min', seconds: 10 * 60 },
-    { label: '15 min', seconds: 15 * 60 },
-    { label: '20 min', seconds: 20 * 60 },
-    { label: '25 min', seconds: 25 * 60 },
-    { label: '30 min', seconds: 30 * 60 },
-    { label: '45 min', seconds: 45 * 60 },
-    { label: '60 min', seconds: 60 * 60 },
-    { label: '90 min', seconds: 90 * 60 },
-];
-
-let ftpIndex = 0;
-let ftpNotify = true;
-let ftpInitialized = false;
-
-function toggleFocusTimerPanel() {
-    const panel = document.getElementById('focusTimerPanel');
-    const isOpen = panel.classList.contains('open');
-    if (isOpen) {
-        panel.classList.remove('open');
-    } else {
-        initFtpScroll();
-        panel.classList.add('open');
-    }
-}
-
-function initFtpScroll() {
-    const track = document.getElementById('ftpTrack');
-    if (!ftpInitialized) {
-        track.innerHTML = '';
-        FOCUS_DURATIONS.forEach((d, i) => {
-            const el = document.createElement('div');
-            el.className = 'ftp-item' + (i === ftpIndex ? ' sel' : '');
-            el.textContent = d.label;
-            el.dataset.index = i;
-            track.appendChild(el);
-        });
-        // Rueda ratón
-        const wrap = document.getElementById('ftpScrollWrap');
-        wrap.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            if (e.deltaY > 0 && ftpIndex < FOCUS_DURATIONS.length - 1) ftpIndex++;
-            else if (e.deltaY < 0 && ftpIndex > 0) ftpIndex--;
-            updateFtpScroll();
-        }, { passive: false });
-        // Touch
-        let lastY = 0;
-        wrap.addEventListener('touchstart', (e) => { lastY = e.touches[0].clientY; });
-        wrap.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            const dy = lastY - e.touches[0].clientY;
-            lastY = e.touches[0].clientY;
-            if (Math.abs(dy) > 10) {
-                if (dy > 0 && ftpIndex < FOCUS_DURATIONS.length - 1) ftpIndex++;
-                else if (dy < 0 && ftpIndex > 0) ftpIndex--;
-                updateFtpScroll();
-            }
-        }, { passive: false });
-        // Click
-        track.addEventListener('click', (e) => {
-            const item = e.target.closest('.ftp-item');
-            if (item) { ftpIndex = parseInt(item.dataset.index); updateFtpScroll(); }
-        });
-        ftpInitialized = true;
-    }
-    updateFtpScroll();
-}
-
-function updateFtpScroll() {
-    document.querySelectorAll('.ftp-item').forEach((el, i) => el.classList.toggle('sel', i === ftpIndex));
-    const offset = -ftpIndex * 44 + 55;
-    document.getElementById('ftpTrack').style.transform = `translateY(${offset}px)`;
-}
-
-function confirmFocusTimer() {
-    const d = FOCUS_DURATIONS[ftpIndex];
-    focusCountdownTotal = d.seconds;
-    ftpNotify = document.getElementById('ftpNotifyCheck').checked;
-    // Cerrar panel
-    document.getElementById('focusTimerPanel').classList.remove('open');
-    // Actualizar botón con badge
-    const btn = document.getElementById('focusTimerBtn');
-    const badge = document.getElementById('focusTimerBadge');
-    if (d.seconds > 0) {
-        btn.classList.add('active', 'has-time');
-        badge.textContent = d.label;
-        // Actualizar display del orbe
-        const m = String(Math.floor(d.seconds / 60)).padStart(2, '0');
-        const s = String(d.seconds % 60).padStart(2, '0');
-        document.getElementById('focusTimer').textContent = `${m}:${s}`;
-        document.getElementById('focusTimerLabel').textContent = 'restante';
-    } else {
-        btn.classList.remove('active', 'has-time');
-        badge.textContent = '';
-        if (!focusRunning) {
-            document.getElementById('focusTimer').textContent = '00:00';
-            document.getElementById('focusTimerLabel').textContent = 'en curso';
-        }
-    }
-    focusSeconds = 0;
-}
-
-function initFocusTimerScroll() {}  // legacy — ya no se usa desde focusSelectOverlay
-function updateFocusTimerScroll() {}
 
 function startFocusSession(type) {
     focusCurrentType = type;
@@ -3433,18 +3065,9 @@ function startFocusSession(type) {
     // Reset estado
     focusRunning = false;
     focusSeconds = 0;
-    focusCountdownTotal = 0;
-    ftpIndex = 0;
-    ftpInitialized = false;
     focusMode = 'both';
     document.getElementById('focusTimer').textContent = '00:00';
-    document.getElementById('focusTimerLabel').textContent = 'en curso';
     document.getElementById('focusMainBtn').textContent = 'Iniciar';
-    // Reset botón timer
-    const timerBtn = document.getElementById('focusTimerBtn');
-    timerBtn.classList.remove('active', 'has-time');
-    document.getElementById('focusTimerBadge').textContent = '';
-    document.getElementById('focusTimerPanel').classList.remove('open');
     document.getElementById('focusVolume').value = 70;
     // Reset selector de modo
     ['modeBtnBoth','modeBtnNoise','modeBtnTone'].forEach(id => document.getElementById(id).classList.remove('active'));
@@ -3463,42 +3086,10 @@ function toggleFocusSession() {
         document.getElementById('focusMainBtn').textContent = 'Pausar';
         startFocusAudio(focusCurrentType);
         focusInterval = setInterval(() => {
-            if (focusCountdownTotal > 0) {
-                // Cuenta regresiva
-                const remaining = focusCountdownTotal - focusSeconds - 1;
-                if (remaining <= 0) {
-                    clearInterval(focusInterval);
-                    focusRunning = false;
-                    document.getElementById('focusTimer').textContent = '00:00';
-                    document.getElementById('focusTimerLabel').textContent = 'completado ✓';
-                    document.getElementById('focusMainBtn').textContent = 'Iniciar';
-                    // Fade out suave 3 segundos
-                    if (focusAudioCtx && focusNoiseGain && focusToneGain) {
-                        const t = focusAudioCtx.currentTime;
-                        focusNoiseGain.gain.linearRampToValueAtTime(0, t + 3);
-                        focusToneGain.gain.linearRampToValueAtTime(0, t + 3);
-                        setTimeout(() => {
-                            stopFocusAudio();
-                            const orb = document.getElementById('focusOrb');
-                            orb.style.background = 'radial-gradient(circle at 40% 35%, #a5d6a7, #43a047)';
-                            if (ftpNotify) {
-                                setTimeout(() => alert('✅ Sesión completada\n\n¡Bien hecho! Has completado tu sesión de foco.'), 200);
-                            }
-                        }, 3100);
-                    }
-                    return;
-                }
-                focusSeconds++;
-                const m = String(Math.floor(remaining / 60)).padStart(2, '0');
-                const s = String(remaining % 60).padStart(2, '0');
-                document.getElementById('focusTimer').textContent = `${m}:${s}`;
-            } else {
-                // Cronómetro ascendente (sin límite)
-                focusSeconds++;
-                const m = String(Math.floor(focusSeconds / 60)).padStart(2, '0');
-                const s = String(focusSeconds % 60).padStart(2, '0');
-                document.getElementById('focusTimer').textContent = `${m}:${s}`;
-            }
+            focusSeconds++;
+            const m = String(Math.floor(focusSeconds / 60)).padStart(2, '0');
+            const s = String(focusSeconds % 60).padStart(2, '0');
+            document.getElementById('focusTimer').textContent = `${m}:${s}`;
         }, 1000);
     } else {
         focusRunning = false;
@@ -3513,8 +3104,8 @@ function stopFocusSession() {
     focusRunning = false;
     stopFocusAudio();
     focusSeconds = 0;
-    document.getElementById('focusTimerPanel').classList.remove('open');
     document.getElementById('focusSessionOverlay').style.display = 'none';
+    // Volver al overlay intermedio de selección
     document.getElementById('focusSelectOverlay').style.display = 'flex';
 }
 
