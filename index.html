@@ -690,7 +690,11 @@
             line-height: 1.7;
             display: none;
             animation: fadeInUp 0.5s ease;
+            text-align: left;
         }
+        .reframe-result p { margin: 0 0 10px; }
+        .reframe-result p:last-child { margin-bottom: 0; }
+        .reframe-result strong { color: var(--accent); font-weight: 700; }
 
         .reframe-result.visible {
             display: block;
@@ -3110,6 +3114,17 @@ function resetReframe() {
     document.getElementById('reframeInput').focus();
 }
 
+function formatReframe(text) {
+    return text
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/^[-\u2013]\s+/gm, '\u2022 ')
+        .replace(/\n{2,}/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        .replace(/^/, '<p>').replace(/$/, '</p>');
+}
+
 async function reframeThought() {
     const input = document.getElementById('reframeInput');
     const thought = input.value.trim();
@@ -3145,7 +3160,7 @@ async function reframeThought() {
         if (!response.ok) throw new Error(data.error || 'Error desconocido');
 
         // Mostrar resultado
-        textEl.textContent = data.reframed;
+        textEl.innerHTML = formatReframe(data.reframed);
         result.classList.add('visible');
         input.style.display = 'none';
         btn.style.display = 'none';
