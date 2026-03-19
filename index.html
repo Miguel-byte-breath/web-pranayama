@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Ocultar menú inmediatamente si viene con parámetros de píldora -->
+    <script>if(window.location.search.includes('p='))document.documentElement.classList.add('has-pill');</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Respira • Tu Espacio de Calma</title>
@@ -343,6 +345,9 @@
             padding: 30px;
             transition: opacity 0.4s ease;
         }
+        /* Píldora: ocultar menú y mostrar pillOverlay antes del primer render */
+        html.has-pill #selectionMenu { display: none !important; }
+        html.has-pill #pillOverlay   { display: flex !important; }
 
         /* --- HOJAS AL VIENTO --- */
         .leaves-container {
@@ -3066,6 +3071,7 @@
 
     function closePill() {
         document.getElementById('pillOverlay').style.display = 'none';
+        document.documentElement.classList.remove('has-pill');
     }
 
     // CHECK SHARE
@@ -3080,8 +3086,7 @@
             const newPattern = parsePatternString(pString);
             if(newPattern.length >= 2) {
                 patterns['pill'] = newPattern;
-                document.getElementById('pillOverlay').style.display = 'flex';
-                // El patrón está listo — el usuario arranca con "Comenzar".
+                // pillOverlay ya visible via CSS has-pill — solo rellenamos datos
             }
         }
     });
