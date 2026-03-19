@@ -1970,20 +1970,44 @@
 </div>
 
 <!-- SUBSTACK OVERLAY -->
-<div id="substackOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:300; display:flex; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(15px); padding:20px 20px 50px 20px; text-align:center; visibility:hidden; opacity:0; pointer-events:none; transition:all 0.4s ease; overflow-y:auto;">
-    <button onclick="const el=document.getElementById('substackOverlay'); el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none';" style="position:absolute; top:25px; right:25px; background:none; border:none; font-size:2rem; color:#78909c; cursor:pointer; padding:10px; line-height:1; z-index:10;">&times;</button>
-    <h2 style="font-family:'Cinzel'; color:#37474f; margin-bottom:20px; margin-top:40px;">Refugio Poético</h2>
-    <div class="refugio-card">
-        <div class="refugio-title">Regla de los 10.000 Pies ...</div>
-        <div class="refugio-author">by Álvaro García</div>
-        <div class="refugio-excerpt">JARDÍN MENTAL</div>
-        <a href="https://open.substack.com/pub/jardinmental/p/modo-0-1?r=2vlvha&utm_campaign=post&utm_medium=web" target="_blank" rel="noopener noreferrer" class="refugio-btn">
-            📖 Leer en Substack
-        </a>
+<div id="lecturaSelectOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:300; flex-direction:column; align-items:center; backdrop-filter:blur(15px); padding:20px 20px 50px 20px; text-align:center; overflow-y:auto;">
+    <button onclick="closeLecturaOverlay()" style="position:absolute; top:25px; left:25px; background:none; border:none; color:var(--accent); font-family:'Manrope',sans-serif; font-size:0.95rem; font-weight:600; cursor:pointer; padding:6px 10px;">← Menú</button>
+    <h2 style="font-family:'Cinzel',serif; color:#37474f; font-size:1.5rem; margin-top:70px; margin-bottom:6px;">📚 Rincón de Lectura</h2>
+    <p style="font-family:'Manrope',sans-serif; color:#90a4ae; font-size:0.88rem; margin-bottom:36px;">Lecturas refrescantes · Substack</p>
+
+    <div style="display:flex; flex-direction:column; gap:20px; width:100%; max-width:420px; margin:0 auto;">
+
+        <!-- Ficha 1: Regla de los 10.000 Pies -->
+        <div class="refugio-card">
+            <div class="refugio-title">Regla de los 10.000 Pies</div>
+            <div class="refugio-author">by Álvaro García</div>
+            <div class="refugio-excerpt">JARDÍN MENTAL</div>
+            <a href="https://open.substack.com/pub/jardinmental/p/modo-0-1?r=2vlvha&utm_campaign=post&utm_medium=web" target="_blank" rel="noopener noreferrer" class="refugio-btn">
+                📖 Leer en Substack
+            </a>
+        </div>
+
+        <!-- Ficha 2: Habitar el vacío con ternura -->
+        <div class="refugio-card">
+            <div class="refugio-title">Habitar el vacío con ternura</div>
+            <div class="refugio-author">by evelyn</div>
+            <div class="refugio-excerpt">Una exploración sobre la belleza de seguir existiendo cuando nada tiene sentido</div>
+            <a href="https://open.substack.com/pub/sternmiel/p/habitar-el-vacio-con-ternura?r=2vlvha&utm_campaign=post&utm_medium=web" target="_blank" rel="noopener noreferrer" class="refugio-btn">
+                📖 Leer en Substack
+            </a>
+        </div>
+
+        <!-- Ficha 3: He nacido para hablar -->
+        <div class="refugio-card">
+            <div class="refugio-title">He nacido para hablar</div>
+            <div class="refugio-author">by Claudia Cuevas</div>
+            <div class="refugio-excerpt">El amor empieza en el cuerpo. Pero sobrevive en la palabra.</div>
+            <a href="https://open.substack.com/pub/claudiacuevas/p/he-nacido-para-hablar-soy-feliz-si?r=2vlvha&utm_campaign=post&utm_medium=web" target="_blank" rel="noopener noreferrer" class="refugio-btn">
+                📖 Leer en Substack
+            </a>
+        </div>
+
     </div>
-    <button class="btn-text" style="margin-top:35px; background:transparent; border:1px solid #cfd8dc; color:#78909c;" onclick="const el = document.getElementById('substackOverlay'); el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none';">
-        Volver al Menú
-    </button>
 </div>
 
 <!-- CUSTOM OVERLAY -->
@@ -2085,17 +2109,9 @@
         </button>
     </div>
     <div class="menu-grid">
-        <div class="substack-card" onclick="const el = document.getElementById('substackOverlay'); el.style.visibility='visible'; el.style.opacity='1'; el.style.pointerEvents='auto';">
-            <div class="substack-icon">
-                <svg viewBox="0 0 24 24" fill="#FF6719" width="20" height="20">
-                    <path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/>
-                </svg>
-            </div>
-            <div class="substack-content">
-                <div class="substack-label">Rincón de Lectura</div>
-                <div class="substack-title">Regla de los 10000 Pies ...</div>
-                <div class="substack-author">by Álvaro García</div>
-            </div>
+        <div class="menu-card" onclick="openLecturaOverlay()" style="border: 1.5px solid rgba(255,103,25,0.2); background: linear-gradient(135deg, rgba(255,245,235,0.6), rgba(255,252,244,0.6));">
+            <h3>📚 💫 Rincón de Lectura</h3>
+            <p>Disfruta de lecturas refrescantes en Substack</p>
         </div>
         <div class="menu-card" onclick="openBreathingOverlay()" style="border: 1.5px solid rgba(0,131,143,0.2); background: linear-gradient(135deg, rgba(224,247,250,0.6), rgba(232,245,233,0.6));">
             <h3 style="color:var(--accent);">⏱️🍃 Respiración</h3>
@@ -3091,6 +3107,20 @@
         }
     });
 // --- LÓGICA TRANSFORMA TUS PENSAMIENTOS ---
+
+function openLecturaOverlay() {
+    const menu = document.getElementById('selectionMenu');
+    menu.style.opacity = '0';
+    setTimeout(() => menu.style.display = 'none', 400);
+    document.getElementById('lecturaSelectOverlay').style.display = 'flex';
+}
+
+function closeLecturaOverlay() {
+    document.getElementById('lecturaSelectOverlay').style.display = 'none';
+    const menu = document.getElementById('selectionMenu');
+    menu.style.display = 'flex';
+    setTimeout(() => menu.style.opacity = '1', 10);
+}
 
 function openReframeOverlay() {
     const overlay = document.getElementById('reframeOverlay');
