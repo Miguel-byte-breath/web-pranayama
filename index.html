@@ -1312,6 +1312,135 @@
         .focus-card.pink  { border-left: 4px solid #f06292; }
         .focus-card.green .focus-card-dot { background: #43a047; }
         .focus-card.green { border-left: 4px solid #66bb6a; }
+        .focus-card.custom { border-left: 4px solid var(--accent); background: linear-gradient(135deg, rgba(224,247,250,0.5), rgba(232,245,233,0.5)); }
+        .focus-card.custom .focus-card-dot { background: var(--accent); }
+
+        /* ── Pad entorno personalizado ── */
+        #focusPadOverlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(20px);
+            z-index: 400;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 24px 40px;
+            overflow-y: auto;
+        }
+        #focusPadOverlay.open { display: flex; }
+        .pad-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #37474f;
+            margin-top: 70px;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+        .pad-subtitle {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.8rem;
+            color: #90a4ae;
+            margin-bottom: 28px;
+            text-align: center;
+        }
+        .pad-wrap {
+            position: relative;
+            width: min(340px, 90vw);
+            height: min(340px, 90vw);
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+            cursor: crosshair;
+            touch-action: none;
+            flex-shrink: 0;
+        }
+        #noisePadCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .pad-cursor {
+            position: absolute;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.25);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            transition: box-shadow 0.15s;
+            background: rgba(255,255,255,0.15);
+        }
+        .pad-axis-labels {
+            display: flex;
+            justify-content: space-between;
+            width: min(340px, 90vw);
+            margin-top: 8px;
+        }
+        .pad-axis-label {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.72rem;
+            color: #90a4ae;
+            font-weight: 600;
+        }
+        .pad-freq-row {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            gap: 6px;
+            width: 100%;
+            max-width: 340px;
+        }
+        .pad-freq-label {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.78rem;
+            color: #90a4ae;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .pad-freq-value {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: var(--accent);
+            font-weight: 700;
+        }
+        .pad-freq-desc {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.8rem;
+            color: #78909c;
+            text-align: center;
+        }
+        .pad-freq-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 12px;
+        }
+        .pad-freq-btn {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1.5px solid rgba(0,131,143,0.2);
+            background: transparent;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #78909c;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pad-freq-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        .pad-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
 
         /* ── HAZ FOCO — PANTALLA SESIÓN ── */
         /* ── Timer selector scroll ── */
@@ -2259,7 +2388,7 @@
         <div class="focus-card brown" onclick="startFocusSession('brown')">
             <div class="focus-card-header">
                 <div class="focus-card-dot"></div>
-                <h3>🟤 Tierra y Liberación</h3>
+                <h3>🐐 Tierra y Liberación</h3>
             </div>
             <p>Ruido marrón grave — como una cascada profunda. Tono sutil de 174 Hz para soltar tensión y entrar en concentración profunda. Ideal para bloquear el entorno y anclar la mente.</p>
             <span class="focus-freq">Ruido marrón + 174 Hz</span>
@@ -2267,7 +2396,7 @@
         <div class="focus-card pink" onclick="startFocusSession('pink')">
             <div class="focus-card-header">
                 <div class="focus-card-dot"></div>
-                <h3>🌸 Claridad</h3>
+                <h3>🧜🏻 Claridad</h3>
             </div>
             <p>Ruido rosa equilibrado — suave y envolvente. Tono de 528 Hz, el "Mi" del ADN. Para estudiar, leer o trabajar con la mente completamente despejada.</p>
             <span class="focus-freq">Ruido rosa + 528 Hz</span>
@@ -2280,9 +2409,72 @@
             <p>Ruido verde — variante cálida del rosa, como lluvia suave en un bosque. Tono de 396 Hz para liberar el miedo. Para cuando necesitas serenidad sin adormecerte.</p>
             <span class="focus-freq">Ruido verde + 396 Hz</span>
         </div>
+        <div class="focus-card custom" onclick="openNoisePad()">
+            <div class="focus-card-header">
+                <div class="focus-card-dot"></div>
+                <h3>🎛️ Entorno Personalizado</h3>
+            </div>
+            <p>Diseña tu propio paisaje sonoro. Mueve el cursor para mezclar tipo de ruido e intensidad.</p>
+            <span class="focus-freq">Ruido · tono · a tu medida</span>
+        </div>
     </div>
 
+</div>
 
+<!-- HAZ FOCO — PAD PERSONALIZADO -->
+<div id="focusPadOverlay">
+    <button onclick="closeNoisePad()" style="position:absolute;top:25px;left:25px;background:none;border:none;color:var(--accent);font-family:'Manrope',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;padding:6px 10px;">← Volver</button>
+    <div class="pad-title">🎛️ Entorno Personalizado</div>
+    <div class="pad-subtitle">Arrastra para mezclar ruido · Eje X: tipo · Eje Y: intensidad</div>
+
+    <div class="pad-wrap" id="padWrap">
+        <canvas id="noisePadCanvas"></canvas>
+        <div class="pad-cursor" id="padCursor"></div>
+    </div>
+
+    <div class="pad-axis-labels">
+        <span class="pad-axis-label">◀ Marrón</span>
+        <span class="pad-axis-label">Rosa</span>
+        <span class="pad-axis-label">Verde ▶</span>
+    </div>
+
+    <div class="pad-freq-row">
+        <div class="pad-freq-label">Tono Solfeggio</div>
+        <div class="pad-freq-selector" id="padFreqSelector">
+            <button class="pad-freq-btn" data-hz="0" onclick="setPadFreq(0)">Sin tono</button>
+            <button class="pad-freq-btn active" data-hz="174" onclick="setPadFreq(174)">174 Hz</button>
+            <button class="pad-freq-btn" data-hz="396" onclick="setPadFreq(396)">396 Hz</button>
+            <button class="pad-freq-btn" data-hz="528" onclick="setPadFreq(528)">528 Hz</button>
+            <button class="pad-freq-btn" data-hz="639" onclick="setPadFreq(639)">639 Hz</button>
+            <button class="pad-freq-btn" data-hz="741" onclick="setPadFreq(741)">741 Hz</button>
+        </div>
+        <div class="pad-freq-desc" id="padFreqDesc">174 Hz · alivio del dolor y la tensión</div>
+    </div>
+
+    <div class="pad-actions">
+        <button class="focus-btn-main" id="padPlayBtn" onclick="togglePadSession()" style="min-width:120px;">Iniciar</button>
+        <button class="focus-timer-btn" id="padTimerBtn" onclick="togglePadTimerPanel()" style="margin-left:4px;">⏱ <span class="timer-badge" id="padTimerBadge"></span></button>
+        <button class="focus-btn-stop" onclick="closeNoisePad()">← Volver</button>
+    </div>
+
+    <!-- Panel timer del pad (bottom sheet independiente) -->
+    <div id="padTimerPanel" style="display:none; position:fixed; bottom:0; left:0; right:0; background:rgba(255,255,255,0.98); backdrop-filter:blur(20px); border-radius:24px 24px 0 0; box-shadow:0 -8px 40px rgba(0,131,143,0.12); z-index:700; padding:0 24px 32px; flex-direction:column; align-items:center; max-width:480px; margin:0 auto;">
+        <div class="ftp-handle"></div>
+        <div class="ftp-title">Temporizador de sesión</div>
+        <div class="ftp-subtitle">Desliza para elegir la duración</div>
+        <div class="ftp-scroll-wrap" id="ptpScrollWrap">
+            <div class="ftp-center-line"></div>
+            <div class="ftp-scroll-track" id="ptpTrack"></div>
+        </div>
+        <div class="ftp-notify-row">
+            <span class="ftp-notify-label">🔔 Avisarme al terminar</span>
+            <label class="ftp-toggle">
+                <input type="checkbox" id="ptpNotifyCheck" checked>
+                <span class="ftp-toggle-slider"></span>
+            </label>
+        </div>
+        <button class="ftp-confirm" onclick="confirmPadTimer()">Establecer</button>
+    </div>
 </div>
 
 <!-- HAZ FOCO — SESIÓN -->
@@ -3351,6 +3543,309 @@ let focusNoiseGain = null;  // ganancia independiente del ruido
 let focusCountdownTotal = 0;   // segundos totales elegidos (0 = sin límite)
 let focusTimerIndex = 0;       // índice seleccionado en el scroll
 let focusMode = 'both';     // 'both' | 'noise' | 'tone'
+
+// ── ENTORNO PERSONALIZADO — PAD ──
+const PAD_FREQ_DESCS = {
+    0:   'Sin tono · solo ruido',
+    174: '174 Hz · alivio del dolor y la tensión',
+    396: '396 Hz · liberación del miedo y la culpa',
+    528: '528 Hz · reparación y transformación',
+    639: '639 Hz · conexión y relaciones',
+    741: '741 Hz · expresión y solución de problemas',
+};
+
+let padPosX = 0.5;   // 0=marrón, 0.5=rosa, 1=verde
+let padPosY = 0.6;   // 0=arriba(suave), 1=abajo(intenso)
+let padFreqHz = 174;
+let padRunning = false;
+let padAudioCtx = null;
+let padNoiseNode = null, padNoiseGain = null;
+let padToneOsc = null, padToneGain = null;
+let padAnimFrame = null;
+let padCountdownTotal = 0;
+let padSeconds = 0;
+let padInterval = null;
+let padTimerNotify = true;
+let ptpIndex = 0;
+let ptpInitialized = false;
+
+function openNoisePad() {
+    document.getElementById('focusSelectOverlay').style.display = 'none';
+    const overlay = document.getElementById('focusPadOverlay');
+    overlay.classList.add('open');
+    initPadCanvas();
+    updatePadCursor();
+}
+
+function closeNoisePad() {
+    clearInterval(padInterval);
+    stopPadAudio();
+    document.getElementById('focusPadOverlay').classList.remove('open');
+    document.getElementById('padTimerPanel').style.display = 'none';
+    padRunning = false;
+    padSeconds = 0;
+    padCountdownTotal = 0;
+    ptpIndex = 0;
+    ptpInitialized = false;
+    document.getElementById('padPlayBtn').textContent = 'Iniciar';
+    document.getElementById('padTimerBtn').classList.remove('active', 'has-time');
+    document.getElementById('padTimerBadge').textContent = '';
+    document.getElementById('focusSelectOverlay').style.display = 'flex';
+}
+
+function initPadCanvas() {
+    const canvas = document.getElementById('noisePadCanvas');
+    const wrap = document.getElementById('padWrap');
+    const size = wrap.offsetWidth;
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+
+    // Gradiente horizontal: marrón → rosa → verde
+    const gX = ctx.createLinearGradient(0, 0, size, 0);
+    gX.addColorStop(0,    '#8d6e63');
+    gX.addColorStop(0.5,  '#f06292');
+    gX.addColorStop(1,    '#66bb6a');
+    ctx.fillStyle = gX;
+    ctx.fillRect(0, 0, size, size);
+
+    // Overlay vertical: arriba blanco (suave) → abajo oscuro (intenso)
+    const gY = ctx.createLinearGradient(0, 0, 0, size);
+    gY.addColorStop(0,   'rgba(255,255,255,0.7)');
+    gY.addColorStop(0.5, 'rgba(255,255,255,0)');
+    gY.addColorStop(1,   'rgba(0,0,0,0.45)');
+    ctx.fillStyle = gY;
+    ctx.fillRect(0, 0, size, size);
+
+    // Eventos touch y mouse
+    const onMove = (nx, ny) => {
+        padPosX = Math.max(0, Math.min(1, nx));
+        padPosY = Math.max(0, Math.min(1, ny));
+        updatePadCursor();
+        if (padRunning) applyPadAudio();
+    };
+
+    wrap.addEventListener('mousedown', (e) => {
+        const r = wrap.getBoundingClientRect();
+        onMove((e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height);
+        const onMM = (e) => {
+            const r = wrap.getBoundingClientRect();
+            onMove((e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height);
+        };
+        window.addEventListener('mousemove', onMM);
+        window.addEventListener('mouseup', () => window.removeEventListener('mousemove', onMM), { once: true });
+    });
+
+    wrap.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const r = wrap.getBoundingClientRect();
+        const t = e.touches[0];
+        onMove((t.clientX - r.left) / r.width, (t.clientY - r.top) / r.height);
+    }, { passive: false });
+
+    wrap.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const r = wrap.getBoundingClientRect();
+        const t = e.touches[0];
+        onMove((t.clientX - r.left) / r.width, (t.clientY - r.top) / r.height);
+    }, { passive: false });
+}
+
+function updatePadCursor() {
+    const wrap = document.getElementById('padWrap');
+    const cursor = document.getElementById('padCursor');
+    cursor.style.left = (padPosX * 100) + '%';
+    cursor.style.top  = (padPosY * 100) + '%';
+}
+
+function setPadFreq(hz) {
+    padFreqHz = hz;
+    document.querySelectorAll('.pad-freq-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.hz) === hz));
+    document.getElementById('padFreqDesc').textContent = PAD_FREQ_DESCS[hz] || '';
+    if (padRunning && padToneOsc) {
+        if (hz === 0) {
+            padToneGain.gain.setTargetAtTime(0, padAudioCtx.currentTime, 0.1);
+        } else {
+            padToneOsc.frequency.setValueAtTime(hz, padAudioCtx.currentTime);
+            padToneGain.gain.setTargetAtTime(0.06, padAudioCtx.currentTime, 0.1);
+        }
+    }
+}
+
+function togglePadSession() {
+    if (!padRunning) {
+        padRunning = true;
+        document.getElementById('padPlayBtn').textContent = 'Pausar';
+        startPadAudio();
+        padInterval = setInterval(() => {
+            if (padCountdownTotal > 0) {
+                const remaining = padCountdownTotal - padSeconds - 1;
+                if (remaining <= 0) {
+                    clearInterval(padInterval);
+                    padRunning = false;
+                    document.getElementById('padPlayBtn').textContent = 'Iniciar';
+                    // Fade out suave 3 segundos
+                    if (padAudioCtx && padNoiseGain) {
+                        const t = padAudioCtx.currentTime;
+                        padNoiseGain.gain.linearRampToValueAtTime(0, t + 3);
+                        if (padToneGain) padToneGain.gain.linearRampToValueAtTime(0, t + 3);
+                        setTimeout(() => {
+                            stopPadAudio();
+                            if (padTimerNotify) {
+                                setTimeout(() => alert('✅ Sesión completada\n\n¡Bien hecho! Has completado tu sesión de foco.'), 200);
+                            }
+                        }, 3100);
+                    }
+                    return;
+                }
+                padSeconds++;
+            } else {
+                padSeconds++;
+            }
+        }, 1000);
+    } else {
+        padRunning = false;
+        document.getElementById('padPlayBtn').textContent = 'Continuar';
+        clearInterval(padInterval);
+        if (padAudioCtx) padAudioCtx.suspend().catch(() => {});
+    }
+}
+
+function startPadAudio() {
+    if (!padAudioCtx) padAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (padAudioCtx.state === 'suspended') padAudioCtx.resume();
+
+    // Nodo de ruido blanco (buffer)
+    const bufSize = padAudioCtx.sampleRate * 2;
+    const buf = padAudioCtx.createBuffer(1, bufSize, padAudioCtx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+
+    padNoiseNode = padAudioCtx.createBufferSource();
+    padNoiseNode.buffer = buf;
+    padNoiseNode.loop = true;
+
+    // Filtro para dar color al ruido según posX
+    const filter = padAudioCtx.createBiquadFilter();
+    padNoiseNode.connect(filter);
+
+    padNoiseGain = padAudioCtx.createGain();
+    filter.connect(padNoiseGain);
+    padNoiseGain.connect(padAudioCtx.destination);
+    padNoiseNode.start();
+
+    // Tono Solfeggio
+    padToneOsc = padAudioCtx.createOscillator();
+    padToneOsc.type = 'sine';
+    padToneOsc.frequency.value = padFreqHz || 174;
+    padToneGain = padAudioCtx.createGain();
+    padToneGain.gain.value = padFreqHz === 0 ? 0 : 0.06;
+    padToneOsc.connect(padToneGain);
+    padToneGain.connect(padAudioCtx.destination);
+    padToneOsc.start();
+
+    // Guardar referencia al filtro para applyPadAudio
+    padNoiseNode._filter = filter;
+    applyPadAudio();
+}
+
+function applyPadAudio() {
+    if (!padAudioCtx || !padNoiseNode) return;
+    const filter = padNoiseNode._filter;
+    const t = padAudioCtx.currentTime;
+
+    // Eje X → tipo de ruido via filtro pasa-bajos / pasa-altos
+    // X=0 (marrón): freq baja, X=0.5 (rosa): media, X=1 (verde): alta
+    const freq = 200 + padPosX * 2800;  // 200Hz → 3000Hz
+    const Q = 0.8 + padPosX * 0.6;
+    filter.type = padPosX < 0.5 ? 'lowpass' : 'bandpass';
+    filter.frequency.setTargetAtTime(freq, t, 0.1);
+    filter.Q.setTargetAtTime(Q, t, 0.1);
+
+    // Eje Y → volumen (0=suave, 1=intenso)
+    const vol = 0.15 + padPosY * 0.45;
+    padNoiseGain.gain.setTargetAtTime(vol, t, 0.1);
+}
+
+function stopPadAudio() {
+    if (padNoiseNode) { try { padNoiseNode.stop(); } catch(e) {} padNoiseNode = null; }
+    if (padToneOsc)   { try { padToneOsc.stop();   } catch(e) {} padToneOsc = null; }
+    if (padAudioCtx)  { padAudioCtx.close().catch(() => {}); padAudioCtx = null; }
+    padNoiseGain = null; padToneGain = null;
+}
+
+function togglePadTimerPanel() {
+    const panel = document.getElementById('padTimerPanel');
+    const isOpen = panel.style.display === 'flex';
+    if (isOpen) {
+        panel.style.display = 'none';
+    } else {
+        initPtpScroll();
+        panel.style.display = 'flex';
+    }
+}
+
+function initPtpScroll() {
+    const track = document.getElementById('ptpTrack');
+    if (!ptpInitialized) {
+        track.innerHTML = '';
+        FOCUS_DURATIONS.forEach((d, i) => {
+            const el = document.createElement('div');
+            el.className = 'ftp-item' + (i === ptpIndex ? ' sel' : '');
+            el.textContent = d.label;
+            el.dataset.index = i;
+            track.appendChild(el);
+        });
+        const wrap = document.getElementById('ptpScrollWrap');
+        wrap.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (e.deltaY > 0 && ptpIndex < FOCUS_DURATIONS.length - 1) ptpIndex++;
+            else if (e.deltaY < 0 && ptpIndex > 0) ptpIndex--;
+            updatePtpScroll();
+        }, { passive: false });
+        let lastY = 0;
+        wrap.addEventListener('touchstart', (e) => { lastY = e.touches[0].clientY; });
+        wrap.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const dy = lastY - e.touches[0].clientY;
+            lastY = e.touches[0].clientY;
+            if (Math.abs(dy) > 10) {
+                if (dy > 0 && ptpIndex < FOCUS_DURATIONS.length - 1) ptpIndex++;
+                else if (dy < 0 && ptpIndex > 0) ptpIndex--;
+                updatePtpScroll();
+            }
+        }, { passive: false });
+        track.addEventListener('click', (e) => {
+            const item = e.target.closest('.ftp-item');
+            if (item) { ptpIndex = parseInt(item.dataset.index); updatePtpScroll(); }
+        });
+        ptpInitialized = true;
+    }
+    updatePtpScroll();
+}
+
+function updatePtpScroll() {
+    document.querySelectorAll('#ptpTrack .ftp-item').forEach((el, i) => el.classList.toggle('sel', i === ptpIndex));
+    const offset = -ptpIndex * 44 + 55;
+    document.getElementById('ptpTrack').style.transform = `translateY(${offset}px)`;
+}
+
+function confirmPadTimer() {
+    const d = FOCUS_DURATIONS[ptpIndex];
+    padCountdownTotal = d.seconds;
+    padTimerNotify = document.getElementById('ptpNotifyCheck').checked;
+    document.getElementById('padTimerPanel').style.display = 'none';
+    const btn = document.getElementById('padTimerBtn');
+    const badge = document.getElementById('padTimerBadge');
+    if (d.seconds > 0) {
+        btn.classList.add('active', 'has-time');
+        badge.textContent = d.label;
+    } else {
+        btn.classList.remove('active', 'has-time');
+        badge.textContent = '';
+    }
+    padSeconds = 0;
+}
 
 function openFocusSelect() {
     document.getElementById('focusSelectOverlay').style.display = 'flex';
