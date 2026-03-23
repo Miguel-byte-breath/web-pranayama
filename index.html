@@ -2451,6 +2451,12 @@
         <div class="pad-freq-desc" id="padFreqDesc">174 Hz · alivio del dolor y la tensión</div>
     </div>
 
+    <div class="focus-volume" style="margin-top:16px; max-width:280px; width:100%;">
+        <span class="focus-volume-label">🔈</span>
+        <input type="range" id="padVolume" min="0" max="100" value="60" oninput="setPadVolume(this.value)">
+        <span class="focus-volume-label">🔊</span>
+    </div>
+
     <div class="pad-actions">
         <button class="focus-btn-main" id="padPlayBtn" onclick="togglePadSession()" style="min-width:120px;">Iniciar</button>
         <button class="focus-timer-btn" id="padTimerBtn" onclick="togglePadTimerPanel()" style="margin-left:4px;">⏱ <span class="timer-badge" id="padTimerBadge"></span></button>
@@ -3749,6 +3755,12 @@ function startPadAudio() {
     applyPadAudio();
 }
 
+function setPadVolume(val) {
+    if (!padAudioCtx || !padNoiseGain) return;
+    const v = val / 100;
+    padNoiseGain.gain.setTargetAtTime(v * (0.15 + padPosY * 0.45), padAudioCtx.currentTime, 0.1);
+}
+
 function applyPadAudio() {
     if (!padAudioCtx || !padNoiseNode) return;
     const filter = padNoiseNode._filter;
@@ -3762,8 +3774,9 @@ function applyPadAudio() {
     filter.frequency.setTargetAtTime(freq, t, 0.1);
     filter.Q.setTargetAtTime(Q, t, 0.1);
 
-    // Eje Y → volumen (0=suave, 1=intenso)
-    const vol = 0.15 + padPosY * 0.45;
+    // Eje Y → volumen base · modulado por el slider
+    const sliderVal = (document.getElementById('padVolume')?.value || 60) / 100;
+    const vol = sliderVal * (0.15 + padPosY * 0.45);
     padNoiseGain.gain.setTargetAtTime(vol, t, 0.1);
 }
 
