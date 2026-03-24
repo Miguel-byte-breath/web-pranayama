@@ -3758,9 +3758,11 @@ function startPadAudio() {
 }
 
 function setPadVolume(val) {
-    if (!padAudioCtx || !padNoiseGain) return;
+    if (!padAudioCtx) return;
     const v = val / 100;
-    padNoiseGain.gain.setTargetAtTime(v * (0.15 + padPosY * 0.45), padAudioCtx.currentTime, 0.1);
+    const t = padAudioCtx.currentTime;
+    if (padNoiseGain) padNoiseGain.gain.setTargetAtTime(v * (0.15 + padPosY * 0.45), t, 0.1);
+    if (padToneGain && padFreqHz > 0) padToneGain.gain.setTargetAtTime(v * 0.06, t, 0.1);
 }
 
 function applyPadAudio() {
