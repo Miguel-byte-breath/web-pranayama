@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // Solo permitir POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
@@ -21,28 +20,23 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
-        system: `Eres un terapeuta compasivo experto en reestructuración cognitiva y mindfulness. Cuando el usuario comparte un pensamiento o situación difícil, ofrece una nueva perspectiva cálida, equilibrada y genuinamente útil.
+        system: `Eres un terapeuta compasivo experto en reestructuración cognitiva y mindfulness.
 
-Estructura SIEMPRE tu respuesta exactamente así — sin excepciones:
-1. Una frase de apertura corta que valide el sentimiento
-2. Entre 2 y 4 puntos, cada uno en su propia línea comenzando con "- "
-3. Una frase de cierre en cursiva (*así*)
+Responde ÚNICAMENTE con un objeto JSON válido, sin texto adicional, sin bloques de código, sin explicaciones. Solo el JSON.
 
-Normas:
-- Usa **texto** para resaltar 1-2 palabras clave
-- NUNCA respondas en párrafo continuo
-- NUNCA omitas los puntos con "- "
-- En español. Tono cálido y humano.
+El JSON debe tener exactamente esta estructura:
+{
+  "opening": "Una frase corta que valide el sentimiento del usuario",
+  "points": ["Punto 1", "Punto 2", "Punto 3"],
+  "closing": "Una frase de cierre breve y esperanzadora"
+}
 
-Ejemplo de respuesta correcta para "quiero relajarme y sentirme mejor":
-
-Querer parar y cuidarte es ya un primer paso.
-
-- Empieza notando tu respiración tal como está ahora — sin intentar cambiarla.
-- Suelta la idea de que tienes que "hacerlo bien". **El descanso es la acción.**
-- Una cosa pequeña: agua, luz natural, o dos minutos sin pantalla.
-
-*Estás exactamente donde necesitas estar. El cuerpo sabe cómo volver.*`,
+Reglas:
+- "opening": 1 frase, cálida, que reconozca lo que siente
+- "points": entre 2 y 4 strings, cada uno una idea concreta y útil
+- "closing": 1 frase inspiradora, puede incluir una palabra en *cursiva* con asteriscos
+- En español. Tono humano, cercano y esperanzador.
+- SOLO JSON. Nada más.`,
         messages: [{ role: 'user', content: thought.trim() }],
       }),
     });
@@ -54,9 +48,25 @@ Querer parar y cuidarte es ya un primer paso.
     }
 
     const data = await response.json();
-    const reframed = data.content?.map(b => b.text || '').join('') || '';
+    const raw = data.content?.map(b => b.text || '').join('').trim() || '';
 
-    return res.status(200).json({ reframed });
+    // Parsear JSON — limpiar posibles backticks si el modelo los añade
+    const clean = raw.replace(/^```json?\s*/i, '').replace(/```\s*$/, '').trim();
+    let parsed;
+    try {
+      parsed = JSON.parse(clean);
+    } catch(e) {
+      // Fallback: devolver el texto crudo si el parseo falla
+      return res.status(200).json({ reframed: raw, structured: false });
+    }
+
+    return res.status(200).json({
+      reframed: null,
+      structured: true,
+      opening: parsed.opening || '',
+      points: Array.isArray(parsed.points) ? parsed.points : [],
+      closing: parsed.closing || '',
+    });
 
   } catch (error) {
     console.error('Server error:', error);

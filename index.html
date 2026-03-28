@@ -725,6 +725,22 @@
             flex-shrink: 0;
             margin-top: 1px;
         }
+        .reframe-result .rf-opening {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 16px !important;
+            font-weight: 600;
+        }
+        .reframe-result .rf-closing {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.88rem;
+            color: #78909c;
+            font-style: italic;
+            margin-top: 6px !important;
+            border-top: 1px solid rgba(0,131,143,0.1);
+            padding-top: 12px;
+        }
 
         .reframe-result.visible {
             display: block;
@@ -3374,6 +3390,35 @@ function resetReframe() {
     document.getElementById('reframeInput').focus();
 }
 
+function renderStructuredReframe(data) {
+    let html = '';
+    // Apertura — Cinzel, color accent
+    if (data.opening) {
+        html += `<p class="rf-opening">${escapeHtml(data.opening)}</p>`;
+    }
+    // Puntos — bullets con dot de color
+    if (data.points && data.points.length) {
+        data.points.forEach(p => {
+            html += `<div class="rf-bullet"><span class="rf-bullet-dot">•</span><span>${applyInlineMarkdown(escapeHtml(p))}</span></div>`;
+        });
+    }
+    // Cierre — cursiva sutil
+    if (data.closing) {
+        html += `<p class="rf-closing">${applyInlineMarkdown(escapeHtml(data.closing))}</p>`;
+    }
+    return html;
+}
+
+function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function applyInlineMarkdown(str) {
+    return str
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>');
+}
+
 function formatReframe(text) {
     // Seguridad HTML
     let t = text
@@ -3432,8 +3477,12 @@ async function reframeThought() {
 
         if (!response.ok) throw new Error(data.error || 'Error desconocido');
 
-        // Mostrar resultado
-        textEl.innerHTML = formatReframe(data.reframed);
+        // Mostrar resultado — estructurado (JSON) o fallback texto plano
+        if (data.structured) {
+            textEl.innerHTML = renderStructuredReframe(data);
+        } else {
+            textEl.innerHTML = formatReframe(data.reframed || '');
+        }
         result.classList.add('visible');
         input.style.display = 'none';
         btn.style.display = 'none';
