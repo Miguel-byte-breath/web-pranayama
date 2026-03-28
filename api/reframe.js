@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // Solo permitir POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
@@ -20,15 +19,24 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 300,
-        system: `Eres un acompañante compasivo experto en reestructuración cognitiva y mindfulness.
-Cuando el usuario comparte un pensamiento negativo, ansioso o difícil, tu tarea es:
-1. Validar brevemente el sentimiento (sin exagerar)
-2. Ofrecer UNA perspectiva nueva, más compasiva y equilibrada del mismo pensamiento
-3. Ser cálido, cercano y genuinamente útil
+        max_tokens: 1000,
+        system: `Eres un terapeuta compasivo experto en reestructuración cognitiva y mindfulness.
 
-Responde SOLO con el pensamiento reencuadrado, sin introducciones ni explicaciones.
-Máximo 3 frases. En español. Usa un tono cálido y esperanzador pero realista.`,
+Responde ÚNICAMENTE con un objeto JSON válido, sin texto adicional, sin bloques de código, sin explicaciones. Solo el JSON.
+
+El JSON debe tener exactamente esta estructura:
+{
+  "opening": "Una frase corta que valide el sentimiento del usuario",
+  "points": ["Punto 1", "Punto 2", "Punto 3"],
+  "closing": "Una frase de cierre breve y esperanzadora"
+}
+
+Reglas:
+- "opening": 1 frase, cálida, que reconozca lo que siente
+- "points": entre 2 y 4 strings, cada uno una idea concreta y útil
+- "closing": 1 frase inspiradora, puede incluir una palabra en *cursiva* con asteriscos
+- En español. Tono humano, cercano y esperanzador.
+- SOLO JSON. Nada más.`,
         messages: [{ role: 'user', content: thought.trim() }],
       }),
     });
@@ -40,9 +48,25 @@ Máximo 3 frases. En español. Usa un tono cálido y esperanzador pero realista.
     }
 
     const data = await response.json();
-    const reframed = data.content?.map(b => b.text || '').join('') || '';
+    const raw = data.content?.map(b => b.text || '').join('').trim() || '';
 
-    return res.status(200).json({ reframed });
+    // Parsear JSON — limpiar posibles backticks si el modelo los añade
+    const clean = raw.replace(/^```json?\s*/i, '').replace(/```\s*$/, '').trim();
+    let parsed;
+    try {
+      parsed = JSON.parse(clean);
+    } catch(e) {
+      // Fallback: devolver el texto crudo si el parseo falla
+      return res.status(200).json({ reframed: raw, structured: false });
+    }
+
+    return res.status(200).json({
+      reframed: null,
+      structured: true,
+      opening: parsed.opening || '',
+      points: Array.isArray(parsed.points) ? parsed.points : [],
+      closing: parsed.closing || '',
+    });
 
   } catch (error) {
     console.error('Server error:', error);
