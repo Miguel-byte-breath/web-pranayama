@@ -850,6 +850,23 @@
             color: var(--accent);
         }
 
+        .reframe-share-btn {
+            background: transparent;
+            border: 1.5px solid rgba(0,131,143,0.35);
+            color: var(--accent);
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 8px 18px;
+            font-family: 'Manrope', sans-serif;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .reframe-share-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
         .reframe-error {
             color: #e57373;
             font-size: 0.9rem;
@@ -2720,6 +2737,9 @@
         <button class="reframe-new-btn" id="reframeNewBtn" style="display:none;" onclick="resetReframe()">
             → Transformar otro pensamiento
         </button>
+        <button class="reframe-share-btn" id="reframeShareBtn" style="display:none;" onclick="shareReframe()">
+            ↑ Guardar / Compartir
+        </button>
     </div>
 
     <div style="margin-top:40px;">
@@ -3445,7 +3465,32 @@ function resetReframe() {
     document.getElementById('reframeResult').classList.remove('visible');
     document.getElementById('reframeError').classList.remove('visible');
     document.getElementById('reframeNewBtn').style.display = 'none';
+    document.getElementById('reframeShareBtn').style.display = 'none';
     document.getElementById('reframeInput').focus();
+}
+
+let _lastReframeData = null;
+
+function shareReframe() {
+    if (!_lastReframeData) return;
+    const d = _lastReframeData;
+    const lines = [];
+    if (d.opening) lines.push(d.opening);
+    if (d.points && d.points.length) d.points.forEach(p => lines.push('• ' + p));
+    if (d.closing) lines.push('\n' + d.closing);
+    if (d.breath && d.breath.technique) lines.push('\n🌬 ' + d.breath.technique + ' · ' + d.breath.rhythm);
+    const text = lines.join('\n');
+
+    if (navigator.share) {
+        navigator.share({ title: 'Mi reencuadre · Respira', text }).catch(() => {});
+    } else {
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.getElementById('reframeShareBtn');
+            const orig = btn.textContent;
+            btn.textContent = '✓ Copiado';
+            setTimeout(() => btn.textContent = orig, 2000);
+        }).catch(() => {});
+    }
 }
 
 // Mapa patrón ACT → clave de patrón respiratorio disponible en la app
@@ -3572,14 +3617,17 @@ async function reframeThought() {
 
         // Mostrar resultado — estructurado (JSON) o fallback texto plano
         if (data.structured) {
+            _lastReframeData = data;
             textEl.innerHTML = renderStructuredReframe(data);
         } else {
+            _lastReframeData = null;
             textEl.innerHTML = formatReframe(data.reframed || '');
         }
         result.classList.add('visible');
         input.style.display = 'none';
         btn.style.display = 'none';
         newBtn.style.display = 'block';
+        document.getElementById('reframeShareBtn').style.display = 'block';
 
     } catch (err) {
         console.error('Reframe error:', err);
