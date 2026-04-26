@@ -2422,7 +2422,7 @@
         </a>
         <a class="focusnaut-card" href="https://open.spotify.com/intl-es/album/02GSMZnoKZ7g4YAvfAsFi5?si=Pr30qtMvSd2vuSCzUg5EwA" target="_blank" rel="noopener">
             <h3>🎹 Glass Minds — Archive</h3>
-            <p>Obra maestra que destaca por su profunda introspección y su capacidad para evocar emociones profundas.</p>
+            <p>Álbum instrumental envolvente · Para sumergirte en foco profundo</p>
             <span class="focusnaut-badge">▶ Abrir en Spotify</span>
         </a>
     </div>
@@ -3455,7 +3455,6 @@ const BREATH_PATTERN_MAP = {
 };
 
 function launchBreath(patternKey) {
-    closeReframeOverlay();
     if (typeof start === 'function') start(patternKey);
 }
 
@@ -3465,7 +3464,17 @@ function renderStructuredReframe(data) {
     if (data.opening) {
         html += `<p class="rf-opening">${escapeHtml(data.opening)}</p>`;
     }
-    // Sugerencia respiratoria — entre apertura y puntos
+    // Puntos — bullets con dot de color
+    if (data.points && data.points.length) {
+        data.points.forEach(p => {
+            html += `<div class="rf-bullet"><span class="rf-bullet-dot">•</span><span>${applyInlineMarkdown(escapeHtml(p))}</span></div>`;
+        });
+    }
+    // Cierre — cursiva sutil
+    if (data.closing) {
+        html += `<p class="rf-closing">${applyInlineMarkdown(escapeHtml(data.closing))}</p>`;
+    }
+    // Sugerencia respiratoria — al final, tras leer la respuesta completa
     if (data.breath && data.breath.technique) {
         const patternKey = BREATH_PATTERN_MAP[data.pattern] || 'box';
         html += `
@@ -3477,16 +3486,6 @@ function renderStructuredReframe(data) {
             <p class="rf-breath-reason">${escapeHtml(data.breath.reason)}</p>
             <button class="rf-breath-btn" onclick="launchBreath('${patternKey}')">Respirar ahora →</button>
         </div>`;
-    }
-    // Puntos — bullets con dot de color
-    if (data.points && data.points.length) {
-        data.points.forEach(p => {
-            html += `<div class="rf-bullet"><span class="rf-bullet-dot">•</span><span>${applyInlineMarkdown(escapeHtml(p))}</span></div>`;
-        });
-    }
-    // Cierre — cursiva sutil
-    if (data.closing) {
-        html += `<p class="rf-closing">${applyInlineMarkdown(escapeHtml(data.closing))}</p>`;
     }
     return html;
 }
