@@ -742,6 +742,61 @@
             padding-top: 12px;
         }
 
+        .rf-breath {
+            background: linear-gradient(135deg, rgba(224,247,250,0.8), rgba(232,245,233,0.8));
+            border: 1px solid rgba(0,131,143,0.2);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin: 4px 0 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .rf-breath-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .rf-breath-title {
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: 500;
+        }
+        .rf-breath-rhythm {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.78rem;
+            color: var(--accent);
+            background: rgba(0,131,143,0.08);
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+        .rf-breath-reason {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.82rem;
+            color: #546e7a;
+            line-height: 1.4;
+        }
+        .rf-breath-btn {
+            align-self: flex-start;
+            margin-top: 4px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 7px 16px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .rf-breath-btn:hover { opacity: 0.85; }
+
         .reframe-result.visible {
             display: block;
         }
@@ -3390,11 +3445,38 @@ function resetReframe() {
     document.getElementById('reframeInput').focus();
 }
 
+// Mapa patrón ACT → clave de patrón respiratorio disponible en la app
+const BREATH_PATTERN_MAP = {
+    'fusión':       'box',
+    'rumia':        '4-7-8b',
+    'anticipación': '4-4-6-2',
+    'evitación':    '5-5',
+    'autocrítica':  'box',
+};
+
+function launchBreath(patternKey) {
+    closeReframeOverlay();
+    if (typeof start === 'function') start(patternKey);
+}
+
 function renderStructuredReframe(data) {
     let html = '';
     // Apertura — Cinzel, color accent
     if (data.opening) {
         html += `<p class="rf-opening">${escapeHtml(data.opening)}</p>`;
+    }
+    // Sugerencia respiratoria — entre apertura y puntos
+    if (data.breath && data.breath.technique) {
+        const patternKey = BREATH_PATTERN_MAP[data.pattern] || 'box';
+        html += `
+        <div class="rf-breath">
+            <div class="rf-breath-header">
+                <span class="rf-breath-title">🌬 ${escapeHtml(data.breath.technique)}</span>
+                <span class="rf-breath-rhythm">${escapeHtml(data.breath.rhythm)}</span>
+            </div>
+            <p class="rf-breath-reason">${escapeHtml(data.breath.reason)}</p>
+            <button class="rf-breath-btn" onclick="launchBreath('${patternKey}')">Respirar ahora →</button>
+        </div>`;
     }
     // Puntos — bullets con dot de color
     if (data.points && data.points.length) {
