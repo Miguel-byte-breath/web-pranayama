@@ -2740,6 +2740,7 @@
         <button class="reframe-share-btn" id="reframeShareBtn" style="display:none;" onclick="shareReframe()">
             ↑ Guardar / Compartir
         </button>
+        <p id="reframeShareHint" style="display:none; font-family:'Manrope',sans-serif; font-size:0.75rem; color:#b0bec5; margin-top:-4px;">El texto también se ha copiado al portapapeles</p>
     </div>
 
     <div style="margin-top:40px;">
@@ -3466,6 +3467,7 @@ function resetReframe() {
     document.getElementById('reframeError').classList.remove('visible');
     document.getElementById('reframeNewBtn').style.display = 'none';
     document.getElementById('reframeShareBtn').style.display = 'none';
+    document.getElementById('reframeShareHint').style.display = 'none';
     document.getElementById('reframeInput').focus();
 }
 
@@ -3629,6 +3631,7 @@ async function reframeThought() {
         btn.style.display = 'none';
         newBtn.style.display = 'block';
         document.getElementById('reframeShareBtn').style.display = 'block';
+        document.getElementById('reframeShareHint').style.display = 'block';
 
     } catch (err) {
         console.error('Reframe error:', err);
