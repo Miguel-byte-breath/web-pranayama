@@ -3281,6 +3281,9 @@
         // Si veníamos del Paisaje Sonoro, volvemos a su pantalla intermedia
         if (wasWinterMode) {
             openSoundscapeSettings();
+        } else if (_fromReframe) {
+            _fromReframe = false;
+            reopenReframeOverlay();
         } else {
             // Volver al overlay de Respiración
             openBreathingOverlay();
@@ -3454,9 +3457,17 @@ const BREATH_PATTERN_MAP = {
     'autocrítica':  'box',
 };
 
+let _fromReframe = false;
+
 function launchBreath(patternKey) {
+    _fromReframe = true;
     closeReframeOverlay();
     if (typeof start === 'function') start(patternKey);
+}
+
+function reopenReframeOverlay() {
+    const overlay = document.getElementById('reframeOverlay');
+    if (overlay) overlay.style.display = 'flex';
 }
 
 function renderStructuredReframe(data) {
