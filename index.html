@@ -742,6 +742,61 @@
             padding-top: 12px;
         }
 
+        .rf-breath {
+            background: linear-gradient(135deg, rgba(224,247,250,0.8), rgba(232,245,233,0.8));
+            border: 1px solid rgba(0,131,143,0.2);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin: 4px 0 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .rf-breath-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .rf-breath-title {
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: 500;
+        }
+        .rf-breath-rhythm {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.78rem;
+            color: var(--accent);
+            background: rgba(0,131,143,0.08);
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+        .rf-breath-reason {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.82rem;
+            color: #546e7a;
+            line-height: 1.4;
+        }
+        .rf-breath-btn {
+            align-self: flex-start;
+            margin-top: 4px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 7px 16px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .rf-breath-btn:hover { opacity: 0.85; }
+
         .reframe-result.visible {
             display: block;
         }
@@ -793,6 +848,23 @@
 
         .reframe-new-btn:hover {
             color: var(--accent);
+        }
+
+        .reframe-share-btn {
+            background: transparent;
+            border: 1.5px solid rgba(0,131,143,0.35);
+            color: var(--accent);
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 8px 18px;
+            font-family: 'Manrope', sans-serif;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .reframe-share-btn:hover {
+            background: var(--accent);
+            color: white;
         }
 
         .reframe-error {
@@ -2367,7 +2439,7 @@
         </a>
         <a class="focusnaut-card" href="https://open.spotify.com/intl-es/album/02GSMZnoKZ7g4YAvfAsFi5?si=Pr30qtMvSd2vuSCzUg5EwA" target="_blank" rel="noopener">
             <h3>🎹 Glass Minds — Archive</h3>
-            <p>Álbum instrumental envolvente · Para sumergirte en foco profundo</p>
+            <p>Obra maestra que destaca por su profunda introspección y su capacidad para evocar emociones profundas.</p>
             <span class="focusnaut-badge">▶ Abrir en Spotify</span>
         </a>
     </div>
@@ -2665,6 +2737,10 @@
         <button class="reframe-new-btn" id="reframeNewBtn" style="display:none;" onclick="resetReframe()">
             → Transformar otro pensamiento
         </button>
+        <button class="reframe-share-btn" id="reframeShareBtn" style="display:none;" onclick="shareReframe()">
+            ↑ Guardar / Compartir
+        </button>
+        <p id="reframeShareHint" style="display:none; font-family:'Manrope',sans-serif; font-size:0.75rem; color:#b0bec5; margin-top:-4px;">El texto también se ha copiado al portapapeles</p>
     </div>
 
     <div style="margin-top:40px;">
@@ -3226,6 +3302,9 @@
         // Si veníamos del Paisaje Sonoro, volvemos a su pantalla intermedia
         if (wasWinterMode) {
             openSoundscapeSettings();
+        } else if (_fromReframe) {
+            _fromReframe = false;
+            reopenReframeOverlay();
         } else {
             // Volver al overlay de Respiración
             openBreathingOverlay();
@@ -3387,7 +3466,56 @@ function resetReframe() {
     document.getElementById('reframeResult').classList.remove('visible');
     document.getElementById('reframeError').classList.remove('visible');
     document.getElementById('reframeNewBtn').style.display = 'none';
+    document.getElementById('reframeShareBtn').style.display = 'none';
+    document.getElementById('reframeShareHint').style.display = 'none';
     document.getElementById('reframeInput').focus();
+}
+
+let _lastReframeData = null;
+
+function shareReframe() {
+    if (!_lastReframeData) return;
+    const d = _lastReframeData;
+    const lines = [];
+    if (d.opening) lines.push(d.opening);
+    if (d.points && d.points.length) d.points.forEach(p => lines.push('• ' + p));
+    if (d.closing) lines.push('\n' + d.closing);
+    if (d.breath && d.breath.technique) lines.push('\n🌬 ' + d.breath.technique + ' · ' + d.breath.rhythm);
+    const text = lines.join('\n');
+
+    if (navigator.share) {
+        navigator.clipboard.writeText(text).catch(() => {});
+        navigator.share({ title: 'Mi reencuadre · Respira', text }).catch(() => {});
+    } else {
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.getElementById('reframeShareBtn');
+            const orig = btn.textContent;
+            btn.textContent = '✓ Copiado';
+            setTimeout(() => btn.textContent = orig, 2000);
+        }).catch(() => {});
+    }
+}
+
+// Mapa patrón ACT → clave de patrón respiratorio disponible en la app
+const BREATH_PATTERN_MAP = {
+    'fusión':       'box',
+    'rumia':        '4-7-8b',
+    'anticipación': '4-4-6-2',
+    'evitación':    '5-5',
+    'autocrítica':  'box',
+};
+
+let _fromReframe = false;
+
+function launchBreath(patternKey) {
+    _fromReframe = true;
+    closeReframeOverlay();
+    if (typeof start === 'function') start(patternKey);
+}
+
+function reopenReframeOverlay() {
+    const overlay = document.getElementById('reframeOverlay');
+    if (overlay) overlay.style.display = 'flex';
 }
 
 function renderStructuredReframe(data) {
@@ -3405,6 +3533,19 @@ function renderStructuredReframe(data) {
     // Cierre — cursiva sutil
     if (data.closing) {
         html += `<p class="rf-closing">${applyInlineMarkdown(escapeHtml(data.closing))}</p>`;
+    }
+    // Sugerencia respiratoria — al final, tras leer la respuesta completa
+    if (data.breath && data.breath.technique) {
+        const patternKey = BREATH_PATTERN_MAP[data.pattern] || 'box';
+        html += `
+        <div class="rf-breath">
+            <div class="rf-breath-header">
+                <span class="rf-breath-title">🌬 ${escapeHtml(data.breath.technique)}</span>
+                <span class="rf-breath-rhythm">${escapeHtml(data.breath.rhythm)}</span>
+            </div>
+            <p class="rf-breath-reason">${escapeHtml(data.breath.reason)}</p>
+            <button class="rf-breath-btn" onclick="launchBreath('${patternKey}')">Respirar ahora →</button>
+        </div>`;
     }
     return html;
 }
@@ -3479,14 +3620,18 @@ async function reframeThought() {
 
         // Mostrar resultado — estructurado (JSON) o fallback texto plano
         if (data.structured) {
+            _lastReframeData = data;
             textEl.innerHTML = renderStructuredReframe(data);
         } else {
+            _lastReframeData = null;
             textEl.innerHTML = formatReframe(data.reframed || '');
         }
         result.classList.add('visible');
         input.style.display = 'none';
         btn.style.display = 'none';
         newBtn.style.display = 'block';
+        document.getElementById('reframeShareBtn').style.display = 'block';
+        document.getElementById('reframeShareHint').style.display = 'block';
 
     } catch (err) {
         console.error('Reframe error:', err);
