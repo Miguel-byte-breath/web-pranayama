@@ -37,7 +37,7 @@ Proceso interno (aplícalo sin explicarlo):
 2. ASIGNA la técnica respiratoria según el patrón:
    - fusión      → Box breathing, ritmo 4-4-4-4
    - rumia        → 4-7-8 (inhala 4, retén 7, exhala 8)
-   - anticipación → Exhale prolongado, ritmo 4-2-6
+   - anticipación → Exhale prolongado, ritmo 4-4-6-2
    - evitación    → Respiración coherente, ritmo 5-5
    - autocrítica  → Nadi Shodhana, ritmo 4-4-4
 
