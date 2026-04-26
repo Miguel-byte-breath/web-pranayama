@@ -3482,6 +3482,7 @@ function shareReframe() {
     const text = lines.join('\n');
 
     if (navigator.share) {
+        navigator.clipboard.writeText(text).catch(() => {});
         navigator.share({ title: 'Mi reencuadre · Respira', text }).catch(() => {});
     } else {
         navigator.clipboard.writeText(text).then(() => {
