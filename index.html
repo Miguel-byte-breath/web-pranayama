@@ -3455,6 +3455,7 @@ const BREATH_PATTERN_MAP = {
 };
 
 function launchBreath(patternKey) {
+    closeReframeOverlay();
     if (typeof start === 'function') start(patternKey);
 }
 
