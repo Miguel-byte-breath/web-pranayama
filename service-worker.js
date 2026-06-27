@@ -1,21 +1,20 @@
-const CACHE_NAME = 'respira-v1.5.1'; // ← Nueva versión
+const CACHE_NAME = 'respira-v1.5.2';
 const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png',
-  './ambient.mp3'
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/ambient.mp3'
   // NOTA: NO añadimos aquí el vídeo ni el audio de invierno.
 ];
 
 // 1. INSTALACIÓN: Guarda los archivos básicos
+//    ⚠️  SIN skipWaiting(): el nuevo SW espera a que todas las
+//    pestañas cierren antes de activarse. Esto evita que Chrome
+//    invalide la instalación de la PWA durante un deploy.
 self.addEventListener('install', (e) => {
   console.log('[Service Worker] Instalando nueva versión...');
-  
-  // FUERZA A INSTALARSE YA (Sin esperar en la cola)
-  self.skipWaiting(); 
-
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS_TO_CACHE);
@@ -34,25 +33,32 @@ self.addEventListener('activate', (e) => {
         }
       }));
     }).then(() => {
-      // FUERZA A TOMAR EL CONTROL DE LA PÁGINA YA
       return self.clients.claim();
     })
   );
 });
 
-// 3. INTERCEPTOR: Estrategia mixta
-//    - index.html → red primero (siempre la versión más nueva si hay conexión)
-//    - resto de assets → caché primero (más rápido, cambian menos)
+// 3. MENSAJE DESDE LA PÁGINA: permite actualización controlada
+//    La página puede enviar { type: 'SKIP_WAITING' } cuando el
+//    usuario confirme que quiere actualizar.
+self.addEventListener('message', (e) => {
+  if (e.data && e.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// 4. INTERCEPTOR: Estrategia mixta
+//    - index.html / raíz → red primero (siempre la versión más nueva si hay conexión)
+//    - resto de assets  → caché primero (más rápido, cambian menos)
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
-  const isHTML = url.pathname.endsWith('/') || url.pathname.endsWith('.html');
+  const isHTML = url.pathname === '/' || url.pathname.endsWith('.html');
 
   if (isHTML) {
     // Red primero: si falla (offline), usamos la caché como respaldo
     e.respondWith(
       fetch(e.request)
         .then((networkResponse) => {
-          // Aprovechamos para actualizar la caché con la versión más reciente
           const clone = networkResponse.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
           return networkResponse;

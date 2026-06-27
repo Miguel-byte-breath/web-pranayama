@@ -1,11 +1,15 @@
 {
+  "id": "/",
   "name": "Respira",
   "short_name": "Respira",
-  "start_url": "./index.html",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#eefcfd",
   "theme_color": "#eefcfd",
   "description": "Tu espacio de calma y respiración consciente.",
+  "prefer_related_applications": false,
+  "categories": ["health", "lifestyle"],
   "related_applications": [
     {
       "platform": "webapp",
