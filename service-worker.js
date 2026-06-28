@@ -1,8 +1,9 @@
-const CACHE_NAME = 'respira-v1.6.0';
+const CACHE_NAME = 'respira-v1.7.0';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/style.css',
+  '/app.js',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
