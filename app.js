@@ -1720,6 +1720,20 @@ function closeFocusnautOverlay() {
     document.getElementById('focusnautOverlay').style.display = 'none';
 }
 
+// ── PÍLDORA DE SABIDURÍA ─────────────────────────────────────────────────────
+// Para actualizar el contenido: edita directamente el HTML del overlay
+// #pildoraOverlay en index.html. Cambia el texto de .pildora-titulo,
+// .pildora-subtitulo, .pildora-cuerpo, .pildora-cita y .pildora-practica.
+// También actualiza .pildora-badge-menu y .pildora-serie-tag con el nuevo tema.
+function openPildoraOverlay() {
+    const overlay = document.getElementById('pildoraOverlay');
+    overlay.style.display = 'flex';
+    overlay.scrollTop = 0;
+}
+function closePildoraOverlay() {
+    document.getElementById('pildoraOverlay').style.display = 'none';
+}
+
 // ── REGISTRO DEL SERVICE WORKER ──────────────────────────────────────────────
 // Sin esto, el SW existe pero nunca se activa y Chrome trata la app como
 // un simple shortcut web, mucho más fácil de eliminar.

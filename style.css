@@ -546,6 +546,157 @@
             color: var(--accent);
         }
 
+        /* --- PÍLDORA DE SABIDURÍA — CARD MENÚ --- */
+        .pildora-menu-card {
+            border: 1.5px solid rgba(181,101,29,0.25) !important;
+            background: linear-gradient(135deg, rgba(255,248,235,0.75), rgba(255,243,220,0.65)) !important;
+            position: relative;
+        }
+
+        .pildora-menu-card:hover {
+            box-shadow: 0 10px 25px rgba(181,101,29,0.15) !important;
+        }
+
+        .pildora-badge-menu {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: rgba(181,101,29,0.12);
+            color: #a0522d;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            padding: 3px 9px;
+            border-radius: 20px;
+            border: 1px solid rgba(181,101,29,0.2);
+        }
+
+        .pildora-card-titulo {
+            color: #8b4513 !important;
+        }
+
+        /* --- PÍLDORA DE SABIDURÍA — OVERLAY --- */
+        .pildora-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+            padding-top: 60px;
+            text-align: center;
+        }
+
+        .pildora-serie-tag {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: #b5651d;
+            text-transform: uppercase;
+            background: rgba(181,101,29,0.1);
+            padding: 5px 14px;
+            border-radius: 20px;
+            margin-bottom: 28px;
+        }
+
+        .pildora-loto {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 18px;
+            opacity: 0.85;
+        }
+
+        .pildora-titulo {
+            font-family: 'Caveat', cursive;
+            font-weight: 700;
+            font-size: 3rem;
+            color: #7b3f00;
+            margin: 0 0 6px 0;
+            line-height: 1;
+        }
+
+        .pildora-subtitulo {
+            font-family: 'Caveat', cursive;
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: #b5651d;
+            margin: 0 0 36px 0;
+        }
+
+        .pildora-cuerpo {
+            text-align: left;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.97rem;
+            color: #4a3728;
+            line-height: 1.75;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .pildora-cuerpo p {
+            margin-bottom: 16px;
+        }
+
+        .pildora-cita {
+            font-family: 'Caveat', cursive;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #8b4513;
+            line-height: 1.5;
+            border-left: 3px solid rgba(181,101,29,0.4);
+            padding: 12px 0 12px 18px;
+            text-align: left;
+            margin-bottom: 36px;
+            width: 100%;
+        }
+
+        .pildora-practica {
+            background: rgba(181,101,29,0.07);
+            border: 1px solid rgba(181,101,29,0.15);
+            border-radius: 16px;
+            padding: 22px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .pildora-practica-titulo {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: #b5651d;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .pildora-practica p {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.92rem;
+            color: #4a3728;
+            line-height: 1.65;
+            margin-bottom: 16px;
+        }
+
+        .pildora-practica-btn {
+            background: #b5651d;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 11px 24px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 14px rgba(181,101,29,0.3);
+        }
+
+        .pildora-practica-btn:active {
+            transform: scale(0.96);
+        }
+
         /* --- SUBSTACK CARD PRO --- */
         .substack-card {
             background: linear-gradient(135deg, #FFFFFF 0%, #F0FFF4 50%, #E0F2F1 100%);
