@@ -15,7 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Cinzel:wght@400;500;700&family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -32,7 +32,7 @@
 <div id="guideOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.98);backdrop-filter:blur(15px);z-index:500;flex-direction:column;align-items:center;justify-content:flex-start;padding:10vh 24px 40px;overflow-y:auto;text-align:left;">
     <button onclick="document.getElementById('guideOverlay').style.display='none'" style="position:absolute;top:25px;right:25px;background:none;border:none;font-size:2rem;color:#78909c;cursor:pointer;padding:10px;line-height:1;">&times;</button>
     <div style="max-width:520px;width:100%;">
-        <h2 style="font-family:'Cinzel',serif;color:#37474f;font-size:1.4rem;margin-bottom:6px;text-align:center;">Guía de Respiración</h2>
+        <h2 style="font-family:'Caveat',cursive;font-weight:700;color:#37474f;font-size:1.8rem;margin-bottom:6px;text-align:center;">Guía de Respiración</h2>
         <p style="font-family:'Manrope',sans-serif;font-size:0.9rem;color:#78909c;margin-bottom:28px;text-align:center;">Interpretación de símbolos</p>
         <div style="background:rgba(255,255,255,0.8);border-radius:14px;padding:20px 22px;margin-bottom:20px;border:1px solid rgba(0,131,143,0.08);">
             <div class="guide-row"><span class="guide-icon" style="color:var(--c-inhale);">●</span><span><strong>Inhala</strong> — Verde</span></div>
@@ -52,7 +52,7 @@
 <!-- SUBSTACK OVERLAY -->
 <div id="lecturaSelectOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.98); z-index:300; flex-direction:column; align-items:center; backdrop-filter:blur(15px); padding:20px 20px 50px 20px; text-align:center; overflow-y:auto;">
     <button onclick="closeLecturaOverlay()" style="position:absolute; top:25px; left:25px; background:none; border:none; color:var(--accent); font-family:'Manrope',sans-serif; font-size:0.95rem; font-weight:600; cursor:pointer; padding:6px 10px;">← Menú</button>
-    <h2 style="font-family:'Cinzel',serif; color:#37474f; font-size:1.5rem; margin-top:70px; margin-bottom:6px;">📚 Rincón de Lectura</h2>
+    <h2 style="font-family:'Caveat',cursive; font-weight:700; color:#37474f; font-size:1.9rem; margin-top:70px; margin-bottom:6px;">📚 Rincón de Lectura</h2>
     <p style="font-family:'Manrope',sans-serif; color:#90a4ae; font-size:0.88rem; margin-bottom:36px;">Lecturas refrescantes · Substack</p>
 
     <div style="display:flex; flex-direction:column; gap:20px; width:100%; max-width:420px; margin:0 auto;">
@@ -148,7 +148,7 @@
 
 <!-- SHARE MODAL -->
 <div id="shareModal">
-    <h2 style="font-family:'Cinzel'; color:#37474f;">¡Píldora Lista!</h2>
+    <h2 style="font-family:'Caveat',cursive; font-weight:700; color:#37474f; font-size:1.9rem;">¡Píldora Lista!</h2>
     <textarea id="shareText" readonly></textarea>
     <div class="share-actions">
         <button class="btn-wa" onclick="sendWhatsapp()">📱 WhatsApp</button>
@@ -335,7 +335,7 @@
     <div id="focusInfoPanel" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.98);backdrop-filter:blur(15px);z-index:300;flex-direction:column;align-items:center;justify-content:flex-start;padding:10vh 24px 40px;overflow-y:auto;text-align:left;">
         <button onclick="document.getElementById('focusInfoPanel').style.display='none'" style="position:absolute;top:25px;right:25px;background:none;border:none;font-size:2rem;color:#78909c;cursor:pointer;padding:10px;line-height:1;">&times;</button>
         <div style="max-width:520px;width:100%;">
-            <h2 style="font-family:'Cinzel',serif;color:#37474f;font-size:1.4rem;margin-bottom:6px;">¿Cómo funciona?</h2>
+            <h2 style="font-family:'Caveat',cursive;font-weight:700;color:#37474f;font-size:1.8rem;margin-bottom:6px;">¿Cómo funciona?</h2>
             <p style="color:#78909c;font-size:0.9rem;margin-bottom:28px;font-family:'Manrope',sans-serif;">Ruido + tono simultáneos — dos capas de audio independientes mezcladas</p>
 
             <div style="background:rgba(0,131,143,0.05);border-radius:14px;padding:20px 22px;margin-bottom:20px;border:1px solid rgba(0,131,143,0.1);">
@@ -345,7 +345,7 @@
                 </p>
             </div>
 
-            <h3 style="font-family:'Cinzel',serif;color:#37474f;font-size:1.1rem;margin-bottom:12px;">Frecuencias Solfeggio</h3>
+            <h3 style="font-family:'Caveat',cursive;font-weight:700;color:#37474f;font-size:1.5rem;margin-bottom:12px;">Frecuencias Solfeggio</h3>
             <p style="font-family:'Manrope',sans-serif;font-size:0.88rem;color:#78909c;line-height:1.6;margin-bottom:16px;">Escala de frecuencias proveniente de himnos gregorianos medievales, redescubierta en los años 90 por el Dr. Joseph Puleo. Cada frecuencia tendría un efecto terapéutico específico:</p>
 
             <div style="background:rgba(255,255,255,0.8);border-radius:12px;padding:16px 20px;border:1px solid rgba(0,131,143,0.08);margin-bottom:20px;">
@@ -528,9 +528,9 @@
 
 <!-- PILL OVERLAY -->
 <div id="pillOverlay">
-    <h1 style="color:var(--accent); font-family:'Cinzel'; margin-bottom:15px;">Una pausa para ti</h1>
+    <h1 style="color:var(--accent); font-family:'Caveat',cursive; font-weight:700; font-size:2.4rem; margin-bottom:15px;">Una pausa para ti</h1>
     <h2 id="pillRecipient" style="color:#546e7a; margin-bottom:25px; font-weight:400; font-family:'Manrope';"></h2>
-    <p id="pillMessage" style="font-size:1.4rem; font-family:'Cinzel'; color:#37474f; margin-bottom:50px; max-width:600px;"></p>
+    <p id="pillMessage" style="font-size:1.6rem; font-family:'Caveat',cursive; font-weight:600; color:#37474f; margin-bottom:50px; max-width:600px;"></p>
     <button class="btn-text" style="background:var(--primary); color:white; padding:16px 50px;" onclick="closePill(); start('pill');">Comenzar</button>
 </div>
 
@@ -625,7 +625,7 @@
 </div>
 
 <div id="psOverlay"  style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: white; z-index: 999999; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-    <h2 style="font-family: 'Cinzel', serif; font-size: 2rem; color: #37474f; margin-bottom: 10px;">Diseña tu Paisaje</h2>
+    <h2 style="font-family: 'Caveat', cursive; font-weight: 700; font-size: 2.5rem; color: #37474f; margin-bottom: 10px;">Diseña tu Paisaje</h2>
     <p style="font-family: 'Manrope', sans-serif; color: #78909c; margin-bottom: 30px;">Introduce 4 tiempos (ej: 4-2-6-2)<br>Añade "b" para boca (ej: "8b")</p>
     
     <input type="text" id="psPatternInput" oninput="formatPsPattern(this)" style="font-size: 2rem; text-align: center; padding: 10px; width: 80%; max-width: 300px; border: 2px solid #e0f7fa; border-radius: 10px; margin-bottom: 40px;" placeholder="4-4-4-4" maxlength="10">
