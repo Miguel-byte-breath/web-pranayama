@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.web_pranayama.twa",
+        "sha256_cert_fingerprints": ["6F:54:67:39:B3:F3:34:F0:A3:E0:88:55:C0:80:85:E5:92:10:AA:34:D1:7A:70:BA:9A:04:ED:DD:CA:AE:81:4B"]
+      }
+    }]
