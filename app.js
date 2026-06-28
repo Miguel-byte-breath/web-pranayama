@@ -1728,7 +1728,18 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
             .then((reg) => {
                 console.log('[App] Service Worker registrado. Scope:', reg.scope);
-
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            showUpdateBanner(newWorker);
+                        }
+                    });
+                });
+            })
+            .catch((err) => console.error('[App] SW error:', err));
+    });
+}
 
 function showUpdateBanner(worker) {
     const banner = document.createElement('div');
