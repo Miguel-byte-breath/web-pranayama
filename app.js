@@ -620,7 +620,7 @@
         const longUrl = `${baseUrl}?p=${encodeURIComponent(pString)}&to=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
         let finalUrl = longUrl;
         try {
-            const response = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(longUrl)}`);
+            const response = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`);
             if(response.ok) finalUrl = await response.text();
         } catch(e) {}
         els.load.style.display = 'none';
