@@ -1752,6 +1752,14 @@ if ('serviceWorker' in navigator) {
                 });
             })
             .catch((err) => console.error('[App] SW error:', err));
+
+        // Recarga automática cuando el SW nuevo toma el control.
+        // Con skipWaiting activo, esto ocurre justo tras la instalación,
+        // garantizando que el usuario siempre ejecuta el JS/CSS más reciente.
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            console.log('[App] Nuevo SW activo — recargando para aplicar cambios.');
+            window.location.reload();
+        });
     });
 }
 
