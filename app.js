@@ -1742,55 +1742,15 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
             .then((reg) => {
                 console.log('[App] Service Worker registrado. Scope:', reg.scope);
-                reg.addEventListener('updatefound', () => {
-                    const newWorker = reg.installing;
-                    newWorker.addEventListener('statechange', () => {
-                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            showUpdateBanner(newWorker);
-                        }
-                    });
-                });
             })
             .catch((err) => console.error('[App] SW error:', err));
 
         // Recarga automática cuando el SW nuevo toma el control.
-        // Con skipWaiting activo, esto ocurre justo tras la instalación,
+        // Con skipWaiting en el install, esto ocurre justo tras cada deploy,
         // garantizando que el usuario siempre ejecuta el JS/CSS más reciente.
         navigator.serviceWorker.addEventListener('controllerchange', () => {
             console.log('[App] Nuevo SW activo — recargando para aplicar cambios.');
             window.location.reload();
         });
     });
-}
-
-function showUpdateBanner(worker) {
-    const banner = document.createElement('div');
-    banner.id = 'sw-update-banner';
-    banner.style.cssText = `
-        position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
-        background: #37474f; color: white; padding: 12px 20px;
-        border-radius: 30px; font-family: 'Manrope', sans-serif; font-size: 0.88rem;
-        font-weight: 600; display: flex; align-items: center; gap: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.25); z-index: 9999;
-        white-space: nowrap;
-    `;
-    banner.innerHTML = `
-        <span>Nueva versión disponible</span>
-        <button onclick="applyUpdate()" style="
-            background: #4CAF50; color: white; border: none; border-radius: 20px;
-            padding: 6px 14px; font-family: 'Manrope', sans-serif; font-size: 0.82rem;
-            font-weight: 700; cursor: pointer;">Actualizar</button>
-        <button onclick="this.closest('#sw-update-banner').remove()" style="
-            background: transparent; color: rgba(255,255,255,0.6); border: none;
-            font-size: 1.1rem; cursor: pointer; padding: 0 4px;">✕</button>
-    `;
-    document.body.appendChild(banner);
-    setTimeout(() => banner.remove?.(), 12000);
-    window._pendingWorker = worker;
-}
-
-function applyUpdate() {
-    if (window._pendingWorker) {
-        window._pendingWorker.postMessage({ type: 'SKIP_WAITING' });
-    }
 }
