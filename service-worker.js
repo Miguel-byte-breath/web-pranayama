@@ -1,4 +1,4 @@
-const CACHE_NAME = 'respira-v1.7.0';
+const CACHE_NAME = 'respira-v1.8.0';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -12,9 +12,8 @@ const ASSETS_TO_CACHE = [
 ];
 
 // 1. INSTALACIÓN: Guarda los archivos básicos
-//    ⚠️  SIN skipWaiting(): el nuevo SW espera a que todas las
-//    pestañas cierren antes de activarse. Esto evita que Chrome
-//    invalide la instalación de la PWA durante un deploy.
+//    skipWaiting() activado temporalmente para forzar actualización
+//    desde versiones bloqueadas (incidente v1.7). Revisar en v1.9.
 self.addEventListener('install', (e) => {
   console.log('[Service Worker] Instalando nueva versión...');
   e.waitUntil(
@@ -22,6 +21,7 @@ self.addEventListener('install', (e) => {
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
+  self.skipWaiting();
 });
 
 // 2. ACTIVACIÓN: Limpia cachés antiguas y toma el control
