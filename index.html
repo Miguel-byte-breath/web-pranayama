@@ -15,7 +15,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;700&family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Cinzel:wght@400;500;700&family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -179,34 +179,74 @@
             <ellipse cx="6.5" cy="10.5" rx="4.5" ry="9.5" fill="#2a9d8f" opacity="0.7" transform="rotate(10 6.5 10.5)"/>
         </svg>
     </div>
-    <div class="menu-title">ELIGE TU RITMO</div>
+    <div class="menu-title">Elige tu ritmo</div>
     <div class="menu-actions">
         <button class="action-btn" onclick="openShareConfig()">
-            🎁 <span>Enviar Píldora</span>
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"><path d="M12 20 C12 20 3 14 3 8 C3 5 5.5 3 8 4 C10 5 12 7 12 7 C12 7 14 5 16 4 C18.5 3 21 5 21 8 C21 14 12 20 12 20 Z"/></svg>
+            <span>Enviar Píldora</span>
         </button>
         <button class="action-btn" id="installBtn" onclick="installApp()">
-            ⭐ <span>Instalar App</span>
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 3 L12 17"/><path d="M7 13 L12 18 L17 13"/><path d="M4 21 L20 21"/></svg>
+            <span>Instalar App</span>
         </button>
     </div>
     <div class="menu-grid">
         <div class="menu-card" onclick="openLecturaOverlay()" style="border: 1.5px solid rgba(255,103,25,0.2); background: linear-gradient(135deg, rgba(255,245,235,0.6), rgba(255,252,244,0.6));">
-            <h3>📚 💫 Rincón de Lectura</h3>
+            <div class="card-icon" style="color:#e65100;">
+                <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 34 L5 10 Q5 8 8 8 Q14 9 22 12 L22 36 Q14 33 5 34 Z" stroke-width="1.6"/>
+                    <path d="M39 34 L39 10 Q39 8 36 8 Q30 9 22 12 L22 36 Q30 33 39 34 Z" stroke-width="1.6"/>
+                    <path d="M9 16 L18 15" stroke-width="1.1"/><path d="M9 20 L18 19" stroke-width="1.1"/><path d="M9 24 L18 23" stroke-width="1.1"/>
+                    <path d="M26 16 L35 15" stroke-width="1.1"/><path d="M26 20 L35 19" stroke-width="1.1"/><path d="M26 24 L35 23" stroke-width="1.1"/>
+                </svg>
+            </div>
+            <h3>Rincón de Lectura</h3>
             <p>Disfruta de lecturas refrescantes en Substack</p>
         </div>
         <div class="menu-card" onclick="openBreathingOverlay()" style="border: 1.5px solid rgba(0,131,143,0.2); background: linear-gradient(135deg, rgba(224,247,250,0.6), rgba(232,245,233,0.6));">
-            <h3 style="color:var(--accent);">⏱️🍃 Respiración</h3>
+            <div class="card-icon" style="color:var(--accent);">
+                <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 6 C22 6 9 14 9 24 C9 33 15 38 22 39 C29 38 35 33 35 24 C35 14 22 6 22 6 Z" stroke-width="1.6"/>
+                    <path d="M22 39 L22 10" stroke-width="1.2"/>
+                    <path d="M22 20 C19 18 14 18 12 20" stroke-width="1.1"/>
+                    <path d="M22 27 C25 25 30 25 32 27" stroke-width="1.1"/>
+                </svg>
+            </div>
+            <h3 style="color:var(--accent);">Respiración</h3>
             <p>Patrones · Paisaje Sonoro · Personalizado</p>
         </div>
         <div class="menu-card" onclick="openReframeOverlay()" style="border: 1.5px solid rgba(0,131,143,0.2); background: linear-gradient(135deg, rgba(232,245,233,0.6), rgba(224,247,250,0.6));">
-            <h3 style="color: var(--accent);">✨🪁 Transforma tus Pensamientos</h3>
+            <div class="card-icon" style="color:var(--accent);">
+                <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 5 L24.5 18 L38 22 L24.5 26 L22 39 L19.5 26 L6 22 L19.5 18 Z" stroke-width="1.6"/>
+                    <path d="M35 8 L36 11 L39 12 L36 13 L35 16 L34 13 L31 12 L34 11 Z" stroke-width="1.1"/>
+                    <circle cx="8" cy="14" r="1.5" fill="currentColor" stroke="none"/>
+                </svg>
+            </div>
+            <h3 style="color: var(--accent);">Transforma tus Pensamientos</h3>
             <p>Una nueva perspectiva para tu mente · IA</p>
         </div>
         <div class="menu-card" onclick="openFocusSelect()" style="border: 1.5px solid rgba(0,131,143,0.2); background: linear-gradient(135deg, rgba(232,245,233,0.6), rgba(241,248,233,0.6));">
-            <h3 style="color: var(--accent);">👩‍🚀🍃 Haz Foco</h3>
+            <div class="card-icon" style="color:var(--accent);">
+                <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 22 C5 22 12 10 22 10 C32 10 39 22 39 22 C39 22 32 34 22 34 C12 34 5 22 5 22 Z" stroke-width="1.6"/>
+                    <circle cx="22" cy="22" r="7" stroke-width="1.4"/>
+                    <circle cx="22" cy="22" r="3" fill="currentColor" stroke="none"/>
+                    <path d="M16 13 L15 10" stroke-width="1.1"/><path d="M22 11 L22 8" stroke-width="1.1"/><path d="M28 13 L29 10" stroke-width="1.1"/>
+                </svg>
+            </div>
+            <h3 style="color: var(--accent);">Haz Foco</h3>
             <p>Ruido + frecuencia · concentración profunda</p>
         </div>
         <div class="menu-card" onclick="openFocusnautOverlay()" style="border: 1.5px solid rgba(30,215,96,0.2); background: linear-gradient(135deg, rgba(232,245,233,0.6), rgba(240,255,244,0.6));">
-            <h3 style="color: var(--accent);">👩‍🚀🎧 Music</h3>
+            <div class="card-icon" style="color:var(--accent);">
+                <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 36 L15 14 L33 9 L33 18" stroke-width="1.7"/>
+                    <ellipse cx="12" cy="36" rx="5" ry="3.5" transform="rotate(-10 12 36)" stroke-width="1.5"/>
+                    <ellipse cx="30" cy="18" rx="5" ry="3.5" transform="rotate(-10 30 18)" stroke-width="1.5"/>
+                </svg>
+            </div>
+            <h3 style="color: var(--accent);">Music</h3>
             <p>Música curada para concentrarte · Spotify</p>
         </div>
     </div>

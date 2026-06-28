@@ -432,16 +432,34 @@
         }
 
         .menu-title {
-            font-family: 'Cinzel', serif;
-            font-size: 2.2rem;
+            font-family: 'Caveat', cursive;
+            font-size: 2.8rem;
             color: #263238;
             margin-bottom: 30px;
-            letter-spacing: 0.1em;
-            font-weight: 500;
+            letter-spacing: 0.02em;
+            font-weight: 600;
             text-align: center;
             background: -webkit-linear-gradient(45deg, #263238, #546e7a);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .card-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .btn-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
         }
 
         .menu-actions {
