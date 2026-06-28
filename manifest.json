@@ -5,10 +5,27 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#eefcfd",
   "theme_color": "#eefcfd",
   "description": "Tu espacio de calma y respiración consciente.",
   "prefer_related_applications": false,
+  "screenshots": [
+    {
+      "src": "/Screenshot_1.png",
+      "sizes": "886x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Menú de patrones de respiración"
+    },
+    {
+      "src": "/Screenshot_2.png",
+      "sizes": "886x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Menú principal de Respira"
+    }
+  ],
   "categories": ["health", "lifestyle"],
   "related_applications": [
     {
