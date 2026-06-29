@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Política de Privacidad · Respira</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #00838f;
+      --accent-light: #00acc1;
+      --bg: #0a0e1a;
+      --surface: #141929;
+      --border: rgba(0, 131, 143, 0.2);
+      --text: #e8eaf0;
+      --text-muted: #8892a4;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Manrope', sans-serif;
+      font-size: 1rem;
+      line-height: 1.75;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      font-family: 'Caveat', cursive;
+      font-weight: 700;
+      font-size: 3rem;
+      color: var(--accent-light);
+      letter-spacing: 0.02em;
+    }
+
+    header h2 {
+      font-family: 'Caveat', cursive;
+      font-weight: 400;
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .fecha {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    section {
+      margin-bottom: 2.5rem;
+    }
+
+    section h3 {
+      font-family: 'Caveat', cursive;
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: var(--accent-light);
+      margin-bottom: 0.75rem;
+    }
+
+    section p {
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+
+    .highlight {
+      background: var(--surface);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+
+    a {
+      color: var(--accent-light);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: var(--accent-light);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <h1>Respira</h1>
+      <h2>Política de Privacidad</h2>
+      <p class="fecha">Última actualización: 29 de junio de 2026</p>
+    </header>
+
+    <section>
+      <h3>Quiénes somos</h3>
+      <p>Respira es una aplicación de bienestar para la práctica de la respiración consciente. No pertenece a ninguna empresa ni organización — es un proyecto personal desarrollado con cuidado y sin ánimo de lucro.</p>
+    </section>
+
+    <section>
+      <h3>Qué datos recogemos</h3>
+      <p>Respira no requiere registro, no crea cuentas de usuario y no almacena ningún dato personal en servidores propios. No usamos cookies de seguimiento ni herramientas de analítica.</p>
+      <p>La app guarda en tu propio dispositivo los recursos necesarios para funcionar sin conexión (imágenes, audio, estilos). Estos datos nunca salen de tu dispositivo.</p>
+    </section>
+
+    <section>
+      <h3>Transforma tus Pensamientos</h3>
+      <p>Esta función permite escribir un pensamiento y recibir un reencuadre cognitivo generado por inteligencia artificial. Para ello, el texto que introduces se envía a la API de Anthropic (los creadores de Claude).</p>
+      <div class="highlight">
+        El texto que escribes en esta sección se transmite a Anthropic para generar la respuesta. No lo almacenamos en ningún servidor propio. Puedes consultar la política de privacidad de Anthropic en <a href="https://www.anthropic.com/privacy" target="_blank">anthropic.com/privacy</a>.
+      </div>
+      <p>Te recomendamos no incluir datos personales sensibles en esta sección.</p>
+    </section>
+
+    <section>
+      <h3>Compartir píldoras</h3>
+      <p>Cuando usas la función "Enviar Píldora", la URL de la sesión se envía a <a href="https://cleanuri.com" target="_blank">cleanuri.com</a> para generar un enlace corto. No se transmite ningún dato personal, solo la URL de la app.</p>
+    </section>
+
+    <section>
+      <h3>Terceros</h3>
+      <p>La app puede cargar contenido de servicios externos como Google Fonts (tipografías) y Spotify (reproductor de música). Estos servicios tienen sus propias políticas de privacidad, ajenas a Respira.</p>
+    </section>
+
+    <section>
+      <h3>Contacto</h3>
+      <p>Si tienes cualquier pregunta sobre esta política de privacidad, puedes escribirnos a <a href="mailto:miguel.meki@gmail.com">miguel.meki@gmail.com</a>.</p>
+    </section>
+
+    <footer>
+      <p>© 2026 Respira · <a href="/">Volver a la app</a></p>
+    </footer>
+
+  </div>
+</body>
+</html>
