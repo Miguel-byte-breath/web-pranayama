@@ -10,14 +10,17 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch(
-      `https://is.gd/create.php?format=simple&url=${encodeURIComponent(url)}`
-    );
-    if (!response.ok) throw new Error('is.gd error');
-    const short = await response.text();
-    return res.status(200).json({ short: short.trim() });
+    const response = await fetch('https://cleanuri.com/api/v1/shorten', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `url=${encodeURIComponent(url)}`
+    });
+    if (!response.ok) throw new Error('cleanuri error');
+    const data = await response.json();
+    if (!data.result_url) throw new Error('sin resultado');
+    return res.status(200).json({ short: data.result_url });
   } catch (e) {
-    // Fallback: devolver la URL original si is.gd falla
+    // Fallback: devolver la URL original si cleanuri falla
     return res.status(200).json({ short: url });
   }
 }
