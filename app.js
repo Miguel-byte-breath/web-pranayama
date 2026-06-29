@@ -620,8 +620,12 @@
         const longUrl = `${baseUrl}?p=${encodeURIComponent(pString)}&to=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
         let finalUrl = longUrl;
         try {
-            const response = await fetch(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(longUrl)}`);
-            if(response.ok) finalUrl = await response.text();
+            const r = await fetch('/api/shorten', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: longUrl })
+            });
+            if(r.ok) { const d = await r.json(); if(d.short) finalUrl = d.short; }
         } catch(e) {}
         els.load.style.display = 'none';
         els.shareText.value = `Píldora de Respiración:\n${m}\n→ ${pString}\n${finalUrl}`;
