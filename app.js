@@ -1745,56 +1745,55 @@ const NIYAMAS = [
         nombre: 'Santosha',
         subtitulo: 'la paz que no espera a que todo esté bien',
         cuerpo: [
-            'El contentamiento no es resignación.',
-            'Santosha es el segundo niyama, y quizás el más malinterpretado. No dice que te conformes, que no aspires, que te quedes quieto. Dice algo más difícil: que puedas estar bien ahora, con lo que hay, sin esperar a que llegue lo que falta.',
-            'Vivimos aplazando la calma. "Cuando acabe esto", "cuando tenga aquello", "cuando todo encaje". Santosha señala ese hábito con amabilidad y pregunta: <em>¿y si el momento de estar en paz fuera este?</em>',
-            'No es fácil. Pero es posible practicarlo, un minuto cada vez.'
+            'El contentamiento no es resignación.',            'Santosha es el segundo niyama, y quizas el mas malinterpretado. No dice que te conformes, que no aspires, que te quedes quieto. Dice algo mas dificil: que puedas estar bien ahora, con lo que hay, sin esperar a que llegue lo que falta.',
+            'Vivimos aplazando la calma. Cuando acabe esto, cuando tenga aquello, cuando todo encaje. Santosha senala ese habito con amabilidad y pregunta: <em>y si el momento de estar en paz fuera este?</em>',
+            'No es facil. Pero es posible practicarlo, un minuto cada vez.'
         ],
-        cita: 'La respiración no espera al momento perfecto.<br>Ocurre ahora. Santosha también.',
-        practica: 'Dos minutos de <strong>respiración caja</strong>: cuatro tiempos en cada fase. Sin prisa. Solo estar.'
+        cita: 'La respiracion no espera al momento perfecto.<br>Ocurre ahora. Santosha tambien.',
+        practica: 'Dos minutos de <strong>respiracion caja</strong>: cuatro tiempos en cada fase. Sin prisa. Solo estar.'
     },
     {
         nombre: 'Tapas',
         subtitulo: 'el fuego que transforma sin destruir',
         cuerpo: [
             'Tapas no es castigo.',
-            'La palabra sánscrita tapas viene de "calor" — el calor que transforma la arcilla en cerámica, el mineral en metal, lo crudo en algo útil. No el fuego que arrasa, sino el que forja.',
-            'En la práctica, tapas es la disciplina que eliges. Levantarte aunque no apetezca. Respirar cuando el impulso es reaccionar. Mantener el compromiso contigo mismo cuando nadie mira.',
+            'La palabra sanscrita tapas viene de calor: el calor que transforma la arcilla en ceramica, el mineral en metal, lo crudo en algo util. No el fuego que arrasa, sino el que forja.',
+            'En la practica, tapas es la disciplina que eliges. Levantarte aunque no apetezca. Respirar cuando el impulso es reaccionar. Mantener el compromiso contigo mismo cuando nadie mira.',
             'La diferencia con el autocastigo es sutil pero crucial: tapas viene del cuidado, no del miedo. Te exiges porque te importas, no porque no seas suficiente.'
         ],
-        cita: 'Cada vez que respiras cuando querrías escapar,<br>tapas está ahí, trabajando.',
-        practica: 'Elige un patrón que te cueste un poco — <strong>4-7-8</strong> o personalizado — y completa cinco rondas sin rendirte.'
+        cita: 'Cada vez que respiras cuando querrias escapar,<br>tapas esta ahi, trabajando.',
+        practica: 'Elige un patron que te cueste un poco: <strong>4-7-8</strong> o personalizado. Completa cinco rondas sin rendirte.'
     },
     {
         nombre: 'Svadhyaya',
         subtitulo: 'mirarte sin el juez dentro',
         cuerpo: [
             'Svadhyaya es autoestudio. Pero no del tipo que te pone nota.',
-            'El cuarto niyama invita a observarte — tus patrones, tus reacciones, los pensamientos que se repiten — con la misma curiosidad con la que observarías algo interesante, no con la lupa del tribunal interior.',
-            '<em>¿Por qué reacciono así aquí?</em> <em>¿Esto que hago me acerca o me aleja de lo que quiero ser?</em> No para juzgar la respuesta, sino para conocerla.',
-            'Svadhyaya dice que el conocimiento propio es un camino, no un destino. Cada día ves algo nuevo. Cada respiración, si la escuchas, te cuenta algo sobre cómo estás.'
+            'El cuarto niyama invita a observarte: tus patrones, tus reacciones, los pensamientos que se repiten. Con la misma curiosidad con la que observarias algo interesante, no con la lupa del tribunal interior.',
+            '<em>Por que reacciono asi aqui?</em> <em>Esto que hago me acerca o me aleja de lo que quiero ser?</em> No para juzgar la respuesta, sino para conocerla.',
+            'Svadhyaya dice que el conocimiento propio es un camino, no un destino. Cada dia ves algo nuevo. Cada respiracion, si la escuchas, te cuenta algo sobre como estas.'
         ],
-        cita: 'Observa cómo respiras cuando nadie te ve.<br>Ahí está tu estado real.',
-        practica: 'Antes de empezar, tómate 30 segundos: <em>¿cómo llego aquí?</em> Sin filtro. Solo nota. Luego respira con el patrón que elijas.'
+        cita: 'Observa como respiras cuando nadie te ve.<br>Ahi esta tu estado real.',
+        practica: 'Antes de empezar, tomate 30 segundos: <em>como llego aqui?</em> Sin filtro. Solo nota. Luego respira con el patron que elijas.'
     },
     {
         nombre: 'Ishvara Pranidhana',
-        subtitulo: 'soltar el control y confiar en el río',
+        subtitulo: 'soltar el control y confiar en el rio',
         cuerpo: [
-            'El quinto niyama es el más difícil de pronunciar y el más difícil de practicar.',
-            'Ishvara Pranidhana se traduce a veces como "rendición a lo divino" — pero no requiere ninguna religión. Requiere algo más extraño para la mente moderna: soltar la ilusión de que puedes controlarlo todo.',
-            'Planificas, te preparas, te esfuerzas — y luego hay cosas que pasan igualmente, o no pasan, o pasan de otra forma. Ishvara Pranidhana dice que puedes hacer tu parte con plena entrega, y soltar el resultado.',
-            'No es pasividad. Es hacer bien lo que puedes hacer, y no aferrarte a cómo tiene que salir. El río sabe dónde va aunque tú no lo veas.'
+            'El quinto niyama es el mas dificil de pronunciar y el mas dificil de practicar.',
+            'Ishvara Pranidhana se traduce a veces como rendicion a lo divino. Pero no requiere ninguna religion. Requiere algo mas extrano para la mente moderna: soltar la ilusion de que puedes controlarlo todo.',
+            'Planificas, te preparas, te esfuerzas. Y luego hay cosas que pasan igualmente, o no pasan, o pasan de otra forma. Ishvara Pranidhana dice que puedes hacer tu parte con plena entrega, y soltar el resultado.',
+            'No es pasividad. Es hacer bien lo que puedes hacer, y no aferrarte a como tiene que salir. El rio sabe donde va aunque tu no lo veas.'
         ],
-        cita: 'Inhala: hago lo que puedo.<br>Exhala: suelto lo que no depende de mí.',
-        practica: 'Respiración <strong>4-7-8</strong>: en los 7 de retención, visualiza algo que llevas cargando. En los 8 de exhale, déjalo ir. Repite tres veces.'
+        cita: 'Inhala: hago lo que puedo.<br>Exhala: suelto lo que no depende de mi.',
+        practica: 'Respiracion <strong>4-7-8</strong>: en los 7 de retencion, visualiza algo que llevas cargando. En los 8 de exhale, dejalo ir. Repite tres veces.'
     }
 ];
 
 let currentNiyama = 0;
 
-function openPildoraOverlay(index = 0) {
-    currentNiyama = index;
+function openPildoraOverlay(index) {
+    currentNiyama = (index === undefined ? 0 : index);
     renderNiyama();
     const overlay = document.getElementById('pildoraOverlay');
     overlay.style.display = 'flex';
@@ -1803,32 +1802,30 @@ function openPildoraOverlay(index = 0) {
 
 function renderNiyama() {
     const n = NIYAMAS[currentNiyama];
-    document.getElementById('pildoraSerieTag').textContent = `Los Niyamas · ${currentNiyama + 1} de 5`;
+    if (!n) return;
+    document.getElementById('pildoraSerieTag').textContent = 'Los Niyamas - ' + (currentNiyama + 1) + ' de 5';
     document.getElementById('pildoraTitulo').textContent = n.nombre;
     document.getElementById('pildoraSubtitulo').textContent = n.subtitulo;
-    document.getElementById('pildoraCuerpo').innerHTML = n.cuerpo.map(p => `<p>${p}</p>`).join('');
+    document.getElementById('pildoraCuerpo').innerHTML = n.cuerpo.map(function(p) { return '<p>' + p + '</p>'; }).join('');
     document.getElementById('pildoraCita').innerHTML = n.cita;
     document.getElementById('pildoraPractica').innerHTML = n.practica;
 
-    // Puntos de navegación
-    document.getElementById('pildoraNavDots').innerHTML = NIYAMAS.map((_, i) =>
-        `<span class="pildora-dot${i === currentNiyama ? ' active' : ''}" onclick="openPildoraOverlay(${i})"></span>`
-    ).join('');
+    var dots = '';
+    for (var i = 0; i < NIYAMAS.length; i++) {
+        dots += '<span class="pildora-dot' + (i === currentNiyama ? ' active' : '') + '" onclick="openPildoraOverlay(' + i + ')"></span>';
+    }
+    document.getElementById('pildoraNavDots').innerHTML = dots;
 
-    // Visibilidad de flechas
     document.getElementById('pildoraNavPrev').style.visibility = currentNiyama === 0 ? 'hidden' : 'visible';
     document.getElementById('pildoraNavNext').style.visibility = currentNiyama === NIYAMAS.length - 1 ? 'hidden' : 'visible';
-
-    // Scroll al inicio
-    const overlay = document.getElementById('pildoraOverlay');
-    if (overlay) overlay.scrollTop = 0;
 }
 
 function navegarNiyama(dir) {
-    const next = currentNiyama + dir;
+    var next = currentNiyama + dir;
     if (next >= 0 && next < NIYAMAS.length) {
         currentNiyama = next;
         renderNiyama();
+        document.getElementById('pildoraOverlay').scrollTop = 0;
     }
 }
 
@@ -1836,22 +1833,17 @@ function closePildoraOverlay() {
     document.getElementById('pildoraOverlay').style.display = 'none';
 }
 
-// ── REGISTRO DEL SERVICE WORKER ──────────────────────────────────────────────
-// Sin esto, el SW existe pero nunca se activa y Chrome trata la app como
-// un simple shortcut web, mucho más fácil de eliminar.
+// -- REGISTRO DEL SERVICE WORKER ----------------------------------------------
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
+    window.addEventListener('load', function() {
         navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
-            .then((reg) => {
+            .then(function(reg) {
                 console.log('[App] Service Worker registrado. Scope:', reg.scope);
             })
-            .catch((err) => console.error('[App] SW error:', err));
+            .catch(function(err) { console.error('[App] SW error:', err); });
 
-        // Recarga automática cuando el SW nuevo toma el control.
-        // Con skipWaiting en el install, esto ocurre justo tras cada deploy,
-        // garantizando que el usuario siempre ejecuta el JS/CSS más reciente.
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-            console.log('[App] Nuevo SW activo — recargando para aplicar cambios.');
+        navigator.serviceWorker.addEventListener('controllerchange', function() {
+            console.log('[App] Nuevo SW activo -- recargando para aplicar cambios.');
             window.location.reload();
         });
     });
