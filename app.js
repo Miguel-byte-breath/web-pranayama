@@ -1745,7 +1745,7 @@ const NIYAMAS = [
         nombre: 'Santosha',
         subtitulo: 'la paz que no espera a que todo esté bien',
         cuerpo: [
-            'El contentamiento no es resignación.',            'Santosha es el segundo niyama, y quizas el mas malinterpretado. No dice que te conformes, que no aspires, que te quedes quieto. Dice algo mas dificil: que puedas estar bien ahora, con lo que hay, sin esperar a que llegue lo que falta.',
+            'La aceptacion serena no es resignacion.',            'Santosha es el segundo niyama, y quizas el mas malinterpretado. No dice que te conformes, que no aspires, que te quedes quieto. Dice algo mas dificil: que puedas estar bien ahora, con lo que hay, sin esperar a que llegue lo que falta.',
             'Vivimos aplazando la calma. Cuando acabe esto, cuando tenga aquello, cuando todo encaje. Santosha senala ese habito con amabilidad y pregunta: <em>y si el momento de estar en paz fuera este?</em>',
             'No es facil. Pero es posible practicarlo, un minuto cada vez.'
         ],
