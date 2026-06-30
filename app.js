@@ -1724,16 +1724,114 @@ function closeFocusnautOverlay() {
     document.getElementById('focusnautOverlay').style.display = 'none';
 }
 
-// ── PÍLDORA DE SABIDURÍA ─────────────────────────────────────────────────────
-// Para actualizar el contenido: edita directamente el HTML del overlay
-// #pildoraOverlay en index.html. Cambia el texto de .pildora-titulo,
-// .pildora-subtitulo, .pildora-cuerpo, .pildora-cita y .pildora-practica.
-// También actualiza .pildora-badge-menu y .pildora-serie-tag con el nuevo tema.
-function openPildoraOverlay() {
+// ── PÍLDORA DE SABIDURÍA — LOS NIYAMAS ──────────────────────────────────────
+// Para añadir una serie nueva: crea un array similar a NIYAMAS y una función
+// openPildoraOverlay que lo use. La arquitectura del overlay es reutilizable.
+
+const NIYAMAS = [
+    {
+        nombre: 'Saucha',
+        subtitulo: 'la limpieza que no ves en el espejo',
+        cuerpo: [
+            'Hay suciedad que no quita el jabón.',
+            'Saucha es el primero de los niyamas — esa lista de cosas que el yoga te propone hacer contigo mismo antes de intentar arreglar el mundo. Y empieza por aquí: limpieza. Pureza. Pero no del tipo que vende la tele.',
+            'La cocina puede brillar y la mente estar hecha un desastre de listas pendientes, rencores a medio digerir y pensamientos que llevan tres días rondando sin pagar alquiler. Saucha pregunta: <em>¿y eso, cuándo lo limpias?</em>',
+            'No es perfeccionismo. No es hacerse el puro ni vivir en blanco y beige. Es más bien esto: notar qué entra en ti — por los ojos, por las palabras que dices, por lo que comes, por con quién te juntas — y preguntarte si eso te aclara o te enturbia.'
+        ],
+        cita: 'Una respiración consciente, por cierto, es Saucha pura.<br>Entra aire. Sale lo que ya no sirve.',
+        practica: 'Tres rondas de <strong>4-7-8</strong> antes de dormir. Cuatro de entrada, siete de silencio, ocho de entrega. Deja salir lo que se acumuló.'
+    },
+    {
+        nombre: 'Santosha',
+        subtitulo: 'la paz que no espera a que todo esté bien',
+        cuerpo: [
+            'El contentamiento no es resignación.',
+            'Santosha es el segundo niyama, y quizás el más malinterpretado. No dice que te conformes, que no aspires, que te quedes quieto. Dice algo más difícil: que puedas estar bien ahora, con lo que hay, sin esperar a que llegue lo que falta.',
+            'Vivimos aplazando la calma. "Cuando acabe esto", "cuando tenga aquello", "cuando todo encaje". Santosha señala ese hábito con amabilidad y pregunta: <em>¿y si el momento de estar en paz fuera este?</em>',
+            'No es fácil. Pero es posible practicarlo, un minuto cada vez.'
+        ],
+        cita: 'La respiración no espera al momento perfecto.<br>Ocurre ahora. Santosha también.',
+        practica: 'Dos minutos de <strong>respiración caja</strong>: cuatro tiempos en cada fase. Sin prisa. Solo estar.'
+    },
+    {
+        nombre: 'Tapas',
+        subtitulo: 'el fuego que transforma sin destruir',
+        cuerpo: [
+            'Tapas no es castigo.',
+            'La palabra sánscrita tapas viene de "calor" — el calor que transforma la arcilla en cerámica, el mineral en metal, lo crudo en algo útil. No el fuego que arrasa, sino el que forja.',
+            'En la práctica, tapas es la disciplina que eliges. Levantarte aunque no apetezca. Respirar cuando el impulso es reaccionar. Mantener el compromiso contigo mismo cuando nadie mira.',
+            'La diferencia con el autocastigo es sutil pero crucial: tapas viene del cuidado, no del miedo. Te exiges porque te importas, no porque no seas suficiente.'
+        ],
+        cita: 'Cada vez que respiras cuando querrías escapar,<br>tapas está ahí, trabajando.',
+        practica: 'Elige un patrón que te cueste un poco — <strong>4-7-8</strong> o personalizado — y completa cinco rondas sin rendirte.'
+    },
+    {
+        nombre: 'Svadhyaya',
+        subtitulo: 'mirarte sin el juez dentro',
+        cuerpo: [
+            'Svadhyaya es autoestudio. Pero no del tipo que te pone nota.',
+            'El cuarto niyama invita a observarte — tus patrones, tus reacciones, los pensamientos que se repiten — con la misma curiosidad con la que observarías algo interesante, no con la lupa del tribunal interior.',
+            '<em>¿Por qué reacciono así aquí?</em> <em>¿Esto que hago me acerca o me aleja de lo que quiero ser?</em> No para juzgar la respuesta, sino para conocerla.',
+            'Svadhyaya dice que el conocimiento propio es un camino, no un destino. Cada día ves algo nuevo. Cada respiración, si la escuchas, te cuenta algo sobre cómo estás.'
+        ],
+        cita: 'Observa cómo respiras cuando nadie te ve.<br>Ahí está tu estado real.',
+        practica: 'Antes de empezar, tómate 30 segundos: <em>¿cómo llego aquí?</em> Sin filtro. Solo nota. Luego respira con el patrón que elijas.'
+    },
+    {
+        nombre: 'Ishvara Pranidhana',
+        subtitulo: 'soltar el control y confiar en el río',
+        cuerpo: [
+            'El quinto niyama es el más difícil de pronunciar y el más difícil de practicar.',
+            'Ishvara Pranidhana se traduce a veces como "rendición a lo divino" — pero no requiere ninguna religión. Requiere algo más extraño para la mente moderna: soltar la ilusión de que puedes controlarlo todo.',
+            'Planificas, te preparas, te esfuerzas — y luego hay cosas que pasan igualmente, o no pasan, o pasan de otra forma. Ishvara Pranidhana dice que puedes hacer tu parte con plena entrega, y soltar el resultado.',
+            'No es pasividad. Es hacer bien lo que puedes hacer, y no aferrarte a cómo tiene que salir. El río sabe dónde va aunque tú no lo veas.'
+        ],
+        cita: 'Inhala: hago lo que puedo.<br>Exhala: suelto lo que no depende de mí.',
+        practica: 'Respiración <strong>4-7-8</strong>: en los 7 de retención, visualiza algo que llevas cargando. En los 8 de exhale, déjalo ir. Repite tres veces.'
+    }
+];
+
+let currentNiyama = 0;
+
+function openPildoraOverlay(index = 0) {
+    currentNiyama = index;
+    renderNiyama();
     const overlay = document.getElementById('pildoraOverlay');
     overlay.style.display = 'flex';
     overlay.scrollTop = 0;
 }
+
+function renderNiyama() {
+    const n = NIYAMAS[currentNiyama];
+    document.getElementById('pildoraSerieTag').textContent = `Los Niyamas · ${currentNiyama + 1} de 5`;
+    document.getElementById('pildoraTitulo').textContent = n.nombre;
+    document.getElementById('pildoraSubtitulo').textContent = n.subtitulo;
+    document.getElementById('pildoraCuerpo').innerHTML = n.cuerpo.map(p => `<p>${p}</p>`).join('');
+    document.getElementById('pildoraCita').innerHTML = n.cita;
+    document.getElementById('pildoraPractica').innerHTML = n.practica;
+
+    // Puntos de navegación
+    document.getElementById('pildoraNavDots').innerHTML = NIYAMAS.map((_, i) =>
+        `<span class="pildora-dot${i === currentNiyama ? ' active' : ''}" onclick="openPildoraOverlay(${i})"></span>`
+    ).join('');
+
+    // Visibilidad de flechas
+    document.getElementById('pildoraNavPrev').style.visibility = currentNiyama === 0 ? 'hidden' : 'visible';
+    document.getElementById('pildoraNavNext').style.visibility = currentNiyama === NIYAMAS.length - 1 ? 'hidden' : 'visible';
+
+    // Scroll al inicio
+    const overlay = document.getElementById('pildoraOverlay');
+    if (overlay) overlay.scrollTop = 0;
+}
+
+function navegarNiyama(dir) {
+    const next = currentNiyama + dir;
+    if (next >= 0 && next < NIYAMAS.length) {
+        currentNiyama = next;
+        renderNiyama();
+    }
+}
+
 function closePildoraOverlay() {
     document.getElementById('pildoraOverlay').style.display = 'none';
 }

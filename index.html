@@ -251,11 +251,10 @@
         </div>
 
         <!-- CARD PÍLDORA DE SABIDURÍA -->
-        <div class="menu-card pildora-menu-card" onclick="openPildoraOverlay()">
-            <div class="pildora-badge-menu">Los Niyamas · 1 de 5</div>
+        <div class="menu-card pildora-menu-card" onclick="openPildoraOverlay(0)">
+            <div class="pildora-badge-menu">Los Niyamas</div>
             <div class="card-icon" style="color:#b5651d;">
                 <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                    <!-- Loto naif: pétalos orgánicos -->
                     <path d="M22 34 C22 34 14 28 14 20 C14 16 17 13 20 14 C21 14.5 21.5 15 22 16 C22.5 15 23 14.5 24 14 C27 13 30 16 30 20 C30 28 22 34 22 34 Z" stroke-width="1.5"/>
                     <path d="M22 34 C22 34 10 30 8 22 C7 17 10 13 13 13 C15 13 17 14 18 16" stroke-width="1.2"/>
                     <path d="M22 34 C22 34 34 30 36 22 C37 17 34 13 31 13 C29 13 27 14 26 16" stroke-width="1.2"/>
@@ -264,18 +263,24 @@
                 </svg>
             </div>
             <h3 class="pildora-card-titulo">Píldora de Sabiduría</h3>
-            <p>Esta semana · <em>Saucha</em></p>
+            <ul class="pildora-niyama-list">
+                <li onclick="event.stopPropagation(); openPildoraOverlay(0)">Saucha</li>
+                <li onclick="event.stopPropagation(); openPildoraOverlay(1)">Santosha</li>
+                <li onclick="event.stopPropagation(); openPildoraOverlay(2)">Tapas</li>
+                <li onclick="event.stopPropagation(); openPildoraOverlay(3)">Svadhyaya</li>
+                <li onclick="event.stopPropagation(); openPildoraOverlay(4)">Ishvara Pranidhana</li>
+            </ul>
         </div>
     </div>
 </div>
 
 
-<!-- OVERLAY PÍLDORA DE SABIDURÍA -->
+<!-- OVERLAY PÍLDORA DE SABIDURÍA — DINÁMICO -->
 <div id="pildoraOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,252,245,0.98); z-index:300; flex-direction:column; align-items:center; backdrop-filter:blur(15px); padding:20px 20px 60px 20px; overflow-y:auto;">
     <button onclick="closePildoraOverlay()" style="position:absolute; top:25px; left:25px; background:none; border:none; color:#b5651d; font-family:'Manrope',sans-serif; font-size:0.95rem; font-weight:600; cursor:pointer; padding:6px 10px;">← Menú</button>
 
     <div class="pildora-inner">
-        <div class="pildora-serie-tag">Los Niyamas · 1 de 5</div>
+        <div class="pildora-serie-tag" id="pildoraSerieTag">Los Niyamas · 1 de 5</div>
 
         <div class="pildora-loto">
             <svg viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#b5651d" stroke-linecap="round" stroke-linejoin="round">
@@ -286,23 +291,22 @@
             </svg>
         </div>
 
-        <h2 class="pildora-titulo">Saucha</h2>
-        <p class="pildora-subtitulo">la limpieza que no ves en el espejo</p>
-
-        <div class="pildora-cuerpo">
-            <p>Hay suciedad que no quita el jabón.</p>
-            <p>Saucha es el primero de los niyamas — esa lista de cosas que el yoga te propone hacer contigo mismo antes de intentar arreglar el mundo. Y empieza por aquí: limpieza. Pureza. Pero no del tipo que vende la tele.</p>
-            <p>La cocina puede brillar y la mente estar hecha un desastre de listas pendientes, rencores a medio digerir y pensamientos que llevan tres días rondando sin pagar alquiler. Saucha pregunta: <em>¿y eso, cuándo lo limpias?</em></p>
-            <p>No es perfeccionismo. No es hacerse el puro ni vivir en blanco y beige. Es más bien esto: notar qué entra en ti — por los ojos, por las palabras que dices, por lo que comes, por con quién te juntas — y preguntarte si eso te aclara o te enturbia.</p>
+        <div class="pildora-nav">
+            <button class="pildora-nav-btn" id="pildoraNavPrev" onclick="navegarNiyama(-1)">←</button>
+            <div class="pildora-nav-dots" id="pildoraNavDots"></div>
+            <button class="pildora-nav-btn" id="pildoraNavNext" onclick="navegarNiyama(1)">→</button>
         </div>
 
-        <div class="pildora-cita">
-            "Una respiración consciente, por cierto, es Saucha pura.<br>Entra aire. Sale lo que ya no sirve."
-        </div>
+        <h2 class="pildora-titulo" id="pildoraTitulo"></h2>
+        <p class="pildora-subtitulo" id="pildoraSubtitulo"></p>
+
+        <div class="pildora-cuerpo" id="pildoraCuerpo"></div>
+
+        <div class="pildora-cita" id="pildoraCita"></div>
 
         <div class="pildora-practica">
             <div class="pildora-practica-titulo">Practícalo hoy</div>
-            <p>Tres rondas de <strong>4-7-8</strong> antes de dormir. Cuatro de entrada, siete de silencio, ocho de entrega. Deja salir lo que se acumuló.</p>
+            <p id="pildoraPractica"></p>
             <button class="pildora-practica-btn" onclick="closePildoraOverlay(); openBreathingOverlay();">Ir a Respiración →</button>
         </div>
     </div>
