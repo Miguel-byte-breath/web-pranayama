@@ -29,6 +29,16 @@
         '5-5': [
             {t:'INHALA', b:5, y:'rise', c:C_INHALE, m:'nose'},
             {t:'EXHALA', b:5, y:'fall', c:C_EXHALE, m:'nose'}
+        ],
+        'nadi': [
+            {t:'INHALA', b:4, y:'rise',     c:C_INHALE, m:'nose', nostril:'left'},
+            {t:'MANTÉN', b:4, y:'holdhigh', c:C_HOLD,   m:'nose', nostril:'both'},
+            {t:'EXHALA', b:4, y:'fall',     c:C_EXHALE, m:'nose', nostril:'right'},
+            {t:'SOSTÉN', b:4, y:'holdlow',  c:C_HOLD,   m:'nose', nostril:'both'},
+            {t:'INHALA', b:4, y:'rise',     c:C_INHALE, m:'nose', nostril:'right'},
+            {t:'MANTÉN', b:4, y:'holdhigh', c:C_HOLD,   m:'nose', nostril:'both'},
+            {t:'EXHALA', b:4, y:'fall',     c:C_EXHALE, m:'nose', nostril:'left'},
+            {t:'SOSTÉN', b:4, y:'holdlow',  c:C_HOLD,   m:'nose', nostril:'both'}
         ]
     };
 
@@ -348,7 +358,33 @@
                 els.modeIcon.classList.add('visible');
             }
             els.sph.style.setProperty('--c-phase', p.c);
-            
+
+            // --- INDICADOR NASAL (Nadi Shodhana) ---
+            const niEl = document.getElementById('nostrilIndicator');
+            if (niEl) {
+                if (state.pk === 'nadi') {
+                    niEl.style.display = 'flex';
+                    const nlEl = document.getElementById('nostrilLeft');
+                    const nrEl = document.getElementById('nostrilRight');
+                    if (nlEl && nrEl) {
+                        nlEl.className = 'nostril-dot nostril-left';
+                        nrEl.className = 'nostril-dot nostril-right';
+                        if (p.nostril === 'left') {
+                            nlEl.classList.add('active');
+                            nrEl.classList.add('closed');
+                        } else if (p.nostril === 'right') {
+                            nrEl.classList.add('active');
+                            nlEl.classList.add('closed');
+                        } else {
+                            nlEl.classList.add('closed');
+                            nrEl.classList.add('closed');
+                        }
+                    }
+                } else {
+                    niEl.style.display = 'none';
+                }
+            }
+
             // Indicador de pasos (puntos abajo)
             const currentPhaseIdx = state.data.indexOf(p);
             state.data.forEach((_, idx) => {
@@ -498,6 +534,10 @@
         els.qt.style.opacity = '1'; // Frase visible
         els.qt.textContent = 'Sigue el ritmo, respira, nada más.'; // Frase inicial
 
+        // Mostrar/ocultar indicador nasal según patrón
+        const niStart = document.getElementById('nostrilIndicator');
+        if (niStart) niStart.style.display = k === 'nadi' ? 'flex' : 'none';
+
         setTimeout(() => {
             initCanvas();
             state.run = true;
@@ -529,6 +569,8 @@
         els.ph.textContent = 'LISTO';
         els.ph.style.color = 'var(--accent)';
         els.modeIcon.classList.remove('visible');
+        const niStop = document.getElementById('nostrilIndicator');
+        if (niStop) niStop.style.display = 'none';
         els.cnt.textContent = '';
         els.cyc.textContent = '0';
         els.sph.style.setProperty('--c-phase', '#4CAF50');

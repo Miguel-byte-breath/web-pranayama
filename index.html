@@ -329,6 +329,10 @@
             <h3>🎨 Crear Personalizado</h3>
             <p>Define tus tiempos (ej: 4-7-8b)</p>
         </div>
+        <div class="breathing-card nadi-breathing" onclick="closeBreathingOverlay(); start('nadi');">
+            <h3>🫁 Alterna · Nadi Shodhana</h3>
+            <p>Respiración nasal alterna (4-4-4-4)</p>
+        </div>
         <div class="breathing-card" onclick="closeBreathingOverlay(); start('4-4-6-2');">
             <h3>4-4-6-2 · Relax Profundo</h3>
             <p>Baja pulsaciones rápidamente</p>
@@ -621,6 +625,16 @@
                 <div class="sphere" id="sphere">
                     <div class="counter-big" id="counterText"></div>
                     <div class="sphere-label" id="patternDisplay"></div>
+                </div>
+            </div>
+            <div id="nostrilIndicator" class="nostril-indicator" style="display:none">
+                <div class="nostril-side">
+                    <div class="nostril-dot nostril-left" id="nostrilLeft"></div>
+                    <span class="nostril-label">I</span>
+                </div>
+                <div class="nostril-side">
+                    <div class="nostril-dot nostril-right" id="nostrilRight"></div>
+                    <span class="nostril-label">D</span>
                 </div>
             </div>
         </div>

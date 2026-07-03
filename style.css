@@ -228,6 +228,87 @@
             cursor: pointer;
         }
 
+        /* --- INDICADOR NASAL (Nadi Shodhana) --- */
+        .nostril-indicator {
+            display: none;
+            flex-direction: row;
+            gap: 32px;
+            justify-content: center;
+            align-items: flex-start;
+            margin-top: 18px;
+        }
+
+        .nostril-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .nostril-label {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 0.08em;
+            opacity: 0.6;
+        }
+
+        .nostril-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(0,131,143,0.1);
+            border: 2px solid rgba(0,131,143,0.2);
+            position: relative;
+            transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .nostril-dot.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 14px rgba(0,131,143,0.55);
+        }
+
+        .nostril-dot.closed {
+            background: rgba(0,131,143,0.07);
+            border-color: rgba(0,131,143,0.18);
+        }
+
+        /* Dedo (finger bar) desde el exterior */
+        .nostril-left.closed::before,
+        .nostril-right.closed::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 7px;
+            height: 18px;
+            border-radius: 4px;
+            background: rgba(0,131,143,0.35);
+            transition: opacity 0.4s ease;
+        }
+
+        /* Izquierda: el dedo viene desde la izquierda */
+        .nostril-left.closed::before {
+            left: -13px;
+        }
+
+        /* Derecha: el dedo viene desde la derecha */
+        .nostril-right.closed::before {
+            right: -13px;
+        }
+
+        .nostril-dot:not(.closed)::before {
+            opacity: 0;
+        }
+
+        /* Card estilo Nadi */
+        .nadi-breathing {
+            border: 1.5px solid rgba(0,131,143,0.25) !important;
+            background: linear-gradient(135deg, rgba(224,247,250,0.7), rgba(178,235,242,0.4)) !important;
+        }
+
        .sphere {
             width: 100%;
             height: 100%;
