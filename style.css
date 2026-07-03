@@ -232,22 +232,22 @@
         .nostril-indicator {
             display: none;
             flex-direction: row;
-            gap: 32px;
+            gap: 28px;
             justify-content: center;
-            align-items: flex-start;
-            margin-top: 18px;
+            align-items: center;
+            margin: -8px 0 4px;
         }
 
         .nostril-side {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 7px;
+            gap: 4px;
         }
 
         .nostril-label {
             font-family: 'Manrope', sans-serif;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
             color: var(--accent);
             letter-spacing: 0.08em;
@@ -255,8 +255,8 @@
         }
 
         .nostril-dot {
-            width: 22px;
-            height: 22px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             background: rgba(0,131,143,0.1);
             border: 2px solid rgba(0,131,143,0.2);
@@ -282,21 +282,21 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            width: 7px;
-            height: 18px;
-            border-radius: 4px;
+            width: 6px;
+            height: 14px;
+            border-radius: 3px;
             background: rgba(0,131,143,0.35);
             transition: opacity 0.4s ease;
         }
 
         /* Izquierda: el dedo viene desde la izquierda */
         .nostril-left.closed::before {
-            left: -13px;
+            left: -11px;
         }
 
         /* Derecha: el dedo viene desde la derecha */
         .nostril-right.closed::before {
-            right: -13px;
+            right: -11px;
         }
 
         .nostril-dot:not(.closed)::before {
