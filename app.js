@@ -490,7 +490,9 @@
     function renderPattern(k) {
         if(!patterns[k]) return;
         els.pat.innerHTML = '';
-        patterns[k].forEach((step, idx) => {
+        // Para nadi, mostrar solo el semi-ciclo (4 fases) en lugar de las 8
+        const displaySteps = k === 'nadi' ? patterns[k].slice(0, 4) : patterns[k];
+        displaySteps.forEach((step, idx) => {
             const numSpan = document.createElement('span');
             numSpan.textContent = step.b;
             if(step.m === 'mouth') {
@@ -502,7 +504,7 @@
             numSpan.className = 'p-num';
             numSpan.id = `p-step-${idx}`;
             els.pat.appendChild(numSpan);
-            if(idx < patterns[k].length - 1) {
+            if(idx < displaySteps.length - 1) {
                 const sep = document.createElement('span');
                 sep.textContent = '—';
                 sep.className = 'p-sep';

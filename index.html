@@ -618,9 +618,19 @@
     <div class="stage-container">
         <div class="panel-side">
             <div class="phase-text" id="phaseText">LISTO</div>
-            <div class="mode-indicator" id="modeIcon"></div>
         </div>
         <div class="panel-center">
+            <div class="mode-indicator" id="modeIcon"></div>
+            <div id="nostrilIndicator" class="nostril-indicator" style="display:none">
+                <div class="nostril-side">
+                    <div class="nostril-dot nostril-left" id="nostrilLeft"></div>
+                    <span class="nostril-label">I</span>
+                </div>
+                <div class="nostril-side">
+                    <div class="nostril-dot nostril-right" id="nostrilRight"></div>
+                    <span class="nostril-label">D</span>
+                </div>
+            </div>
             <div class="sphere-wrapper" onclick="togglePause()" title="Toca para Pausar/Reanudar">
                 <div class="sphere" id="sphere">
                     <div class="counter-big" id="counterText"></div>
@@ -630,16 +640,6 @@
         </div>
         <div class="panel-side">
             <div class="quote" id="phraseContent">Respira...</div>
-        </div>
-    </div>
-    <div id="nostrilIndicator" class="nostril-indicator" style="display:none">
-        <div class="nostril-side">
-            <div class="nostril-dot nostril-left" id="nostrilLeft"></div>
-            <span class="nostril-label">I</span>
-        </div>
-        <div class="nostril-side">
-            <div class="nostril-dot nostril-right" id="nostrilRight"></div>
-            <span class="nostril-label">D</span>
         </div>
     </div>
     <div class="bottom-viz">
