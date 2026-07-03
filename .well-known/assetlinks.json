@@ -3,6 +3,9 @@
       "target": {
         "namespace": "android_app",
         "package_name": "app.vercel.web_pranayama.twa",
-        "sha256_cert_fingerprints": ["6F:54:67:39:B3:F3:34:F0:A3:E0:88:55:C0:80:85:E5:92:10:AA:34:D1:7A:70:BA:9A:04:ED:DD:CA:AE:81:4B"]
+        "sha256_cert_fingerprints": [
+          "6F:54:67:39:B3:F3:34:F0:A3:E0:88:55:C0:80:85:E5:92:10:AA:34:D1:7A:70:BA:9A:04:ED:DD:CA:AE:81:4B",
+          "E7:E9:C0:B3:92:82:FF:9F:70:EB:8F:F5:86:51:75:02:A4:76:8B:83:D2:38:CA:05:EC:F6:C0:2E:1A:4A:CA:9C"
+        ]
       }
     }]
