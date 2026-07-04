@@ -240,6 +240,11 @@
             border: 1.5px solid rgba(0,131,143,0.25) !important;
             background: linear-gradient(135deg, rgba(224,247,250,0.7), rgba(178,235,242,0.4)) !important;
         }
+        /* Nadi Shodhana — bajar esfera para dar aire al PNG nasal */
+        .nadi-session .panel-center {
+            margin-top: 85px;
+            margin-bottom: 35px;
+        }
 
        .sphere {
             width: 100%;

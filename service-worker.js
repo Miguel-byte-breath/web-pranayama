@@ -1,4 +1,4 @@
-const CACHE_NAME = 'respira-v2.6.0';
+const CACHE_NAME = 'respira-v2.7.0';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -74,6 +74,4 @@ self.addEventListener('fetch', (e) => {
         .catch(() => caches.match(e.request))
     );
   } else {
-    // Caché primero para assets pesados (imágenes, audio, iconos...)
-    e.respondWith(
-      caches.match(e.request).then((response) =>
+    // Caché primero para assets pesados (imágene

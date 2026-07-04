@@ -535,6 +535,10 @@
         // Reset indicador nadi al arrancar
         els.modeIcon._nadiKey = null;
         if (k !== 'nadi') els.modeIcon.innerHTML = '';
+        // Clase nadi-session en stage-container para CSS específico de Nadi
+        const stageEl = document.querySelector('.stage-container');
+        if (k === 'nadi') stageEl.classList.add('nadi-session');
+        else stageEl.classList.remove('nadi-session');
 
         setTimeout(() => {
             initCanvas();
@@ -569,6 +573,7 @@
         els.modeIcon.classList.remove('visible');
         els.modeIcon.innerHTML = '';
         els.modeIcon._nadiKey = null;
+        document.querySelector('.stage-container').classList.remove('nadi-session');
         els.cnt.textContent = '';
         els.cyc.textContent = '0';
         els.sph.style.setProperty('--c-phase', '#4CAF50');
