@@ -60,7 +60,7 @@
     }
 
     // STATE V1.3.0 Quotes ENABLED by default
-    let state = {pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, snd:false, met:false, quotesEnabled: true, music: true};
+    let state = {pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, met:false, quotesEnabled: true, music: true};
 
     let audioCtx = null;
     let nextNoteTime = 0.0;
@@ -217,16 +217,13 @@
     }
 
     function playTone(freq, type, dur, time) {
-        if(!state.snd && !state.met) return;
+        if(!state.met) return;
         try {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = type;
             osc.frequency.setValueAtTime(freq, time);
-            let vol = 0.0;
-            if(state.snd) vol = 0.05;
-            if(state.met && type === 'square') vol = 0.05;
-            if(state.met && state.snd && type === 'square') vol = 0.08;
+            let vol = 0.05;
             gain.gain.setValueAtTime(vol, time);
             gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
             osc.connect(gain);
@@ -328,6 +325,21 @@
         } else {
             // Compensar el tiempo de pausa para que el visual no se desincronice
             state.startAudioTime += audioCtx.currentTime - state.pauseStartTime;
+            // Recalcular currentBeatIndex desde posición visual para evitar desync
+            {
+                const _el = audioCtx.currentTime - state.startAudioTime;
+                const _tc = _el % state.dur;
+                let _bi = 0;
+                for (const _ph of state.data) {
+                    if (_tc >= _ph.start && _tc < _ph.end) {
+                        _bi += Math.floor((_tc - _ph.start) / state.tempo);
+                        break;
+                    }
+                    _bi += _ph.b;
+                }
+                const _tot = state.data.reduce((s, p) => s + p.b, 0);
+                currentBeatIndex = _bi % _tot;
+            }
             nextNoteTime = audioCtx.currentTime;
             // Reanudar música si estaba activa
             if(state.music && !state.winterMode) ambientAudio.play().catch(e => console.log(e));
@@ -634,15 +646,9 @@
         if(state.run) start(state.pk);
     }
 
-    function toggleSound() {
-        state.snd=!state.snd;
-        document.getElementById('soundBtn').textContent=state.snd?'🔔':'🔕';
-        if(state.run) initAudio();
-    }
-
-    function toggleMetronome() {
-        state.met=!state.met;
-        document.getElementById('metronomeBtn').classList.toggle('active');
+    function toggleHeart() {
+        state.met = !state.met;
+        document.getElementById('heartBtn').classList.toggle('active', state.met);
     }
 
     function toggleMusic() {
@@ -1919,11 +1925,23 @@ if ('serviceWorker' in navigator) {
             .catch(function(err) { console.error('[App] SW error:', err); });
 
         navigator.serviceWorker.addEventListener('controllerchange', function() {
-            console.log('[App] Nuevo SW activo -- recargando para aplicar cambios.');
-            window.location.reload();
+            if (!state.run) {
+                console.log('[App] Nuevo SW activo -- recargando.');
+                window.location.reload();
+            } else {
+                console.log('[App] Nuevo SW activo -- recarga diferida (sesión en curso).');
+            }
         });
     });
 }
+// --- DIAGNÓSTICO DE ERRORES ---
+window.onerror = function(msg, src, line, col, err) {
+    console.error('[App] Error no capturado:', msg, 'en', src, line+':'+col, err);
+};
+window.onunhandledrejection = function(e) {
+    console.error('[App] Promise rechazada:', e.reason);
+};
+
     function openNadiInfo() {
         const ov = document.getElementById('nadiInfoOverlay');
         ov.style.display = 'flex';
