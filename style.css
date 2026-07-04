@@ -256,11 +256,6 @@
             background: rgba(0,131,143,0.2);
             transform: scale(0.95);
         }
-        .nadi-session .nadi-info-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
 
                 /* Card estilo Nadi */
         .nadi-breathing {

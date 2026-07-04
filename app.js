@@ -539,6 +539,9 @@
         const stageEl = document.querySelector('.stage-container');
         if (k === 'nadi') stageEl.classList.add('nadi-session');
         else stageEl.classList.remove('nadi-session');
+        // Botón ℹ Nasagra Mudra — solo visible en Nadi
+        const nadiBtn = document.getElementById('nadiInfoBtn');
+        if (nadiBtn) nadiBtn.style.display = k === 'nadi' ? 'flex' : 'none';
 
         setTimeout(() => {
             initCanvas();
@@ -574,6 +577,8 @@
         els.modeIcon.innerHTML = '';
         els.modeIcon._nadiKey = null;
         document.querySelector('.stage-container').classList.remove('nadi-session');
+        const nadiBtnStop = document.getElementById('nadiInfoBtn');
+        if (nadiBtnStop) nadiBtnStop.style.display = 'none';
         els.cnt.textContent = '';
         els.cyc.textContent = '0';
         els.sph.style.setProperty('--c-phase', '#4CAF50');
