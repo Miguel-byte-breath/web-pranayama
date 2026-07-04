@@ -325,22 +325,26 @@
         } else {
             // Compensar el tiempo de pausa para que el visual no se desincronice
             state.startAudioTime += audioCtx.currentTime - state.pauseStartTime;
-            // Recalcular currentBeatIndex desde posición visual para evitar desync
+            // Recalcular currentBeatIndex y nextNoteTime desde posición visual
             {
-                const _el = audioCtx.currentTime - state.startAudioTime;
-                const _tc = _el % state.dur;
-                let _bi = 0;
+                const _el  = audioCtx.currentTime - state.startAudioTime;
+                const _cyc = Math.floor(_el / state.dur);
+                const _tc  = _el % state.dur;
+                let _bi = 0, _beatStart = 0;
                 for (const _ph of state.data) {
                     if (_tc >= _ph.start && _tc < _ph.end) {
-                        _bi += Math.floor((_tc - _ph.start) / state.tempo);
+                        const _n = Math.floor((_tc - _ph.start) / state.tempo);
+                        _bi += _n;
+                        _beatStart = _ph.start + _n * state.tempo;
                         break;
                     }
                     _bi += _ph.b;
                 }
                 const _tot = state.data.reduce((s, p) => s + p.b, 0);
                 currentBeatIndex = _bi % _tot;
+                // nextNoteTime = inicio del próximo beat (alineado con el visual)
+                nextNoteTime = state.startAudioTime + _cyc * state.dur + _beatStart + state.tempo;
             }
-            nextNoteTime = audioCtx.currentTime;
             // Reanudar música si estaba activa
             if(state.music && !state.winterMode) ambientAudio.play().catch(e => console.log(e));
         }
