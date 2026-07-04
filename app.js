@@ -324,7 +324,19 @@
         }
     }
 
-    function draw() {
+    // --- NADI SHODHANA: mapeo de imagen por fase ---
+    function getNadiImg(nostril, t) {
+        const map = {
+            'left:INHALA':  'nadi-assets/mage_dertap_izqinh.png',
+            'left:EXHALA':  'nadi-assets/mage_dertap_izqexh.png',
+            'right:INHALA': 'nadi-assets/mage_izqtap_derinh.png',
+            'right:EXHALA': 'nadi-assets/mage_izqtap_derexh.png',
+        };
+        const src = map[(nostril||'both') + ':' + (t||'')] || 'nadi-assets/mage_izqtap_dertap.png';
+        return '<img src="' + src + '" class="nadi-img" alt="">';
+    }
+
+        function draw() {
         if(!state.run) return;
         if(state.paused) {
             requestAnimationFrame(draw);
@@ -346,44 +358,28 @@
             }
             
             // Iconos
-            const isHold = (p.y === 'holdhigh' || p.y === 'holdlow');
-            if(isHold) {
-                els.modeIcon.textContent = '⏸';
-                els.modeIcon.classList.add('visible');
-            } else if(p.m === 'mouth') {
-                els.modeIcon.textContent = '💨';
-                els.modeIcon.classList.add('visible');
+            if (state.pk === 'nadi') {
+                // Nadi Shodhana: imagen nariz+dedo según fase
+                const nadiKey = (p.nostril || 'both') + ':' + (p.t || '');
+                if (els.modeIcon._nadiKey !== nadiKey) {
+                    els.modeIcon._nadiKey = nadiKey;
+                    els.modeIcon.innerHTML = getNadiImg(p.nostril, p.t);
+                    els.modeIcon.classList.add('visible');
+                }
             } else {
-                els.modeIcon.textContent = '👃';
-                els.modeIcon.classList.add('visible');
-            }
-            els.sph.style.setProperty('--c-phase', p.c);
-
-            // --- INDICADOR NASAL (Nadi Shodhana) ---
-            const niEl = document.getElementById('nostrilIndicator');
-            if (niEl) {
-                if (state.pk === 'nadi') {
-                    niEl.style.display = 'flex';
-                    const nlEl = document.getElementById('nostrilLeft');
-                    const nrEl = document.getElementById('nostrilRight');
-                    if (nlEl && nrEl) {
-                        nlEl.className = 'nostril-dot nostril-left';
-                        nrEl.className = 'nostril-dot nostril-right';
-                        if (p.nostril === 'left') {
-                            nlEl.classList.add('active');
-                            nrEl.classList.add('closed');
-                        } else if (p.nostril === 'right') {
-                            nrEl.classList.add('active');
-                            nlEl.classList.add('closed');
-                        } else {
-                            nlEl.classList.add('closed');
-                            nrEl.classList.add('closed');
-                        }
-                    }
+                const isHold = (p.y === 'holdhigh' || p.y === 'holdlow');
+                if(isHold) {
+                    els.modeIcon.textContent = '⏸';
+                    els.modeIcon.classList.add('visible');
+                } else if(p.m === 'mouth') {
+                    els.modeIcon.textContent = '💨';
+                    els.modeIcon.classList.add('visible');
                 } else {
-                    niEl.style.display = 'none';
+                    els.modeIcon.textContent = '👃';
+                    els.modeIcon.classList.add('visible');
                 }
             }
+            els.sph.style.setProperty('--c-phase', p.c);
 
             // Indicador de pasos (puntos abajo)
             const currentPhaseIdx = state.data.indexOf(p);
@@ -536,9 +532,9 @@
         els.qt.style.opacity = '1'; // Frase visible
         els.qt.textContent = 'Sigue el ritmo, respira, nada más.'; // Frase inicial
 
-        // Mostrar/ocultar indicador nasal según patrón
-        const niStart = document.getElementById('nostrilIndicator');
-        if (niStart) niStart.style.display = k === 'nadi' ? 'flex' : 'none';
+        // Reset indicador nadi al arrancar
+        els.modeIcon._nadiKey = null;
+        if (k !== 'nadi') els.modeIcon.innerHTML = '';
 
         setTimeout(() => {
             initCanvas();
@@ -571,8 +567,8 @@
         els.ph.textContent = 'LISTO';
         els.ph.style.color = 'var(--accent)';
         els.modeIcon.classList.remove('visible');
-        const niStop = document.getElementById('nostrilIndicator');
-        if (niStop) niStop.style.display = 'none';
+        els.modeIcon.innerHTML = '';
+        els.modeIcon._nadiKey = null;
         els.cnt.textContent = '';
         els.cyc.textContent = '0';
         els.sph.style.setProperty('--c-phase', '#4CAF50');

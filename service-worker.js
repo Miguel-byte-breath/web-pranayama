@@ -1,4 +1,4 @@
-const CACHE_NAME = 'respira-v2.4.0';
+const CACHE_NAME = 'respira-v2.5.0';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -7,7 +7,12 @@ const ASSETS_TO_CACHE = [
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
-  '/ambient.mp3'
+  '/ambient.mp3',
+  '/nadi-assets/mage_dertap_izqinh.png',
+  '/nadi-assets/mage_dertap_izqexh.png',
+  '/nadi-assets/mage_izqtap_derinh.png',
+  '/nadi-assets/mage_izqtap_derexh.png',
+  '/nadi-assets/mage_izqtap_dertap.png'
   // NOTA: NO añadimos aquí el vídeo ni el audio de invierno.
 ];
 
@@ -70,9 +75,4 @@ self.addEventListener('fetch', (e) => {
   } else {
     // Caché primero para assets (imágenes, audio, iconos...)
     e.respondWith(
-      caches.match(e.request).then((response) => {
-        return response || fetch(e.request);
-      })
-    );
-  }
-});
+      caches.match(e.request).then((response) =>
