@@ -303,8 +303,12 @@
             els.ph.textContent = 'PAUSA';
             els.ph.style.color = '#78909c';
             els.modeIcon.style.opacity = 0.5;
+            // Pausar música junto con la sesión
+            if(state.music && !state.winterMode) ambientAudio.pause();
         } else {
             nextNoteTime = audioCtx.currentTime;
+            // Reanudar música si estaba activa
+            if(state.music && !state.winterMode) ambientAudio.play().catch(e => console.log(e));
         }
     }
 

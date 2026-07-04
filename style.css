@@ -238,20 +238,18 @@
         /* Botón informativo Nasagra Mudra */
         .nadi-info-btn {
             display: none;
+            align-items: center;
+            justify-content: center;
             background: rgba(0,131,143,0.1);
             border: 1.5px solid rgba(0,131,143,0.25);
             color: var(--accent);
             border-radius: 50%;
             width: 28px;
             height: 28px;
-            font-size: 0.8rem;
-            font-family: 'Manrope', sans-serif;
-            font-weight: 700;
+            font-size: 0.85rem;
             cursor: pointer;
             padding: 0;
             margin: 0;
-            line-height: 28px;
-            text-align: center;
             transition: all 0.2s ease;
         }
         .nadi-info-btn:active {
