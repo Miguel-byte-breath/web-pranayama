@@ -1,4 +1,4 @@
-const CACHE_NAME = 'respira-v2.5.0';
+const CACHE_NAME = 'respira-v2.6.0';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -55,13 +55,14 @@ self.addEventListener('message', (e) => {
 });
 
 // 4. INTERCEPTOR: Estrategia mixta
-//    - index.html / raíz → red primero (siempre la versión más nueva si hay conexión)
-//    - resto de assets  → caché primero (más rápido, cambian menos)
+//    - HTML, JS, CSS → red primero (siempre código fresco con conexión)
+//    - imágenes, audio, iconos → caché primero (cambian poco, pesan mucho)
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   const isHTML = url.pathname === '/' || url.pathname.endsWith('.html');
+  const isCore = url.pathname.endsWith('.js') || url.pathname.endsWith('.css');
 
-  if (isHTML) {
+  if (isHTML || isCore) {
     // Red primero: si falla (offline), usamos la caché como respaldo
     e.respondWith(
       fetch(e.request)
@@ -73,6 +74,6 @@ self.addEventListener('fetch', (e) => {
         .catch(() => caches.match(e.request))
     );
   } else {
-    // Caché primero para assets (imágenes, audio, iconos...)
+    // Caché primero para assets pesados (imágenes, audio, iconos...)
     e.respondWith(
       caches.match(e.request).then((response) =>
