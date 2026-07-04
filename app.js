@@ -1893,3 +1893,10 @@ if ('serviceWorker' in navigator) {
         });
     });
 }
+    function openNadiInfo() {
+        const ov = document.getElementById('nadiInfoOverlay');
+        ov.style.display = 'flex';
+    }
+    function closeNadiInfo() {
+        document.getElementById('nadiInfoOverlay').style.display = 'none';
+    }
