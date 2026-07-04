@@ -236,6 +236,25 @@
         } catch(e) {}
     }
 
+    function playTok(isDownbeat, time) {
+        try {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            const startFreq = isDownbeat ? 800 : 500;
+            const endFreq   = isDownbeat ? 200 : 150;
+            osc.frequency.setValueAtTime(startFreq, time);
+            osc.frequency.exponentialRampToValueAtTime(endFreq, time + 0.08);
+            const vol = isDownbeat ? 0.18 : 0.10;
+            gain.gain.setValueAtTime(vol, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(time);
+            osc.stop(time + 0.15);
+        } catch(e) {}
+    }
+
     function scheduleNote(beatNumber, time) {
         if(state.paused) return;
         let accumulatedBeats = 0;
@@ -259,7 +278,7 @@
                 playTone(freq, 'sine', 0.2, time);
             }
             if(state.met) {
-                playTone(beatInPhase === 1 ? 1200 : 800, 'square', 0.05, time);
+                playTok(beatInPhase === 1, time);
             }
         }
     }
