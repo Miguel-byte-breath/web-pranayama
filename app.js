@@ -341,8 +341,9 @@
                     _bi += _ph.b;
                 }
                 const _tot = state.data.reduce((s, p) => s + p.b, 0);
-                currentBeatIndex = _bi % _tot;
-                // nextNoteTime = inicio del próximo beat (alineado con el visual)
+                // currentBeatIndex apunta al próximo beat (el que sonará en nextNoteTime)
+                currentBeatIndex = (_bi + 1) % _tot;
+                // nextNoteTime = tiempo exacto de ese próximo beat
                 nextNoteTime = state.startAudioTime + _cyc * state.dur + _beatStart + state.tempo;
             }
             // Reanudar música si estaba activa
