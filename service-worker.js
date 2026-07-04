@@ -16,11 +16,9 @@ const ASSETS_TO_CACHE = [
   // NOTA: NO añadimos aquí el vídeo ni el audio de invierno.
 ];
 
-// 1. INSTALACIÓN: Guarda los archivos básicos
-//    skipWaiting() activado temporalmente para forzar actualización
-//    desde versiones bloqueadas (incidente v1.7). Revisar en v1.9.
+// 1. INSTALACIÓN
 self.addEventListener('install', (e) => {
-  console.log('[Service Worker] Instalando nueva versión...');
+  console.log('[Service Worker] Instalando nueva version...');
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS_TO_CACHE);
@@ -35,7 +33,7 @@ self.addEventListener('activate', (e) => {
     caches.keys().then((keyList) => {
       return Promise.all(keyList.map((key) => {
         if (key !== CACHE_NAME) {
-          console.log('[Service Worker] Borrando caché vieja:', key);
+          console.log('[Service Worker] Borrando cache vieja:', key);
           return caches.delete(key);
         }
       }));
@@ -45,9 +43,7 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// 3. MENSAJE DESDE LA PÁGINA: permite actualización controlada
-//    La página puede enviar { type: 'SKIP_WAITING' } cuando el
-//    usuario confirme que quiere actualizar.
+// 3. MENSAJE DESDE LA PÁGINA
 self.addEventListener('message', (e) => {
   if (e.data && e.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
@@ -55,15 +51,14 @@ self.addEventListener('message', (e) => {
 });
 
 // 4. INTERCEPTOR: Estrategia mixta
-//    - HTML, JS, CSS → red primero (siempre código fresco con conexión)
-//    - imágenes, audio, iconos → caché primero (cambian poco, pesan mucho)
+//    - HTML, JS, CSS -> red primero (codigo fresco con conexion, cache offline)
+//    - imagenes, audio, iconos -> cache primero (cambian poco, pesan mucho)
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   const isHTML = url.pathname === '/' || url.pathname.endsWith('.html');
   const isCore = url.pathname.endsWith('.js') || url.pathname.endsWith('.css');
 
   if (isHTML || isCore) {
-    // Red primero: si falla (offline), usamos la caché como respaldo
     e.respondWith(
       fetch(e.request)
         .then((networkResponse) => {
@@ -74,4 +69,16 @@ self.addEventListener('fetch', (e) => {
         .catch(() => caches.match(e.request))
     );
   } else {
-    // Caché primero para assets pesados (imágene
+    // Cache primero para assets pesados (imagenes, audio, iconos)
+    e.respondWith(
+      caches.match(e.request).then((cachedResponse) => {
+        if (cachedResponse) return cachedResponse;
+        return fetch(e.request).then((networkResponse) => {
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+          return networkResponse;
+        });
+      })
+    );
+  }
+});
