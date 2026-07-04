@@ -242,14 +242,16 @@
             border: 1.5px solid rgba(0,131,143,0.25);
             color: var(--accent);
             border-radius: 50%;
-            width: 26px;
-            height: 26px;
+            width: 28px;
+            height: 28px;
             font-size: 0.8rem;
             font-family: 'Manrope', sans-serif;
             font-weight: 700;
             cursor: pointer;
-            margin-top: 8px;
-            line-height: 1;
+            padding: 0;
+            margin: 0;
+            line-height: 28px;
+            text-align: center;
             transition: all 0.2s ease;
         }
         .nadi-info-btn:active {
