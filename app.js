@@ -60,7 +60,7 @@
     }
 
     // STATE V1.3.0 Quotes ENABLED by default
-    let state = {pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, met:false, quotesEnabled: true, music: true};
+    let state = {pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, met:false, quotesEnabled: true, music: false};
 
     let audioCtx = null;
     let nextNoteTime = 0.0;
@@ -558,10 +558,8 @@
             return;
         }
         // MÚSICA: Solo arranca ambient si NO estamos en modo Paisaje Sonoro
-        if(state.music && !state.winterMode) {
-            ambientAudio.currentTime = 0;
-            ambientAudio.play().catch(e => console.log('Audio error', e));
-        }
+        ambientAudio.pause();
+        ambientAudio.currentTime = 0;
         initAudio();
         renderPattern(k);
         els.menu.style.opacity = '0';
@@ -569,6 +567,9 @@
 
         // V1.3.0 Reset states: Queremos que empiece ENCENDIDO por defecto
         // NOTA: state.winterMode NO se toca aquí — lo gestiona startWinterMode() y stop()
+        // Reflejar estado inicial del botón de música
+        const musicBtnEl = document.getElementById('musicBtn');
+        if (musicBtnEl) musicBtnEl.style.opacity = state.music ? '1' : '0.35';
         state.quotesEnabled = true;
         const btn = document.getElementById('quoteToggleBtn');
         btn.classList.add('active'); // Botón iluminado
@@ -1903,17 +1904,7 @@ function renderNiyama() {
     }
     document.getElementById('pildoraNavDots').innerHTML = dots;
 
-    document.getElementById('pildoraNavPrev').style.visibility = currentNiyama === 0 ? 'hidden' : 'visible';
-    document.getElementById('pildoraNavNext').style.visibility = currentNiyama === NIYAMAS.length - 1 ? 'hidden' : 'visible';
-}
-
-function navegarNiyama(dir) {
-    var next = currentNiyama + dir;
-    if (next >= 0 && next < NIYAMAS.length) {
-        currentNiyama = next;
-        renderNiyama();
-        document.getElementById('pildoraOverlay').scrollTop = 0;
-    }
+    document.getElementById('pildoraOverlay').scrollTop = 0;
 }
 
 function closePildoraOverlay() {
@@ -1939,6 +1930,7 @@ if ('serviceWorker' in navigator) {
         });
     });
 }
+
 // --- DIAGNÓSTICO DE ERRORES ---
 window.onerror = function(msg, src, line, col, err) {
     console.error('[App] Error no capturado:', msg, 'en', src, line+':'+col, err);

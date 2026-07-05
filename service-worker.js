@@ -1,4 +1,4 @@
-const CACHE_NAME = 'respira-v3.0.2';
+const CACHE_NAME = 'respira-v3.0.3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -75,10 +75,4 @@ self.addEventListener('fetch', (e) => {
         if (cachedResponse) return cachedResponse;
         return fetch(e.request).then((networkResponse) => {
           const clone = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
-          return networkResponse;
-        });
-      })
-    );
-  }
-});
+          caches.open(CACHE_NAME).then(cache => cache.put(e.request, cl
