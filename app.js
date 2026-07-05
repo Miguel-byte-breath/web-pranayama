@@ -565,11 +565,10 @@
         els.menu.style.opacity = '0';
         setTimeout(() => els.menu.style.display='none', 400);
 
-        // V1.3.0 Reset states: Queremos que empiece ENCENDIDO por defecto
-        // NOTA: state.winterMode NO se toca aquí — lo gestiona startWinterMode() y stop()
-        // Reflejar estado inicial del botón de música
+        // Reset música: siempre arranca en silencio, sin importar sesión anterior
+        state.music = false;
         const musicBtnEl = document.getElementById('musicBtn');
-        if (musicBtnEl) musicBtnEl.style.opacity = state.music ? '1' : '0.35';
+        if (musicBtnEl) musicBtnEl.style.opacity = '0.35';
         state.quotesEnabled = true;
         const btn = document.getElementById('quoteToggleBtn');
         btn.classList.add('active'); // Botón iluminado
