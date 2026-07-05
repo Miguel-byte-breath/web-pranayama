@@ -383,7 +383,11 @@
             requestAnimationFrame(draw);
             return;
         }
-        const currentTime = audioCtx.currentTime;
+        // Compensar la latencia de salida de audio: el click se oye
+        // outputLatency segundos DESPUÉS del "time" programado, así que
+        // atrasamos la barra visual esa misma cantidad para que coincidan.
+        const outLatency = (audioCtx.outputLatency || audioCtx.baseLatency || 0);
+        const currentTime = audioCtx.currentTime - outLatency;
         const elapsed = currentTime - state.startAudioTime;
         const totalCycleDur = state.dur;
         const cycleCountVisual = Math.floor(elapsed / totalCycleDur);
