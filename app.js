@@ -32,13 +32,11 @@
         ],
         'nadi': [
             {t:'INHALA', b:4, y:'rise',     c:C_INHALE, m:'nose', nostril:'left'},
-            {t:'MANTÉN', b:4, y:'holdhigh', c:C_HOLD,   m:'nose', nostril:'both'},
+            {t:'MANTÉN', b:2, y:'holdhigh', c:C_HOLD,   m:'nose', nostril:'both'},
             {t:'EXHALA', b:4, y:'fall',     c:C_EXHALE, m:'nose', nostril:'right'},
-            {t:'SOSTÉN', b:4, y:'holdlow',  c:C_HOLD,   m:'nose', nostril:'both'},
             {t:'INHALA', b:4, y:'rise',     c:C_INHALE, m:'nose', nostril:'right'},
-            {t:'MANTÉN', b:4, y:'holdhigh', c:C_HOLD,   m:'nose', nostril:'both'},
-            {t:'EXHALA', b:4, y:'fall',     c:C_EXHALE, m:'nose', nostril:'left'},
-            {t:'SOSTÉN', b:4, y:'holdlow',  c:C_HOLD,   m:'nose', nostril:'both'}
+            {t:'MANTÉN', b:2, y:'holdhigh', c:C_HOLD,   m:'nose', nostril:'both'},
+            {t:'EXHALA', b:4, y:'fall',     c:C_EXHALE, m:'nose', nostril:'left'}
         ]
     };
 
@@ -529,8 +527,8 @@
     function renderPattern(k) {
         if(!patterns[k]) return;
         els.pat.innerHTML = '';
-        // Para nadi, mostrar solo el semi-ciclo (4 fases) en lugar de las 8
-        const displaySteps = k === 'nadi' ? patterns[k].slice(0, 4) : patterns[k];
+        // Para nadi, mostrar solo el semi-ciclo (3 fases) en lugar de las 6
+        const displaySteps = k === 'nadi' ? patterns[k].slice(0, 3) : patterns[k];
         displaySteps.forEach((step, idx) => {
             const numSpan = document.createElement('span');
             numSpan.textContent = step.b;
