@@ -699,6 +699,18 @@
         closeCycleTargetSheet();
     }
 
+    function setCycleTargetFromInput() {
+        const input = document.getElementById('cycleTargetInput');
+        const n = parseInt(input.value, 10);
+        if(!Number.isInteger(n) || n < 1 || n > 999) {
+            input.style.borderColor = '#e53935';
+            setTimeout(() => { input.style.borderColor = ''; }, 1200);
+            return;
+        }
+        input.value = '';
+        setCycleTarget(n);
+    }
+
     function toggleMusic() {
     state.music = !state.music;
     const audPaisaje = document.getElementById('winterAudio');
