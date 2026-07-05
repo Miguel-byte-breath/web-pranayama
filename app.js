@@ -58,7 +58,7 @@
     }
 
     // STATE V1.3.0 Quotes ENABLED by default
-    let state = {pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, met:false, quotesEnabled: true, music: false};
+    let state = {pk:null, data:[], dur:0, tempo:1.0, run:false, paused:false, startAudioTime:0, cyc:0, met:false, quotesEnabled: true, music: false, cycleTarget: Infinity, goalReached: false};
 
     let audioCtx = null;
     let nextNoteTime = 0.0;
@@ -391,7 +391,13 @@
         const elapsed = currentTime - state.startAudioTime;
         const totalCycleDur = state.dur;
         const cycleCountVisual = Math.floor(elapsed / totalCycleDur);
-        els.cyc.textContent = cycleCountVisual;
+        updateCycleBadge(cycleCountVisual);
+
+        // Auto-pausa al alcanzar el objetivo de ciclos
+        if(state.cycleTarget !== Infinity && !state.goalReached && cycleCountVisual >= state.cycleTarget) {
+            state.goalReached = true;
+            if(!state.paused) togglePause();
+        }
         const timeInCycle = (elapsed % totalCycleDur);
         const p = state.data.find(x => timeInCycle >= x.start && timeInCycle < x.end);
         
@@ -596,6 +602,9 @@
             nextNoteTime = state.startAudioTime;
             currentBeatIndex = 0;
             state.cyc = 0;
+            state.cycleTarget = Infinity;
+            state.goalReached = false;
+            updateCycleBadge();
             if(audioCtx) scheduler();
             requestAnimationFrame(draw);
         }, 100);
@@ -656,6 +665,38 @@
     function toggleHeart() {
         state.met = !state.met;
         document.getElementById('heartBtn').classList.toggle('active', state.met);
+    }
+
+    // --- CONTADOR DE CICLOS CON OBJETIVO ---
+    function updateCycleBadge(n) {
+        if(!els.cyc) return;
+        const count = (n === undefined) ? state.cyc : n;
+        els.cyc.textContent = (state.cycleTarget === Infinity)
+            ? count
+            : `${count}/${state.cycleTarget}`;
+    }
+
+    function openCycleTargetSheet() {
+        document.querySelectorAll('.cycle-opt').forEach(btn => btn.classList.remove('active'));
+        if(state.cycleTarget === Infinity) {
+            document.getElementById('cycleOptInf').classList.add('active');
+        } else {
+            document.querySelectorAll('.cycle-opt').forEach(btn => {
+                if(btn.textContent.trim() === String(state.cycleTarget)) btn.classList.add('active');
+            });
+        }
+        document.getElementById('cycleTargetOverlay').style.display = 'block';
+    }
+
+    function closeCycleTargetSheet(e) {
+        document.getElementById('cycleTargetOverlay').style.display = 'none';
+    }
+
+    function setCycleTarget(n) {
+        state.cycleTarget = n;
+        state.goalReached = false;
+        updateCycleBadge();
+        closeCycleTargetSheet();
     }
 
     function toggleMusic() {
