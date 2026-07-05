@@ -1832,48 +1832,49 @@ const NIYAMAS = [
         nombre: 'Santosha',
         subtitulo: 'la paz que no espera a que todo esté bien',
         cuerpo: [
-            'La aceptacion serena no es resignacion.',            'Santosha es el segundo niyama, y quizas el mas malinterpretado. No dice que te conformes, que no aspires, que te quedes quieto. Dice algo mas dificil: que puedas estar bien ahora, con lo que hay, sin esperar a que llegue lo que falta.',
-            'Vivimos aplazando la calma. Cuando acabe esto, cuando tenga aquello, cuando todo encaje. Santosha senala ese habito con amabilidad y pregunta: <em>y si el momento de estar en paz fuera este?</em>',
-            'No es facil. Pero es posible practicarlo, un minuto cada vez.'
+            'La aceptación serena no es resignación.',
+            'Santosha es el segundo niyama, y quizás el más malinterpretado. No dice que te conformes, que no aspires, que te quedes quieto. Dice algo más difícil: que puedas estar bien ahora, con lo que hay, sin esperar a que llegue lo que falta.',
+            'Vivimos aplazando la calma. Cuando acabe esto, cuando tenga aquello, cuando todo encaje. Santosha señala ese hábito con amabilidad y pregunta: <em>¿y si el momento de estar en paz fuera este?</em>',
+            'No es fácil. Pero es posible practicarlo, un minuto cada vez.'
         ],
-        cita: 'La respiracion no espera al momento perfecto.<br>Ocurre ahora. Santosha tambien.',
-        practica: 'Dos minutos de <strong>respiracion caja</strong>: cuatro tiempos en cada fase. Sin prisa. Solo estar.'
+        cita: 'La respiración no espera al momento perfecto.<br>Ocurre ahora. Santosha también.',
+        practica: 'Dos minutos de <strong>respiración caja</strong>: cuatro tiempos en cada fase. Sin prisa. Solo estar.'
     },
     {
         nombre: 'Tapas',
         subtitulo: 'el fuego que transforma sin destruir',
         cuerpo: [
             'Tapas no es castigo.',
-            'La palabra sanscrita tapas viene de calor: el calor que transforma la arcilla en ceramica, el mineral en metal, lo crudo en algo util. No el fuego que arrasa, sino el que forja.',
-            'En la practica, tapas es la disciplina que eliges. Levantarte aunque no apetezca. Respirar cuando el impulso es reaccionar. Mantener el compromiso contigo mismo cuando nadie mira.',
+            'La palabra sánscrita tapas viene de calor: el calor que transforma la arcilla en cerámica, el mineral en metal, lo crudo en algo útil. No el fuego que arrasa, sino el que forja.',
+            'En la práctica, tapas es la disciplina que eliges. Levantarte aunque no apetezca. Respirar cuando el impulso es reaccionar. Mantener el compromiso contigo mismo cuando nadie mira.',
             'La diferencia con el autocastigo es sutil pero crucial: tapas viene del cuidado, no del miedo. Te exiges porque te importas, no porque no seas suficiente.'
         ],
-        cita: 'Cada vez que respiras cuando querrias escapar,<br>tapas esta ahi, trabajando.',
-        practica: 'Elige un patron que te cueste un poco: <strong>4-7-8</strong> o personalizado. Completa cinco rondas sin rendirte.'
+        cita: 'Cada vez que respiras cuando querrías escapar,<br>tapas está ahí, trabajando.',
+        practica: 'Elige un patrón que te cueste un poco: <strong>4-7-8</strong> o personalizado. Completa cinco rondas sin rendirte.'
     },
     {
         nombre: 'Svadhyaya',
         subtitulo: 'mirarte sin el juez dentro',
         cuerpo: [
             'Svadhyaya es autoestudio. Pero no del tipo que te pone nota.',
-            'El cuarto niyama invita a observarte: tus patrones, tus reacciones, los pensamientos que se repiten. Con la misma curiosidad con la que observarias algo interesante, no con la lupa del tribunal interior.',
-            '<em>Por que reacciono asi aqui?</em> <em>Esto que hago me acerca o me aleja de lo que quiero ser?</em> No para juzgar la respuesta, sino para conocerla.',
-            'Svadhyaya dice que el conocimiento propio es un camino, no un destino. Cada dia ves algo nuevo. Cada respiracion, si la escuchas, te cuenta algo sobre como estas.'
+            'El cuarto niyama invita a observarte: tus patrones, tus reacciones, los pensamientos que se repiten. Con la misma curiosidad con la que observarías algo interesante, no con la lupa del tribunal interior.',
+            '<em>¿Por qué reacciono así aquí?</em> <em>¿Esto que hago me acerca o me aleja de lo que quiero ser?</em> No para juzgar la respuesta, sino para conocerla.',
+            'Svadhyaya dice que el conocimiento propio es un camino, no un destino. Cada día ves algo nuevo. Cada respiración, si la escuchas, te cuenta algo sobre cómo estás.'
         ],
-        cita: 'Observa como respiras cuando nadie te ve.<br>Ahi esta tu estado real.',
-        practica: 'Antes de empezar, tomate 30 segundos: <em>como llego aqui?</em> Sin filtro. Solo nota. Luego respira con el patron que elijas.'
+        cita: 'Observa cómo respiras cuando nadie te ve.<br>Ahí está tu estado real.',
+        practica: 'Antes de empezar, tómate 30 segundos: <em>¿cómo llego aquí?</em> Sin filtro. Solo nota. Luego respira con el patrón que elijas.'
     },
     {
         nombre: 'Ishvara Pranidhana',
         subtitulo: 'soltar el control y confiar en el rio',
         cuerpo: [
-            'El quinto niyama es el mas dificil de pronunciar y el mas dificil de practicar.',
-            'Ishvara Pranidhana se traduce a veces como rendicion a lo divino. Pero no requiere ninguna religion. Requiere algo mas extrano para la mente moderna: soltar la ilusion de que puedes controlarlo todo.',
+            'El quinto niyama es el más difícil de pronunciar y el más difícil de practicar.',
+            'Ishvara Pranidhana se traduce a veces como rendición a lo divino. Pero no requiere ninguna religión. Requiere algo más extraño para la mente moderna: soltar la ilusión de que puedes controlarlo todo.',
             'Planificas, te preparas, te esfuerzas. Y luego hay cosas que pasan igualmente, o no pasan, o pasan de otra forma. Ishvara Pranidhana dice que puedes hacer tu parte con plena entrega, y soltar el resultado.',
-            'No es pasividad. Es hacer bien lo que puedes hacer, y no aferrarte a como tiene que salir. El rio sabe donde va aunque tu no lo veas.'
+            'No es pasividad. Es hacer bien lo que puedes hacer, y no aferrarte a cómo tiene que salir. El río sabe dónde va aunque tú no lo veas.'
         ],
-        cita: 'Inhala: hago lo que puedo.<br>Exhala: suelto lo que no depende de mi.',
-        practica: 'Respiracion <strong>4-7-8</strong>: en los 7 de retencion, visualiza algo que llevas cargando. En los 8 de exhale, dejalo ir. Repite tres veces.'
+        cita: 'Inhala: hago lo que puedo.<br>Exhala: suelto lo que no depende de mí.',
+        practica: 'Respiración <strong>4-7-8</strong>: en los 7 de retención, visualiza algo que llevas cargando. En los 8 de exhale, déjalo ir. Repite tres veces.'
     }
 ];
 
@@ -1885,6 +1886,11 @@ function openPildoraOverlay(index) {
     const overlay = document.getElementById('pildoraOverlay');
     overlay.style.display = 'flex';
     overlay.scrollTop = 0;
+}
+
+function navegarNiyama(dir) {
+    currentNiyama = (currentNiyama + dir + NIYAMAS.length) % NIYAMAS.length;
+    renderNiyama();
 }
 
 function renderNiyama() {
