@@ -677,15 +677,10 @@
     }
 
     function openCycleTargetSheet() {
-        document.querySelectorAll('.cycle-opt').forEach(btn => btn.classList.remove('active'));
-        if(state.cycleTarget === Infinity) {
-            document.getElementById('cycleOptInf').classList.add('active');
-        } else {
-            document.querySelectorAll('.cycle-opt').forEach(btn => {
-                if(btn.textContent.trim() === String(state.cycleTarget)) btn.classList.add('active');
-            });
-        }
-        document.getElementById('cycleTargetOverlay').style.display = 'block';
+        const input = document.getElementById('cycleTargetInput');
+        input.value = (state.cycleTarget === Infinity) ? '' : state.cycleTarget;
+        document.getElementById('cycleTargetOverlay').style.display = 'flex';
+        input.focus();
     }
 
     function closeCycleTargetSheet(e) {

@@ -279,45 +279,20 @@
             transform: scale(0.95);
         }
 
-        /* Opciones del selector de ciclos (bottom sheet) */
-        .cycle-opt {
+        /* Input numérico minimalista del selector de ciclos */
+        .cycle-input-minimal {
+            font-size: 2.2rem;
             font-family: 'Manrope', sans-serif;
-            font-weight: 600;
-            font-size: 1rem;
-            color: var(--accent);
-            background: rgba(0,131,143,0.08);
-            border: 1.5px solid rgba(0,131,143,0.2);
-            border-radius: 30px;
-            padding: 12px 20px;
-            min-width: 52px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .cycle-opt:active {
-            transform: scale(0.95);
-        }
-        .cycle-opt.active {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-        }
-
-        /* Input numérico personalizado del selector de ciclos */
-        .cycle-input {
-            font-family: 'Manrope', sans-serif;
-            font-weight: 600;
-            font-size: 1rem;
-            color: #37474f;
-            background: rgba(0,131,143,0.04);
-            border: 1.5px solid rgba(0,131,143,0.2);
-            border-radius: 30px;
-            padding: 12px 16px;
-            width: 100px;
+            font-weight: 300;
+            border: none;
+            border-bottom: 2px solid var(--accent);
+            background: transparent;
+            color: var(--text-main);
+            width: 140px;
             text-align: center;
+            letter-spacing: 1px;
             outline: none;
-        }
-        .cycle-input:focus {
-            border-color: var(--accent);
+            padding-bottom: 5px;
         }
 
                 /* Card estilo Nadi */
