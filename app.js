@@ -214,20 +214,27 @@
         if(audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
     }
 
-    function playTone(freq, type, dur, time) {
+    function playTone(freq, type, dur, time, direction) {
         if(!state.met) return;
         try {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = type;
-            osc.frequency.setValueAtTime(freq, time);
-            let vol = 0.05;
-            gain.gain.setValueAtTime(vol, time);
+            // Barrido direccional suave: sube en inhala, baja en exhala, estable en mantén
+            let f0 = freq, f1 = freq;
+            if(direction === 'up')   { f0 = freq * 0.85; f1 = freq * 1.15; }
+            if(direction === 'down') { f0 = freq * 1.15; f1 = freq * 0.85; }
+            osc.frequency.setValueAtTime(f0, time);
+            osc.frequency.exponentialRampToValueAtTime(f1, time + dur * 0.8);
+            const vol = 0.05;
+            // Ataque suave (no encendido brusco) para evitar el "blip"
+            gain.gain.setValueAtTime(0.0001, time);
+            gain.gain.exponentialRampToValueAtTime(vol, time + 0.02);
             gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
             osc.connect(gain);
             gain.connect(audioCtx.destination);
             osc.start(time);
-            osc.stop(time + dur);
+            osc.stop(time + dur + 0.02);
         } catch(e) {}
     }
 
@@ -265,12 +272,12 @@
         }
         if(phase) {
             if(beatInPhase === 1) {
-                let freq = 440;
-                if(phase.y === 'rise') freq = 300;
-                else if(phase.y === 'holdhigh') freq = 450;
-                else if(phase.y === 'fall') freq = 400;
-                else freq = 250;
-                playTone(freq, 'sine', 0.2, time);
+                let freq = 440, direction = 'steady';
+                if(phase.y === 'rise')          { freq = 300; direction = 'up'; }
+                else if(phase.y === 'holdhigh') { freq = 450; direction = 'steady'; }
+                else if(phase.y === 'fall')     { freq = 400; direction = 'down'; }
+                else                            { freq = 250; direction = 'steady'; }
+                playTone(freq, 'sine', 0.25, time, direction);
             }
             if(state.met) {
                 playTok(beatInPhase === 1, time);
