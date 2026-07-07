@@ -745,7 +745,7 @@
         els.pillPatternInput.focus();
     }
 
-    async function generateShareLink() {
+    function generateShareLink() {
         let pString = els.pillPatternInput.value.trim();
         if(!pString) {
             alert('Falta el patrón.');
@@ -759,19 +759,10 @@
         const n = els.pillNameInput.value.trim() || 'Amigo';
         const m = els.pillMessageInput.value.trim() || 'Respira conmigo...';
         els.shareConfigOverlay.style.display = 'none';
-        els.load.style.display = 'flex';
+        // Enlace directo a nuestro propio dominio — sin shorteners de terceros
+        // (cleanuri.com empezó a redirigir a paginas de parking de GoDaddy sin aviso).
         const baseUrl = location.href.split('?')[0];
-        const longUrl = `${baseUrl}?p=${encodeURIComponent(pString)}&to=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
-        let finalUrl = longUrl;
-        try {
-            const r = await fetch('/api/shorten', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: longUrl })
-            });
-            if(r.ok) { const d = await r.json(); if(d.short) finalUrl = d.short; }
-        } catch(e) {}
-        els.load.style.display = 'none';
+        const finalUrl = `${baseUrl}?p=${encodeURIComponent(pString)}&to=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
         els.shareText.value = `Píldora de Respiración:\n${m}\n→ ${pString}\n${finalUrl}`;
         els.shareModal.style.display = 'flex';
     }
