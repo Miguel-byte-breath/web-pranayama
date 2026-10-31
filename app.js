@@ -766,7 +766,20 @@
         const safeName = n.replace(/[\/?#&]/g, '').trim();
         let finalUrl = `${location.origin}/p/${encodeURIComponent(pString)}`;
         if (safeName && safeName !== 'Amigo') finalUrl += `/${encodeURIComponent(safeName)}`;
-        els.shareText.value = `🌬️ Píldora de Respiración para ${n}\n"${m}"\n→ ${pString}\n${finalUrl}`;
+        // Patrón traducido a palabras ("Inhala 4 · Mantén 7 · Exhala 8 por la boca").
+        // Solo símbolos BMP (◦ · ↓): los emojis de 4 bytes se rompen vía wa.me en WhatsApp Web/escritorio.
+        const pasos = testP.map(ph => {
+            const verbo = ph.t.charAt(0) + ph.t.slice(1).toLowerCase();
+            const boca = (ph.m === 'mouth' && (ph.y === 'rise' || ph.y === 'fall')) ? ' por la boca' : '';
+            return `${verbo} ${ph.b}${boca}`;
+        }).join(' · ');
+        const para = (n && n !== 'Amigo') ? ` para ${n}` : '';
+        els.shareText.value =
+            `◦ *Píldora de Respiración*${para} ◦\n` +
+            `_"${m}"_\n\n` +
+            `${pasos}\n\n` +
+            `Ábrela y respira conmigo ↓\n` +
+            `${finalUrl}`;
         els.shareModal.style.display = 'flex';
     }
 
