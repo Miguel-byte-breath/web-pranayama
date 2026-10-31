@@ -1884,7 +1884,6 @@ const NIYAMAS = [
         nombre: 'Saucha',
         subtitulo: 'la limpieza que no ves en el espejo',
         cuerpo: [
-            'Hay suciedad que no quita el jabón.',
             'Saucha es el primero de los niyamas — esa lista de cosas que el yoga te propone hacer contigo mismo antes de intentar arreglar el mundo. Y empieza por aquí: limpieza. Pureza. Pero no del tipo que vende la tele.',
             'La cocina puede brillar y la mente estar hecha un desastre de listas pendientes, rencores a medio digerir y pensamientos que llevan tres días rondando sin pagar alquiler. Saucha pregunta: <em>¿y eso, cuándo lo limpias?</em>',
             'No es perfeccionismo. No es hacerse el puro ni vivir en blanco y beige. Es más bien esto: notar qué entra en ti — por los ojos, por las palabras que dices, por lo que comes, por con quién te juntas — y preguntarte si eso te aclara o te enturbia.'
