@@ -761,9 +761,12 @@
         els.shareConfigOverlay.style.display = 'none';
         // Enlace directo a nuestro propio dominio — sin shorteners de terceros
         // (cleanuri.com empezó a redirigir a paginas de parking de GoDaddy sin aviso).
-        const baseUrl = location.href.split('?')[0];
-        const finalUrl = `${baseUrl}?p=${encodeURIComponent(pString)}&to=${encodeURIComponent(n)}&msg=${encodeURIComponent(m)}`;
-        els.shareText.value = `Píldora de Respiración:\n${m}\n→ ${pString}\n${finalUrl}`;
+        // Enlace corto: /p/<patrón>[/<nombre>] — vercel.json lo redirige a /?p=...&to=...
+        // El mensaje NO va en la URL: ya viaja en el texto de WhatsApp.
+        const safeName = n.replace(/[\/?#&]/g, '').trim();
+        let finalUrl = `${location.origin}/p/${encodeURIComponent(pString)}`;
+        if (safeName && safeName !== 'Amigo') finalUrl += `/${encodeURIComponent(safeName)}`;
+        els.shareText.value = `🌬️ Píldora de Respiración para ${n}\n"${m}"\n→ ${pString}\n${finalUrl}`;
         els.shareModal.style.display = 'flex';
     }
 

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'respira-v3.0.10';
+const CACHE_NAME = 'respira-v3.0.11';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -55,6 +55,8 @@ self.addEventListener('message', (e) => {
 //    - imagenes, audio, iconos -> cache primero (cambian poco, pesan mucho)
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
+  // Enlaces de píldora /p/... son redirecciones de Vercel: dejar pasar sin cachear
+  if (url.pathname.startsWith('/p/')) return;
   const isHTML = url.pathname === '/' || url.pathname.endsWith('.html');
   const isCore = url.pathname.endsWith('.js') || url.pathname.endsWith('.css');
 
@@ -75,4 +77,10 @@ self.addEventListener('fetch', (e) => {
         if (cachedResponse) return cachedResponse;
         return fetch(e.request).then((networkResponse) => {
           const clone = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(e.request, cl
+          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+          return networkResponse;
+        });
+      })
+    );
+  }
+});
