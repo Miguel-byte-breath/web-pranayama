@@ -3,6 +3,6 @@
   "private": true,
   "description": "Respira · Tu Espacio de Calma (PWA). Dependencias solo para las funciones de api/.",
   "dependencies": {
-    "@vercel/og": "1.0.3"
+    "@vercel/og": "0.8.6"
   }
 }
