@@ -1,17 +1,13 @@
 {
-  "redirects": [
+  "rewrites": [
     {
       "source": "/p/:p/:to",
-      "destination": "/?p=:p&to=:to",
-      "permanent": false
+      "destination": "/api/pill?p=:p&to=:to"
     },
     {
       "source": "/p/:p",
-      "destination": "/?p=:p",
-      "permanent": false
-    }
-  ],
-  "rewrites": [
+      "destination": "/api/pill?p=:p"
+    },
     {
       "source": "/api/(.*)",
       "destination": "/api/$1"
