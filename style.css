@@ -2479,3 +2479,107 @@
         .focusnaut-card h3 { font-family:'Manrope',sans-serif; font-size:1rem; font-weight:700; color:#37474f; margin:0 0 6px 0; line-height:1.3; }
         .focusnaut-card p { font-family:'Manrope',sans-serif; font-size:0.85rem; color:#78909c; margin:0 0 10px 0; line-height:1.5; }
         .focusnaut-badge { display:inline-flex; align-items:center; gap:5px; font-size:0.75rem; font-weight:600; color:#1ed760; background:rgba(30,215,96,0.08); border-radius:20px; padding:3px 10px; }
+
+        /* ===== PÍLDORA REGALO (pantalla de recibir) ===== */
+        #pillOverlay.pill-gift {
+            padding: 0;
+            overflow: hidden;
+            background: #fffdf8;
+            backdrop-filter: none;
+            z-index: 450;
+        }
+        /* Fondo nocturno del sobre: capa propia que se desvanece (los degradados no se animan) */
+        #pillOverlay.pill-gift::before { content: ''; position: absolute; inset: 0; z-index: 0;
+            background: radial-gradient(ellipse at 50% 45%, #1d2b3a 0%, #0d1520 70%); transition: opacity 0.9s ease; }
+        #pillOverlay.pill-gift.opened::before { opacity: 0; }
+
+        #pillFx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
+
+        /* Aurora de color (aparece tras abrir) */
+        .pill-aurora { position: absolute; inset: -20%; opacity: 0; transition: opacity 1.4s ease 0.3s; z-index: 1; filter: blur(60px); }
+        .pill-gift.opened .pill-aurora { opacity: 0.55; }
+        .pill-aurora span { position: absolute; width: 55%; height: 55%; border-radius: 50%; mix-blend-mode: multiply; }
+        .pill-aurora span:nth-child(1) { background: #a5d6a7; top: 5%;  left: 5%;  animation: pillDrift1 14s ease-in-out infinite; }
+        .pill-aurora span:nth-child(2) { background: #ffcc80; top: 35%; right: 0;  animation: pillDrift2 17s ease-in-out infinite; }
+        .pill-aurora span:nth-child(3) { background: #90caf9; bottom: 0; left: 20%; animation: pillDrift3 15s ease-in-out infinite; }
+        @keyframes pillDrift1 { 50% { transform: translate(25%, 20%) scale(1.15); } }
+        @keyframes pillDrift2 { 50% { transform: translate(-30%, 10%) scale(0.9); } }
+        @keyframes pillDrift3 { 50% { transform: translate(15%, -25%) scale(1.2); } }
+
+        /* Destello y onda expansiva */
+        .pill-bloom { position: absolute; left: var(--burst-x, 50%); top: var(--burst-y, 40%); width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%;
+            background: radial-gradient(circle, #fff 0%, rgba(255,255,255,0.9) 35%, rgba(255,255,255,0) 70%);
+            transform: scale(0); opacity: 0; z-index: 2; pointer-events: none; }
+        .pill-ring { position: absolute; left: var(--seed-x, 50%); top: var(--seed-y, 40%); width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.9); transform: scale(0); opacity: 0; z-index: 4; pointer-events: none; }
+        .pill-gift.opened .pill-bloom   { animation: pillBloom 1.1s cubic-bezier(.2,.7,.3,1) forwards; }
+        .pill-gift.bursting .pill-ring  { animation: pillRing 1.2s cubic-bezier(.1,.8,.3,1) forwards; }
+        @keyframes pillBloom { 0% { transform: scale(0.5); opacity: 1; } 40% { opacity: 1; } 100% { transform: scale(45); opacity: 0; } }
+        @keyframes pillRing  { 0% { transform: scale(0.8); opacity: 0.9; border-width: 4px; } 100% { transform: scale(9); opacity: 0; border-width: 0.5px; } }
+
+        /* Etapa 1: sobre cerrado */
+        .pill-envelope { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; -webkit-tap-highlight-color: transparent; transition: opacity 0.4s ease; outline: none; }
+        .pill-seed { position: relative; width: 110px; height: 110px; margin-top: -8vh; margin-bottom: 42px; animation: pillSeedBeat 2.4s ease-in-out infinite; }
+        .pill-seed span { position: absolute; inset: 14px; border-radius: 50%; mix-blend-mode: screen; filter: blur(1px); }
+        .pill-seed span:nth-child(1) { background: radial-gradient(circle at 40% 40%, #a5d6a7, #4CAF50 60%, transparent 72%); animation: pillOrbit 3.2s linear infinite; }
+        .pill-seed span:nth-child(2) { background: radial-gradient(circle at 40% 40%, #ffe0b2, #FF9800 60%, transparent 72%); animation: pillOrbit 3.2s linear infinite -1.07s; }
+        .pill-seed span:nth-child(3) { background: radial-gradient(circle at 40% 40%, #bbdefb, #2196F3 60%, transparent 72%); animation: pillOrbit 3.2s linear infinite -2.13s; }
+        @keyframes pillOrbit { 0% { transform: translate(20px,0); } 33% { transform: translate(-10px,17px); } 66% { transform: translate(-10px,-17px); } 100% { transform: translate(20px,0); } }
+        @keyframes pillSeedBeat { 0%,100% { transform: scale(0.92); filter: drop-shadow(0 0 18px rgba(255,255,255,0.15)); }
+                                  50% { transform: scale(1.08); filter: drop-shadow(0 0 38px rgba(255,255,255,0.35)); } }
+        .pill-env-to { font-family: 'Caveat', cursive; font-weight: 700; font-size: 2.3rem; color: #fff; margin: 0 20px 10px; }
+        .pill-env-hint { font-family: 'Manrope', sans-serif; font-size: 0.8rem; letter-spacing: 0.25em; text-transform: uppercase;
+            color: rgba(255,255,255,0.6); animation: pillHint 2.4s ease-in-out infinite; }
+        @keyframes pillHint { 50% { opacity: 0.35; } }
+        .pill-gift.inhaling .pill-seed { animation: pillInhale 0.7s cubic-bezier(.45,0,.55,1) forwards; }
+        @keyframes pillInhale { from { transform: scale(1); } to { transform: scale(1.45); filter: drop-shadow(0 0 60px rgba(255,255,255,0.7)) brightness(1.35); } }
+        .pill-gift.inhaling .pill-env-to, .pill-gift.inhaling .pill-env-hint { animation: none; opacity: 0; transform: translateY(8px); transition: opacity 0.5s ease, transform 0.5s ease; }
+        .pill-gift.bursting .pill-seed { opacity: 0; transition: opacity 0.12s ease; }
+        .pill-gift.bursting .pill-envelope { pointer-events: none; }
+        .pill-gift.opened .pill-envelope { opacity: 0; }
+
+        /* Etapa 2: revelación */
+        .pill-reveal { position: relative; z-index: 6; display: flex; flex-direction: column; align-items: center; text-align: center;
+            padding: 24px 20px; max-width: 520px; width: 100%; visibility: hidden; }
+        .pill-gift.opened .pill-reveal { visibility: visible; }
+        .pill-reveal > * { opacity: 0; transform: translateY(18px) scale(0.96); }
+        .pill-gift.opened .pill-reveal > * { animation: pillIn 0.7s cubic-bezier(.2,.9,.3,1.25) forwards; }
+        .pill-gift.opened .pill-reveal > :nth-child(1) { animation-delay: 0s; animation-duration: 0.5s; }
+        .pill-gift.opened .pill-reveal > :nth-child(2) { animation-delay: 0.55s; }
+        .pill-gift.opened .pill-reveal > :nth-child(3) { animation-delay: 0.7s; }
+        .pill-gift.opened .pill-reveal > :nth-child(4) { animation-delay: 0.8s; }
+        .pill-gift.opened .pill-reveal > :nth-child(5) { animation-delay: 0.9s; }
+        .pill-gift.opened .pill-reveal > :nth-child(6) { animation-delay: 1.35s; }
+        @keyframes pillIn { to { opacity: 1; transform: none; } }
+
+        .pill-orb-wrap { position: relative; width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+        .pill-orb { width: 150px; height: 150px; border-radius: 50%; background: #4CAF50; transform: scale(0.55);
+            box-shadow: 0 0 40px rgba(76,175,80,0.45), inset -12px -14px 30px rgba(0,0,0,0.12), inset 10px 12px 26px rgba(255,255,255,0.45); }
+        .pill-orb-label { position: absolute; font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 0.8rem; letter-spacing: 0.18em; color: #fff;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.25); }
+
+        .pill-title { font-family: 'Caveat', cursive; font-weight: 700; font-size: clamp(2.3rem, 11vw, 3rem); line-height: 1.05; margin: 0 0 6px; white-space: nowrap;
+            background: linear-gradient(90deg, #43a047, #fb8c00 50%, #1e88e5); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .pill-recipient { font-family: 'Manrope', sans-serif; font-weight: 400; font-size: 1.3rem; color: #546e7a; margin: 0 0 14px; }
+        .pill-message { font-family: 'Caveat', cursive; font-weight: 600; font-size: 1.6rem; color: #37474f; margin: 0 0 14px; }
+        .pill-message:empty { display: none; }
+
+        .pill-steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 8px 0 30px; }
+        .pill-step { font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 0.9rem; padding: 8px 14px; border-radius: 999px;
+            color: #fff; background: var(--step-c); box-shadow: 0 4px 14px color-mix(in srgb, var(--step-c) 35%, transparent);
+            opacity: 0.55; transform: scale(0.94); transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease; }
+        .pill-step.active { opacity: 1; transform: scale(1.06); box-shadow: 0 6px 22px color-mix(in srgb, var(--step-c) 55%, transparent); }
+        .pill-step small { font-weight: 400; opacity: 0.85; }
+
+        .pill-start { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 1.1rem; color: #fff; border: none; cursor: pointer;
+            padding: 16px 56px; border-radius: 999px; background: linear-gradient(90deg, #43a047, #00838f);
+            box-shadow: 0 8px 24px rgba(0,131,143,0.35); }
+        .pill-start:active { transform: scale(0.97); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .pill-seed, .pill-seed span, .pill-env-hint, .pill-aurora span { animation: none !important; }
+            .pill-gift.bursting .pill-bloom, .pill-gift.bursting .pill-ring { animation: none !important; }
+            .pill-gift.opened .pill-reveal > * { animation: pillFade 0.6s ease forwards !important; animation-delay: 0s !important; }
+            @keyframes pillFade { to { opacity: 1; transform: none; } }
+        }

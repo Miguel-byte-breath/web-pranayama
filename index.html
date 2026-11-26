@@ -26,7 +26,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=3.0.11">
+    <link rel="stylesheet" href="style.css?v=3.0.12">
 </head>
 <body>
 
@@ -593,12 +593,30 @@
     </div>
 </div>
 
-<!-- PILL OVERLAY -->
-<div id="pillOverlay">
-    <h1 style="color:var(--accent); font-family:'Caveat',cursive; font-weight:700; font-size:2.4rem; margin-bottom:15px;">Una pausa para ti</h1>
-    <h2 id="pillRecipient" style="color:#546e7a; margin-bottom:25px; font-weight:400; font-family:'Manrope';"></h2>
-    <p id="pillMessage" style="font-size:1.6rem; font-family:'Caveat',cursive; font-weight:600; color:#37474f; margin-bottom:50px; max-width:600px;"></p>
-    <button class="btn-text" style="background:var(--primary); color:white; padding:16px 50px;" onclick="closePill(); start('pill');">Comenzar</button>
+<!-- PILL OVERLAY (píldora regalo) -->
+<div id="pillOverlay" class="pill-gift">
+    <div class="pill-aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+    <canvas id="pillFx" aria-hidden="true"></canvas>
+    <div class="pill-bloom" aria-hidden="true"></div>
+    <div class="pill-ring" aria-hidden="true"></div>
+
+    <div class="pill-envelope" id="pillEnvelope" role="button" tabindex="0" aria-label="Abrir la píldora">
+        <div class="pill-seed"><span></span><span></span><span></span></div>
+        <p class="pill-env-to" id="pillEnvTo">Tienes una píldora</p>
+        <p class="pill-env-hint">Toca para abrirla</p>
+    </div>
+
+    <div class="pill-reveal" id="pillReveal">
+        <div class="pill-orb-wrap">
+            <div class="pill-orb" id="pillOrb"></div>
+            <span class="pill-orb-label" id="pillOrbLabel"></span>
+        </div>
+        <h1 class="pill-title">Una pausa para ti</h1>
+        <h2 id="pillRecipient" class="pill-recipient"></h2>
+        <p id="pillMessage" class="pill-message"></p>
+        <div class="pill-steps" id="pillSteps"></div>
+        <button class="pill-start" onclick="closePill(); start('pill');">Comenzar</button>
+    </div>
 </div>
 
 <!-- APP LAYOUT -->
@@ -746,5 +764,5 @@
     </div>
 </div>
 
-<script src="app.js?v=3.0.11" defer></script>
+<script src="app.js?v=3.0.12" defer></script>
 

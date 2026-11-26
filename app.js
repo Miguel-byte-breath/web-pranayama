@@ -798,7 +798,161 @@
         }
     }
 
+    // --- PÍLDORA REGALO: sobre -> explosión de color -> revelación con esfera ---
+    const pillGift = (() => {
+        const COLORS = ['#4CAF50', '#81c784', '#FF9800', '#ffb74d', '#2196F3', '#64b5f6', '#00acc1', '#ffffff'];
+        const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let raf = null, orbTimer = null, opened = false, pattern = null;
+
+        function label(ph) {
+            const verbo = ph.t.charAt(0) + ph.t.slice(1).toLowerCase();
+            const boca = (ph.m === 'mouth' && (ph.y === 'rise' || ph.y === 'fall')) ? ' <small>boca</small>' : '';
+            return `${verbo} ${ph.b}${boca}`;
+        }
+
+        // Exhala: luces suaves en espiral (ángulo áureo) arrastradas por una corriente
+        // que se arremolinan y se recogen en la esfera de la revelación.
+        function burst(onGather) {
+            const cv = document.getElementById('pillFx');
+            if (!cv || reduce) { onGather && onGather(); return; }
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const W = cv.clientWidth, H = cv.clientHeight;
+            cv.width = W * dpr; cv.height = H * dpr;
+            const ctx = cv.getContext('2d');
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            const ov = document.getElementById('pillOverlay');
+            const seed = document.querySelector('.pill-seed').getBoundingClientRect();
+            const orb = document.getElementById('pillOrb').getBoundingClientRect();
+            const sx = seed.left + seed.width / 2, sy = seed.top + seed.height / 2;
+            const tx = orb.left + orb.width / 2, ty = orb.top + orb.height / 2 - 18; // -18: la revelación entra subiendo
+            ov.style.setProperty('--seed-x', sx + 'px'); ov.style.setProperty('--seed-y', sy + 'px');
+            ov.style.setProperty('--burst-x', tx + 'px'); ov.style.setProperty('--burst-y', ty + 'px');
+
+            // Sprites de luz suave por color (más baratos que gradientes por partícula)
+            const sprites = {};
+            COLORS.forEach(c => {
+                const s = document.createElement('canvas'); s.width = s.height = 64;
+                const g = s.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+                gr.addColorStop(0, '#ffffff'); gr.addColorStop(0.18, c); gr.addColorStop(0.5, c + '55'); gr.addColorStop(1, c + '00');
+                g.fillStyle = gr; g.fillRect(0, 0, 64, 64); sprites[c] = s;
+            });
+
+            const GOLDEN = Math.PI * (3 - Math.sqrt(5));
+            const N = 420, reach = Math.min(W, H) * 0.95;
+            const parts = [];
+            for (let i = 0; i < N; i++) {
+                const a = i * GOLDEN, k = Math.sqrt((i + 1) / N);          // girasol: más densidad en el centro
+                const v = reach * (0.011 + k * 0.03) * (0.8 + Math.random() * 0.4);
+                const tang = 0.55;                                           // componente de giro
+                parts.push({ x: sx, y: sy,
+                    vx: Math.cos(a) * v - Math.sin(a) * v * tang, vy: Math.sin(a) * v + Math.cos(a) * v * tang,
+                    s: 6 + Math.random() * 16, c: COLORS[i % 7], ph: Math.random() * 6.28, delay: Math.random() * 0.12 });
+            }
+
+            const T_OUT = 1.15, T_IN = 0.95; // segundos: exhala y recogida
+            let t0 = null, gathered = false;
+            const ease = x => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+
+            const tick = now => {
+                if (t0 === null) t0 = now;
+                const t = (now - t0) / 1000;
+                // estela: desvanecer lo pintado manteniendo el lienzo transparente
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.fillStyle = 'rgba(0,0,0,0.22)'; ctx.fillRect(0, 0, W, H);
+                ctx.globalCompositeOperation = 'lighter';
+
+                for (const p of parts) {
+                    if (t < T_OUT) {                                         // EXHALA: espiral + corriente
+                        if (t < p.delay) continue;
+                        const fx = Math.sin(p.y * 0.012 + t * 2.2 + p.ph) * 0.35;
+                        const fy = Math.cos(p.x * 0.012 - t * 1.8 + p.ph) * 0.35;
+                        p.vx = p.vx * 0.972 + fx; p.vy = p.vy * 0.972 + fy;
+                        p.x += p.vx; p.y += p.vy;
+                        p.r0 = null;
+                    } else {                                                 // RECOGIDA: remolino hacia la esfera
+                        if (p.r0 == null) { p.r0 = Math.hypot(p.x - tx, p.y - ty); p.a0 = Math.atan2(p.y - ty, p.x - tx); }
+                        const u = Math.min((t - T_OUT) / T_IN, 1), e = ease(u);
+                        const r = p.r0 * (1 - e), a = p.a0 + e * 3.2;
+                        p.x = tx + Math.cos(a) * r; p.y = ty + Math.sin(a) * r;
+                    }
+                    const fade = t < T_OUT ? 1 : 1 - Math.max(0, (t - T_OUT - T_IN * 0.75) / (T_IN * 0.25));
+                    const tw = 0.75 + 0.25 * Math.sin(t * 9 + p.ph);           // titileo
+                    const size = p.s * (t < T_OUT ? 1 : 1 - ease(Math.min((t - T_OUT) / T_IN, 1)) * 0.6);
+                    ctx.globalAlpha = Math.max(0, fade) * tw;
+                    ctx.drawImage(sprites[p.c], p.x - size / 2, p.y - size / 2, size, size);
+                }
+                ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+
+                if (!gathered && t >= T_OUT + T_IN * 0.82) { gathered = true; onGather && onGather(); }
+                if (t < T_OUT + T_IN + 0.5) raf = requestAnimationFrame(tick);
+                else { ctx.clearRect(0, 0, W, H); raf = null; }
+            };
+            raf = requestAnimationFrame(tick);
+        }
+
+        function breatheOrb() {
+            const orb = document.getElementById('pillOrb');
+            const lbl = document.getElementById('pillOrbLabel');
+            const chips = document.querySelectorAll('#pillSteps .pill-step');
+            if (!orb || !pattern || !pattern.length) return;
+            let i = 0;
+            const step = () => {
+                const ph = pattern[i];
+                const big = ph.y === 'rise' || ph.y === 'holdhigh';
+                orb.style.transition = `transform ${ph.b}s ease-in-out, background-color 0.8s ease, box-shadow 0.8s ease`;
+                orb.style.transform = `scale(${big ? 1 : 0.55})`;
+                orb.style.backgroundColor = ph.c;
+                orb.style.boxShadow = `0 0 50px ${ph.c}88, inset -12px -14px 30px rgba(0,0,0,0.12), inset 10px 12px 26px rgba(255,255,255,0.45)`;
+                lbl.textContent = ph.t;
+                chips.forEach((c, k) => c.classList.toggle('active', k === i));
+                orbTimer = setTimeout(step, ph.b * 1000);
+                i = (i + 1) % pattern.length;
+            };
+            step();
+        }
+
+        function open() {
+            if (opened) return;
+            opened = true;
+            const ov = document.getElementById('pillOverlay');
+            if (reduce) { ov.classList.add('opened'); setTimeout(breatheOrb, 600); return; }
+            ov.classList.add('inhaling');                        // 1. inhala: la esfera se hincha
+            setTimeout(() => {
+                ov.classList.add('bursting');                    // 2. exhala: suelta las luces
+                if (navigator.vibrate) { try { navigator.vibrate(40); } catch (e) {} }
+                burst(() => {                                    // 3. se recogen en la esfera
+                    ov.classList.add('opened');
+                    if (navigator.vibrate) { try { navigator.vibrate([15, 30, 15]); } catch (e) {} }
+                    setTimeout(breatheOrb, 900);
+                });
+            }, 700);
+        }
+
+        function init(pat, to) {
+            pattern = pat;
+            const env = document.getElementById('pillEnvelope');
+            if (!env) return;
+            const name = (to && to !== 'Amigo') ? to : '';
+            document.getElementById('pillEnvTo').textContent = name ? `${name}, tienes una píldora` : 'Tienes una píldora';
+            document.getElementById('pillSteps').innerHTML = (pat || []).map(ph =>
+                `<span class="pill-step" style="--step-c:${ph.c}">${label(ph)}</span>`).join('');
+            env.addEventListener('click', open);
+            env.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+        }
+
+        function stop() {
+            if (raf) cancelAnimationFrame(raf);
+            clearTimeout(orbTimer);
+            raf = null; orbTimer = null;
+        }
+
+        return { init, stop, open };
+    })();
+    window._pillGift = pillGift;
+
     function closePill() {
+        pillGift.stop();
         document.getElementById('pillOverlay').style.display = 'none';
         document.documentElement.classList.remove('has-pill');
     }
@@ -809,7 +963,7 @@
         if(params.has('p')) {
             const pString = params.get('p');
             const to = params.get('to') || 'Amigo';
-            const msg = params.get('msg') || 'Respira conmigo...';
+            const msg = params.get('msg') || '';
             document.getElementById('pillRecipient').textContent = `Para ${to}`;
             document.getElementById('pillMessage').textContent = msg;
             const newPattern = parsePatternString(pString);
@@ -817,6 +971,7 @@
                 patterns['pill'] = newPattern;
                 // pillOverlay ya visible via CSS has-pill — solo rellenamos datos
             }
+            pillGift.init(newPattern.length >= 2 ? newPattern : [], to);
         }
     });
 // --- LÓGICA TRANSFORMA TUS PENSAMIENTOS ---
