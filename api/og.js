@@ -5,8 +5,13 @@ import { parsePattern, isValidPattern, cleanName } from './_og/pattern.js';
 
 export const config = { runtime: 'edge' };
 
-const font = name => fetch(new URL(`./_og/${name}`, import.meta.url)).then(r => r.arrayBuffer());
-const fontsP = Promise.all([font('caveat-700.woff'), font('manrope-800.woff'), font('manrope-600.woff')]);
+// Rutas literales: el empaquetador de Vercel solo incluye los archivos que ve escritos tal cual
+const load = url => fetch(url).then(r => r.arrayBuffer());
+const fontsP = Promise.all([
+  load(new URL('./_og/caveat-700.woff', import.meta.url)),
+  load(new URL('./_og/manrope-800.woff', import.meta.url)),
+  load(new URL('./_og/manrope-600.woff', import.meta.url)),
+]);
 
 // Satori acepta objetos tipo React sin JSX
 const h = (type, style, ...children) => {
