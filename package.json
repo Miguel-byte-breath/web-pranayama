@@ -1,6 +1,7 @@
 {
   "name": "web-pranayama",
   "private": true,
+  "type": "module",
   "description": "Respira · Tu Espacio de Calma (PWA). Dependencias solo para las funciones de api/.",
   "dependencies": {
     "@vercel/og": "0.8.6"
