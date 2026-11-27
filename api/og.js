@@ -1,17 +1,15 @@
 // Imagen de vista previa (1200x630) para cada píldora: /api/og?p=4-7-8b&to=María
 // La usa la etiqueta og:image de /p/... para que WhatsApp muestre una tarjeta propia.
+// Runtime Node (no Edge): Vercel incluye en la función exactamente los archivos que
+// `vercel build` traza, y así se puede reproducir y probar fuera de Vercel.
 import { ImageResponse } from '@vercel/og';
+import { readFileSync } from 'node:fs';
 import { parsePattern, isValidPattern, cleanName } from './_og/pattern.js';
 
-export const config = { runtime: 'edge' };
-
-// Rutas literales: el empaquetador de Vercel solo incluye los archivos que ve escritos tal cual
-const load = url => fetch(url).then(r => r.arrayBuffer());
-const fontsP = Promise.all([
-  load(new URL('./_og/caveat-700.woff', import.meta.url)),
-  load(new URL('./_og/manrope-800.woff', import.meta.url)),
-  load(new URL('./_og/manrope-600.woff', import.meta.url)),
-]);
+// Rutas literales para que el trazado de archivos de Vercel incluya las fuentes
+const caveat = readFileSync(new URL('./_og/caveat-700.woff', import.meta.url));
+const manrope800 = readFileSync(new URL('./_og/manrope-800.woff', import.meta.url));
+const manrope600 = readFileSync(new URL('./_og/manrope-600.woff', import.meta.url));
 
 // Satori acepta objetos tipo React sin JSX
 const h = (type, style, ...children) => {
@@ -36,12 +34,10 @@ function orb() {
   );
 }
 
-export default async function handler(req) {
-  const { searchParams } = new URL(req.url);
+function render(searchParams) {
   const p = searchParams.get('p') || '';
   const name = cleanName(searchParams.get('to'));
   const phases = isValidPattern(p) ? parsePattern(p) : [];
-  const [caveat, manrope800, manrope600] = await fontsP;
 
   const title = name ? `Para ${name}` : 'Una pausa para ti';
   const titleSize = title.length > 18 ? 76 : title.length > 12 ? 96 : 118;
@@ -75,6 +71,20 @@ export default async function handler(req) {
       { name: 'Manrope', data: manrope800, weight: 800, style: 'normal' },
       { name: 'Manrope', data: manrope600, weight: 600, style: 'normal' },
     ],
-    headers: { 'Cache-Control': 'public, max-age=86400, s-maxage=604800, immutable' },
   });
+}
+
+export default async function handler(req, res) {
+  try {
+    const { searchParams } = new URL(req.url, 'http://localhost');
+    // Se genera el PNG completo antes de responder: si algo falla, sale un 500 con el error
+    // en los logs (y no una página en blanco como con la respuesta en streaming)
+    const png = Buffer.from(await render(searchParams).arrayBuffer());
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=604800, immutable');
+    res.status(200).send(png);
+  } catch (err) {
+    console.error('[og] error generando la imagen:', err);
+    res.status(500).send('Error generando la imagen');
+  }
 }
